@@ -12,6 +12,10 @@ import 'models.dart';
 const String apiBaseUrl =
     String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8000');
 
+// Long enough to ride out Render's free-tier cold start (~30-60s after the
+// service has been idle), which is far longer than a normal request.
+const Duration _requestTimeout = Duration(seconds: 75);
+
 class ApiException implements Exception {
   final String message;
   ApiException(this.message);
@@ -57,6 +61,15 @@ class MemberActivity {
 }
 
 class ApiClient {
+  /// Fire-and-forget ping that wakes a sleeping free-tier backend while the
+  /// user is still typing their credentials.
+  void warmUp() {
+    http
+        .get(Uri.parse('$apiBaseUrl/health'))
+        .timeout(_requestTimeout)
+        .ignore();
+  }
+
   Future<AdminLoginResult> adminLogin(String email, String password) async {
     final res = await _post('/admin/auth/login', {'email': email, 'password': password});
     final admin = res['admin'] as Map<String, dynamic>;
@@ -193,7 +206,7 @@ class ApiClient {
       res = await http
           .post(Uri.parse('$apiBaseUrl$path'),
               headers: headers, body: body == null ? null : jsonEncode(body))
-          .timeout(const Duration(seconds: 10));
+          .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
     }
@@ -208,7 +221,7 @@ class ApiClient {
     try {
       res = await http
           .patch(Uri.parse('$apiBaseUrl$path'), headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 10));
+          .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
     }
@@ -223,7 +236,7 @@ class ApiClient {
     if (token != null) headers['Authorization'] = 'Bearer $token';
     final http.Response res;
     try {
-      res = await http.get(uri, headers: headers).timeout(const Duration(seconds: 10));
+      res = await http.get(uri, headers: headers).timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
     }
@@ -238,7 +251,7 @@ class ApiClient {
     if (token != null) headers['Authorization'] = 'Bearer $token';
     final http.Response res;
     try {
-      res = await http.get(uri, headers: headers).timeout(const Duration(seconds: 10));
+      res = await http.get(uri, headers: headers).timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
     }

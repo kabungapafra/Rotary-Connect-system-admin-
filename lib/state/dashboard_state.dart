@@ -13,6 +13,12 @@ import '../theme.dart';
 class DashboardState extends ChangeNotifier {
   final ApiClient _api = ApiClient();
 
+  DashboardState() {
+    // Wake the free-tier backend as soon as the login screen appears, so
+    // it's warm by the time credentials are submitted.
+    _api.warmUp();
+  }
+
   String view = 'dashboard';
   Color accentColor = AdminColors.accent;
 
