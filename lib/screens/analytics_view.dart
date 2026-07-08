@@ -20,9 +20,9 @@ class AnalyticsView extends StatelessWidget {
         GapRow(
           gap: 14,
           children: [
-            const StatCard(label: 'New Clubs This Month', value: '4'),
+            StatCard(label: 'New Clubs This Month', value: '${state.newClubsThisMonth}'),
             StatCard(label: 'Active Members', value: '${state.activeMembersCount}'),
-            const StatCard(label: 'Avg. Attendance', value: '78%'),
+            StatCard(label: 'Avg. Attendance', value: '${state.avgAttendancePercent}%'),
           ],
         ),
         const SizedBox(height: 16),
@@ -59,12 +59,12 @@ class _AttendanceCard extends StatelessWidget {
             style: TextStyle(fontSize: 11.5, color: AdminColors.textMuted),
           ),
           const SizedBox(height: 12),
-          AttendanceChart(values: DashboardState.attendanceVals, accentColor: state.accentColor),
+          AttendanceChart(values: state.attendanceVals, accentColor: state.accentColor),
           const SizedBox(height: 6),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (final lbl in DashboardState.attendanceLabels)
+              for (final lbl in state.attendanceLabels)
                 Text(lbl, style: const TextStyle(fontSize: 11, color: AdminColors.textMuted)),
             ],
           ),

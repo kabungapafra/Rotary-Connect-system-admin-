@@ -86,7 +86,7 @@ class NewClubWizard extends StatelessWidget {
                   ),
                   if (state.wizardStep == 2)
                     ElevatedButton(
-                      onPressed: state.createClub,
+                      onPressed: state.createClubLoading ? null : state.createClub,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: state.accentColor,
                         foregroundColor: Colors.white,
@@ -95,7 +95,13 @@ class NewClubWizard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 9),
                         textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                       ),
-                      child: const Text('Create Club'),
+                      child: state.createClubLoading
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            )
+                          : const Text('Create Club'),
                     )
                   else
                     Opacity(
@@ -231,6 +237,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-name'),
               label: 'Club Name',
               value: state.draft.name,
               placeholder: 'Rotary Club of ...',
@@ -239,6 +246,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-district'),
               label: 'District',
               value: state.draft.district,
               placeholder: 'e.g. D9213',
@@ -247,6 +255,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-location'),
               label: 'Location',
               value: state.draft.location,
               placeholder: 'City, Country',
@@ -260,6 +269,7 @@ class _StepContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             LabeledField(
+              key: const ValueKey('draft-email'),
               label: 'Club President Email',
               value: state.draft.email,
               placeholder: 'president@club.org',
@@ -268,6 +278,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-phone'),
               label: 'Contact Phone',
               value: state.draft.phone,
               placeholder: '+256 700 000 000',
@@ -276,6 +287,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-members'),
               label: 'Estimated Members',
               value: state.draft.members,
               placeholder: 'e.g. 45',
@@ -289,6 +301,7 @@ class _StepContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             LabeledField(
+              key: const ValueKey('draft-feeAmount'),
               label: 'Monthly Fee (UGX)',
               value: state.draft.feeAmount,
               placeholder: 'e.g. 150000',
@@ -297,6 +310,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-firstPaymentDate'),
               label: 'First Payment Date',
               value: state.draft.firstPaymentDate,
               placeholder: 'e.g. 08 Jul 2026',
@@ -305,6 +319,7 @@ class _StepContent extends StatelessWidget {
             ),
             const SizedBox(height: 13),
             LabeledField(
+              key: const ValueKey('draft-nextDueDate'),
               label: 'Next Payment Due',
               value: state.draft.nextDueDate,
               placeholder: 'e.g. 08 Aug 2026',

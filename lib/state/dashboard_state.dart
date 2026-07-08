@@ -1,123 +1,113 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../api_client.dart';
 import '../models.dart';
 import '../theme.dart';
 
-/// Single shared app state for the admin dashboard, mirroring the source
-/// design's one-component `state` object and its actions 1:1 (same seed
-/// data, same view/modal/menu flags, same toggle & toast behavior). This is
-/// a self-contained prototype exactly like the source bundle — no backend
-/// calls, everything lives in memory.
+/// Single shared app state for the admin dashboard. UI/navigation state
+/// (current view, open menus/modals, wizard step, form drafts) lives here
+/// directly; club/member/analytics data is loaded from the real backend via
+/// [ApiClient] and cached in the lists below.
 class DashboardState extends ChangeNotifier {
+  final ApiClient _api = ApiClient();
+
   String view = 'dashboard';
   Color accentColor = AdminColors.accent;
 
-  final List<Club> clubs = [
-    Club(
-        id: 1,
-        name: 'Rotary Club of Mbalwa',
-        district: 'D9213',
-        location: 'Kampala, Uganda',
-        members: 62,
-        status: 'active',
-        feeAmount: 350000,
-        lastPaidDate: '12 Jul 2026',
-        nextDueDate: '12 Aug 2026',
-        paymentStatus: 'paid',
-        joined: '03 Jan 2022'),
-    Club(
-        id: 2,
-        name: 'Rotary Club of Westlands',
-        district: 'D9212',
-        location: 'Nairobi, Kenya',
-        members: 48,
-        status: 'active',
-        feeAmount: 180000,
-        lastPaidDate: '04 Jul 2026',
-        nextDueDate: '11 Jul 2026',
-        paymentStatus: 'due-soon',
-        joined: '17 Jun 2021'),
-    Club(
-        id: 3,
-        name: 'Rotary Club of Kigali Central',
-        district: 'D9150',
-        location: 'Kigali, Rwanda',
-        members: 33,
-        status: 'suspended',
-        feeAmount: 70000,
-        lastPaidDate: '21 May 2026',
-        nextDueDate: '21 Jun 2026',
-        paymentStatus: 'overdue',
-        joined: '09 Nov 2023'),
-    Club(
-        id: 4,
-        name: 'Rotary Club of Dar Harbour',
-        district: 'D9211',
-        location: 'Dar es Salaam, Tanzania',
-        members: 71,
-        status: 'active',
-        feeAmount: 350000,
-        lastPaidDate: '30 Jun 2026',
-        nextDueDate: '30 Jul 2026',
-        paymentStatus: 'paid',
-        joined: '22 Feb 2020'),
-    Club(
-        id: 5,
-        name: 'Rotary Club of Lusaka North',
-        district: 'D9210',
-        location: 'Lusaka, Zambia',
-        members: 29,
-        status: 'active',
-        feeAmount: 70000,
-        lastPaidDate: '15 Jun 2026',
-        nextDueDate: '15 Jul 2026',
-        paymentStatus: 'due-soon',
-        joined: '14 May 2024'),
-    Club(
-        id: 6,
-        name: 'Rotary Club of Accra Coast',
-        district: 'D9102',
-        location: 'Accra, Ghana',
-        members: 55,
-        status: 'active',
-        feeAmount: 180000,
-        lastPaidDate: '02 Jul 2026',
-        nextDueDate: '02 Aug 2026',
-        paymentStatus: 'paid',
-        joined: '30 Mar 2022'),
-  ];
+  // ── auth ────────────────────────────────────────────────────────────
+  String? authToken;
+  String adminName = '';
+  String adminEmail = '';
+  bool loginLoading = false;
+  String? loginError;
 
-  final List<Member> members = [
-    Member(id: 1, name: 'Grace Nabirye', phone: '+256 772 145 890', club: 'Rotary Club of Mbalwa', status: 'active'),
-    Member(id: 2, name: 'Daniel Otieno', phone: '+254 712 334 210', club: 'Rotary Club of Westlands', status: 'active'),
-    Member(id: 3, name: 'Aline Uwase', phone: '+250 788 210 445', club: 'Rotary Club of Kigali Central', status: 'suspended'),
-    Member(id: 4, name: 'Samuel Mushi', phone: '+255 754 902 118', club: 'Rotary Club of Dar Harbour', status: 'active'),
-    Member(id: 5, name: 'Beatrice Phiri', phone: '+260 977 664 330', club: 'Rotary Club of Lusaka North', status: 'active'),
-    Member(id: 6, name: 'Kwame Boateng', phone: '+233 244 887 512', club: 'Rotary Club of Accra Coast', status: 'active'),
-    Member(id: 7, name: 'Esther Kato', phone: '+256 701 552 903', club: 'Rotary Club of Mbalwa', status: 'suspended'),
-    Member(id: 8, name: 'John Mwangi', phone: '+254 733 210 665', club: 'Rotary Club of Westlands', status: 'active'),
-  ];
+  bool get isLoggedIn => authToken != null;
 
-  int _nextId = 7;
+  Future<void> login(String email, String password) async {
+    if (email.trim().isEmpty || password.isEmpty) {
+      _update(() => loginError = 'Enter your email and password.');
+      return;
+    }
+    _update(() {
+      loginLoading = true;
+      loginError = null;
+    });
+    try {
+      final result = await _api.adminLogin(email.trim(), password);
+      _update(() {
+        authToken = result.token;
+        adminName = result.admin.name;
+        adminEmail = result.admin.email;
+        loginLoading = false;
+      });
+      await _loadAll();
+    } on ApiException catch (e) {
+      _update(() {
+        loginLoading = false;
+        loginError = e.message;
+      });
+    }
+  }
 
-  bool newClubOpen = false;
-  int wizardStep = 0;
-  ClubDraft draft = ClubDraft();
+  void logout() => _update(() {
+        authToken = null;
+        adminName = '';
+        adminEmail = '';
+        clubs.clear();
+        members.clear();
+        analytics = null;
+        view = 'dashboard';
+      });
 
-  int? paymentModalClubId;
-  PaymentDraft paymentDraft = PaymentDraft();
+  // ── data (loaded from backend) ─────────────────────────────────────
+  final List<Club> clubs = [];
+  final List<Member> members = [];
+  AnalyticsData? analytics;
+  bool dataLoading = false;
+  String? dataError;
 
-  int? statsModalClubId;
+  Future<void> _loadAll() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() {
+      dataLoading = true;
+      dataError = null;
+    });
+    try {
+      final loadedClubs = await _api.fetchClubs(token);
+      final loadedMembers = await _api.fetchMembers(token);
+      final loadedAnalytics = await _api.fetchAnalytics(token);
+      _update(() {
+        clubs
+          ..clear()
+          ..addAll(loadedClubs);
+        members
+          ..clear()
+          ..addAll(loadedMembers);
+        analytics = loadedAnalytics;
+        dataLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() {
+        dataLoading = false;
+        dataError = e.message;
+      });
+    }
+  }
 
-  String memberSearch = '';
-  String memberClubFilter = 'all';
-  String memberStatusFilter = 'all';
-
-  String? toastMessage;
-  Timer? _toastTimer;
+  Future<void> _refreshAnalytics() async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      final a = await _api.fetchAnalytics(token);
+      _update(() => analytics = a);
+    } on ApiException {
+      // Best-effort refresh; keep showing the last known analytics rather
+      // than surfacing an error for a secondary stat refresh.
+    }
+  }
 
   void _update(VoidCallback fn) {
     fn();
@@ -144,14 +134,19 @@ class DashboardState extends ChangeNotifier {
   void setAccentColor(Color c) => _update(() => accentColor = c);
 
   // ── new club wizard ──────────────────────────────────────────────────
+  bool newClubOpen = false;
+  int wizardStep = 0;
+  ClubDraft draft = ClubDraft();
+  bool createClubLoading = false;
+
   void openNewClub() => _update(() {
         newClubOpen = true;
         wizardStep = 0;
         draft = ClubDraft();
       });
   void closeNewClub() => _update(() => newClubOpen = false);
-  void nextStep() => _update(() => wizardStep = math.min(2, wizardStep + 1));
-  void prevStep() => _update(() => wizardStep = math.max(0, wizardStep - 1));
+  void nextStep() => _update(() => wizardStep = wizardStep < 2 ? wizardStep + 1 : 2);
+  void prevStep() => _update(() => wizardStep = wizardStep > 0 ? wizardStep - 1 : 0);
 
   void setDraftName(String v) => _update(() => draft.name = v);
   void setDraftDistrict(String v) => _update(() => draft.district = v);
@@ -165,44 +160,58 @@ class DashboardState extends ChangeNotifier {
 
   bool get nextDisabled => wizardStep == 0 && draft.name.trim().isEmpty;
 
-  static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-
-  void createClub() {
-    final parsedMembers = int.tryParse(draft.members) ?? 0;
-    final membersNum = parsedMembers == 0 ? 10 : parsedMembers;
-    final feeNum = int.tryParse(draft.feeAmount) ?? 0;
-    final now = DateTime.now();
-    final joined = '${now.day.toString().padLeft(2, '0')} ${_months[now.month - 1]} ${now.year}';
-    final newClub = Club(
-      id: _nextId,
-      name: draft.name.trim().isEmpty ? 'Untitled Club' : draft.name.trim(),
-      district: draft.district.trim().isEmpty ? '—' : draft.district.trim(),
-      location: draft.location.trim().isEmpty ? '—' : draft.location.trim(),
-      members: membersNum,
-      status: 'active',
-      feeAmount: feeNum,
-      lastPaidDate: draft.firstPaymentDate.trim().isEmpty ? '—' : draft.firstPaymentDate.trim(),
-      nextDueDate: draft.nextDueDate.trim().isEmpty ? '—' : draft.nextDueDate.trim(),
-      paymentStatus: 'paid',
-      joined: joined,
-    );
-    _update(() {
-      clubs.insert(0, newClub);
-      _nextId++;
-      newClubOpen = false;
-    });
-    _toast('${newClub.name} onboarded successfully');
+  Future<void> createClub() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() => createClubLoading = true);
+    try {
+      final membersNum = int.tryParse(draft.members) ?? 0;
+      final club = await _api.createClub(
+        token,
+        name: draft.name,
+        district: draft.district,
+        location: draft.location,
+        membersCount: membersNum == 0 ? 10 : membersNum,
+        feeAmount: int.tryParse(draft.feeAmount) ?? 0,
+        firstPaymentDate: draft.firstPaymentDate.trim().isEmpty ? null : draft.firstPaymentDate.trim(),
+        nextDueDate: draft.nextDueDate.trim().isEmpty ? null : draft.nextDueDate.trim(),
+      );
+      _update(() {
+        clubs.insert(0, club);
+        createClubLoading = false;
+        newClubOpen = false;
+      });
+      _toast('${club.name} onboarded successfully');
+      unawaited(_refreshAnalytics());
+    } on ApiException catch (e) {
+      _update(() => createClubLoading = false);
+      _toast(e.message);
+    }
   }
 
   // ── clubs ───────────────────────────────────────────────────────────
-  void toggleClubStatus(int id) {
-    final club = clubs.firstWhere((c) => c.id == id);
-    final willBe = club.status == 'active' ? 'suspended' : 'activated';
-    _update(() => club.status = club.status == 'active' ? 'suspended' : 'active');
-    _toast('${club.name} $willBe');
+  void _replaceClub(Club updated) {
+    final i = clubs.indexWhere((c) => c.id == updated.id);
+    if (i != -1) clubs[i] = updated;
   }
+
+  Future<void> toggleClubStatus(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    final club = clubs.firstWhere((c) => c.id == id);
+    final nextStatus = club.status == 'active' ? 'suspended' : 'active';
+    try {
+      final updated = await _api.setClubStatus(token, id, nextStatus);
+      _update(() => _replaceClub(updated));
+      _toast('${updated.name} ${nextStatus == 'suspended' ? 'suspended' : 'activated'}');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  int? paymentModalClubId;
+  PaymentDraft paymentDraft = PaymentDraft();
+  bool paymentSaving = false;
 
   void openPaymentModal(int id) {
     final club = clubs.firstWhere((c) => c.id == id);
@@ -217,44 +226,108 @@ class DashboardState extends ChangeNotifier {
   void setPaymentDatePaid(String v) => _update(() => paymentDraft.datePaid = v);
   void setPaymentNextDue(String v) => _update(() => paymentDraft.nextDue = v);
 
-  void savePayment() {
+  Future<void> savePayment() async {
+    final token = authToken;
     final id = paymentModalClubId;
-    if (id == null) return;
-    final club = clubs.firstWhere((c) => c.id == id);
-    _update(() {
-      final parsedAmount = int.tryParse(paymentDraft.amount) ?? 0;
-      if (parsedAmount != 0) club.feeAmount = parsedAmount;
-      if (paymentDraft.datePaid.trim().isNotEmpty) club.lastPaidDate = paymentDraft.datePaid.trim();
-      if (paymentDraft.nextDue.trim().isNotEmpty) club.nextDueDate = paymentDraft.nextDue.trim();
-      club.paymentStatus = 'paid';
-      paymentModalClubId = null;
-    });
-    _toast('Payment recorded for ${club.name}');
+    if (token == null || id == null) return;
+    _update(() => paymentSaving = true);
+    try {
+      final updated = await _api.recordPayment(
+        token,
+        id,
+        amount: int.tryParse(paymentDraft.amount) ?? 0,
+        datePaid: paymentDraft.datePaid.trim().isEmpty ? null : paymentDraft.datePaid.trim(),
+        nextDue: paymentDraft.nextDue.trim().isEmpty ? null : paymentDraft.nextDue.trim(),
+      );
+      _update(() {
+        _replaceClub(updated);
+        paymentSaving = false;
+        paymentModalClubId = null;
+      });
+      _toast('Payment recorded for ${updated.name}');
+    } on ApiException catch (e) {
+      _update(() => paymentSaving = false);
+      _toast(e.message);
+    }
   }
 
-  void openStatsModal(int id) => _update(() => statsModalClubId = id);
+  int? statsModalClubId;
+  ClubStats? statsModalData;
+  bool statsModalLoading = false;
+
+  Future<void> openStatsModal(int id) async {
+    final token = authToken;
+    _update(() {
+      statsModalClubId = id;
+      statsModalData = null;
+      statsModalLoading = token != null;
+    });
+    if (token == null) return;
+    try {
+      final stats = await _api.fetchClubStats(token, id);
+      if (statsModalClubId == id) {
+        _update(() {
+          statsModalData = stats;
+          statsModalLoading = false;
+        });
+      }
+    } on ApiException catch (e) {
+      _update(() => statsModalLoading = false);
+      _toast(e.message);
+    }
+  }
+
   void closeStatsModal() => _update(() => statsModalClubId = null);
 
   // ── members ─────────────────────────────────────────────────────────
+  String memberSearch = '';
+  String memberClubFilter = 'all';
+  String memberStatusFilter = 'all';
+
   void setMemberSearch(String v) => _update(() => memberSearch = v);
   void setMemberClubFilter(String v) => _update(() => memberClubFilter = v);
   void setMemberStatusFilter(String v) => _update(() => memberStatusFilter = v);
 
-  void toggleMemberStatus(int id) {
-    final m = members.firstWhere((m) => m.id == id);
-    final willBe = m.status == 'active' ? 'suspended' : 'reactivated';
-    _update(() => m.status = m.status == 'active' ? 'suspended' : 'active');
-    _toast('${m.name} $willBe');
+  void _replaceMember(Member updated) {
+    final i = members.indexWhere((m) => m.id == updated.id);
+    if (i != -1) members[i] = updated;
   }
 
-  void resetPassword(int id) {
-    final m = members.firstWhere((m) => m.id == id);
-    _toast('Password reset link sent to ${m.name}');
+  Future<void> toggleMemberStatus(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    final member = members.firstWhere((m) => m.id == id);
+    final nextStatus = member.status == 'active' ? 'suspended' : 'active';
+    try {
+      final updated = await _api.setMemberStatus(token, id, nextStatus);
+      _update(() => _replaceMember(updated));
+      _toast('${updated.name} ${nextStatus == 'suspended' ? 'suspended' : 'reactivated'}');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
   }
 
-  void viewActivity(int id) {
-    final m = members.firstWhere((m) => m.id == id);
-    _toast('Opening activity log for ${m.name}');
+  Future<void> resetPassword(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      final result = await _api.resetPassword(token, id);
+      _toast('New PIN ${result.newPin} generated for ${result.memberName}');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> viewActivity(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      final a = await _api.fetchMemberActivity(token, id);
+      final suffix = a.lastCheckIn != null ? ', last on ${a.lastCheckIn}' : ' yet';
+      _toast('${a.memberName}: ${a.checkInCount} check-in${a.checkInCount == 1 ? '' : 's'}$suffix');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
   }
 
   // ── derived data ────────────────────────────────────────────────────
@@ -303,30 +376,28 @@ class DashboardState extends ChangeNotifier {
         const KpiData('SMS Sent Today', '983', ''),
       ];
 
-  static const attendanceVals = [62, 71, 68, 80, 74, 78];
-  static const attendanceLabels = ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6'];
+  // Attendance trend and "new clubs this month" need cross-club check-in
+  // history the client doesn't have loaded, so those come from the
+  // /admin/analytics endpoint rather than being derived client-side.
+  List<int> get attendanceVals => analytics?.attendanceValues ?? const [0, 0, 0, 0, 0, 0];
+  List<String> get attendanceLabels =>
+      analytics?.attendanceLabels ?? const ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6'];
+  int get newClubsThisMonth => analytics?.newClubsThisMonth ?? 0;
+  int get avgAttendancePercent => analytics?.avgAttendancePercent ?? 0;
 
   Club? get paymentModalClub {
     final id = paymentModalClubId;
     if (id == null) return null;
-    return clubs.where((c) => c.id == id).firstOrNull;
+    final matches = clubs.where((c) => c.id == id);
+    return matches.isEmpty ? null : matches.first;
   }
 
-  Club? get statsModalClub {
-    final id = statsModalClubId;
-    if (id == null) return null;
-    return clubs.where((c) => c.id == id).firstOrNull;
-  }
-
-  int statsAttendanceFor(Club c) => math.max(58, math.min(96, 70 + (c.id * 7) % 27));
+  Timer? _toastTimer;
+  String? toastMessage;
 
   @override
   void dispose() {
     _toastTimer?.cancel();
     super.dispose();
   }
-}
-
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
 }

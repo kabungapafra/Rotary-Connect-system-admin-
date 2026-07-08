@@ -13,10 +13,13 @@ class StatsModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DashboardState>();
-    final club = state.statsModalClub;
-    if (club == null) return const SizedBox.shrink();
+    final id = state.statsModalClubId;
+    if (id == null) return const SizedBox.shrink();
+    final matches = state.clubs.where((c) => c.id == id);
+    if (matches.isEmpty) return const SizedBox.shrink();
+    final club = matches.first;
     final style = paymentStyleFor(club.paymentStatus);
-    final attendance = state.statsAttendanceFor(club);
+    final attendance = state.statsModalData?.attendancePercent ?? 0;
 
     return ModalScrim(
       onDismiss: state.closeStatsModal,
@@ -92,7 +95,13 @@ class StatsModal extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Attendance', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AdminColors.textMuted)),
-                        Text('$attendance%', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                        state.statsModalLoading
+                            ? const SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : Text('$attendance%', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
                       ],
                     ),
                     const SizedBox(height: 6),

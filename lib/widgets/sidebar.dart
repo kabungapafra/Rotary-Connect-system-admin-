@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
 import 'nav_icons.dart';
@@ -101,9 +102,9 @@ class AdminSidebar extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
-                    'SA',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+                  child: Text(
+                    memberInitialsFor(state.adminName.isEmpty ? 'System Admin' : state.adminName),
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
                   ),
                 ),
                 const SizedBox(width: 9),
@@ -112,17 +113,25 @@ class AdminSidebar extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
-                        'System Admin',
+                      Text(
+                        state.adminName.isEmpty ? 'System Admin' : state.adminName,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
+                        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
                       ),
                       Text(
-                        'admin@rotary.org',
+                        state.adminEmail,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 11, color: AdminColors.sidebarEmailText),
+                        style: const TextStyle(fontSize: 11, color: AdminColors.sidebarEmailText),
                       ),
                     ],
+                  ),
+                ),
+                InkWell(
+                  onTap: state.logout,
+                  borderRadius: BorderRadius.circular(6),
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(Icons.logout, size: 15, color: AdminColors.navInactiveText),
                   ),
                 ),
               ],

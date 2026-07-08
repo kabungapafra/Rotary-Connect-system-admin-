@@ -135,7 +135,7 @@ class RecordPaymentModal extends StatelessWidget {
                   ),
                   const SizedBox(width: 9),
                   ElevatedButton(
-                    onPressed: state.savePayment,
+                    onPressed: state.paymentSaving ? null : state.savePayment,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: state.accentColor,
                       foregroundColor: Colors.white,
@@ -144,7 +144,13 @@ class RecordPaymentModal extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
                       textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
                     ),
-                    child: const Text('Save Payment'),
+                    child: state.paymentSaving
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          )
+                        : const Text('Save Payment'),
                   ),
                 ],
               ),

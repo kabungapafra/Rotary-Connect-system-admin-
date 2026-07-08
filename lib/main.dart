@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'screens/admin_login_screen.dart';
 import 'screens/analytics_view.dart';
 import 'screens/billing_view.dart';
 import 'screens/clubs_view.dart';
@@ -35,7 +36,9 @@ class AdminApp extends StatelessWidget {
       title: 'Rotary Admin',
       debugShowCheckedModeBanner: false,
       theme: buildAdminTheme(accent),
-      home: const AdminShell(),
+      home: context.watch<DashboardState>().isLoggedIn
+          ? const AdminShell()
+          : const AdminLoginScreen(),
     );
   }
 }
@@ -59,12 +62,16 @@ class AdminShell extends StatelessWidget {
                   children: [
                     const AdminTopbar(),
                     Expanded(
-                      child: Scrollbar(
-                        child: SingleChildScrollView(
-                          padding: const EdgeInsets.fromLTRB(32, 24, 32, 40),
-                          child: _CurrentView(view: state.view),
-                        ),
-                      ),
+                      child: state.dataLoading && state.clubs.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : state.dataError != null && state.clubs.isEmpty
+                              ? _LoadErrorView(message: state.dataError!)
+                              : Scrollbar(
+                                  child: SingleChildScrollView(
+                                    padding: const EdgeInsets.fromLTRB(32, 24, 32, 40),
+                                    child: _CurrentView(view: state.view),
+                                  ),
+                                ),
                     ),
                   ],
                 ),
@@ -76,6 +83,25 @@ class AdminShell extends StatelessWidget {
           if (state.statsModalClubId != null) const StatsModal(),
           const ToastOverlay(),
         ],
+      ),
+    );
+  }
+}
+
+class _LoadErrorView extends StatelessWidget {
+  final String message;
+  const _LoadErrorView({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 13.5, color: AdminColors.overdueColor),
+        ),
       ),
     );
   }

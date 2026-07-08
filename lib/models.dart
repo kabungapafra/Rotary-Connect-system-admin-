@@ -25,6 +25,20 @@ class Club {
     required this.paymentStatus,
     required this.joined,
   });
+
+  factory Club.fromJson(Map<String, dynamic> json) => Club(
+        id: json['id'] as int,
+        name: json['name'] as String,
+        district: json['district'] as String,
+        location: json['location'] as String,
+        members: json['members_count'] as int,
+        status: json['status'] as String,
+        feeAmount: json['fee_amount'] as int,
+        lastPaidDate: json['last_paid_date'] as String? ?? '—',
+        nextDueDate: json['next_due_date'] as String? ?? '—',
+        paymentStatus: json['payment_status'] as String,
+        joined: json['joined'] as String,
+      );
 }
 
 /// A member of a club, managed platform-wide by the system admin.
@@ -42,6 +56,14 @@ class Member {
     required this.club,
     required this.status,
   });
+
+  factory Member.fromJson(Map<String, dynamic> json) => Member(
+        id: json['id'] as int,
+        name: json['name'] as String,
+        phone: json['phone'] as String,
+        club: json['club'] as String,
+        status: json['status'] as String,
+      );
 }
 
 /// Working copy of the "Onboard New Club" wizard fields.
@@ -78,6 +100,54 @@ class LegendItem {
   final int count;
   final String colorKey; // paid | due-soon | overdue
   const LegendItem(this.name, this.count, this.colorKey);
+
+  factory LegendItem.fromJson(Map<String, dynamic> json) => LegendItem(
+        json['name'] as String,
+        json['count'] as int,
+        json['color_key'] as String,
+      );
+}
+
+/// Aggregate stats backing the Dashboard and Analytics views.
+class AnalyticsData {
+  final int totalClubs;
+  final int activeClubs;
+  final int totalMembers;
+  final int activeMembers;
+  final int newClubsThisMonth;
+  final int avgAttendancePercent;
+  final String mrrFormatted;
+  final List<LegendItem> paymentLegend;
+  final List<String> attendanceLabels;
+  final List<int> attendanceValues;
+
+  AnalyticsData({
+    required this.totalClubs,
+    required this.activeClubs,
+    required this.totalMembers,
+    required this.activeMembers,
+    required this.newClubsThisMonth,
+    required this.avgAttendancePercent,
+    required this.mrrFormatted,
+    required this.paymentLegend,
+    required this.attendanceLabels,
+    required this.attendanceValues,
+  });
+
+  factory AnalyticsData.fromJson(Map<String, dynamic> json) => AnalyticsData(
+        totalClubs: json['total_clubs'] as int,
+        activeClubs: json['active_clubs'] as int,
+        totalMembers: json['total_members'] as int,
+        activeMembers: json['active_members'] as int,
+        newClubsThisMonth: json['new_clubs_this_month'] as int,
+        avgAttendancePercent: json['avg_attendance_percent'] as int,
+        mrrFormatted: json['mrr_formatted'] as String,
+        paymentLegend: (json['payment_legend'] as List)
+            .map((e) => LegendItem.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        attendanceLabels: (json['attendance_labels'] as List).cast<String>(),
+        attendanceValues: (json['attendance_values'] as List).cast<int>(),
+      );
 }
 
 String initialsFor(String name) {
