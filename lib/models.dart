@@ -130,6 +130,8 @@ class AnalyticsData {
   final int activeMembers;
   final int newClubsThisMonth;
   final int avgAttendancePercent;
+  final int meetingsToday;
+  final int checkinsToday;
   final String mrrFormatted;
   final List<LegendItem> paymentLegend;
   final List<String> attendanceLabels;
@@ -142,6 +144,8 @@ class AnalyticsData {
     required this.activeMembers,
     required this.newClubsThisMonth,
     required this.avgAttendancePercent,
+    required this.meetingsToday,
+    required this.checkinsToday,
     required this.mrrFormatted,
     required this.paymentLegend,
     required this.attendanceLabels,
@@ -155,6 +159,8 @@ class AnalyticsData {
         activeMembers: json['active_members'] as int,
         newClubsThisMonth: json['new_clubs_this_month'] as int,
         avgAttendancePercent: json['avg_attendance_percent'] as int,
+        meetingsToday: json['meetings_today'] as int? ?? 0,
+        checkinsToday: json['checkins_today'] as int? ?? 0,
         mrrFormatted: json['mrr_formatted'] as String,
         paymentLegend: (json['payment_legend'] as List)
             .map((e) => LegendItem.fromJson(e as Map<String, dynamic>))

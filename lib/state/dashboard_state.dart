@@ -388,10 +388,10 @@ class DashboardState extends ChangeNotifier {
 
   List<KpiData> get kpis => [
         KpiData('Total Clubs', '$totalClubs', '$activeClubs active'),
-        KpiData('Total Members', commas(totalMembers), '+3.2%'),
-        const KpiData("Today's Meetings", '31', '+4'),
-        const KpiData('Online Users', '216', ''),
-        const KpiData('SMS Sent Today', '983', ''),
+        KpiData('Total Members', commas(totalMembers), ''),
+        KpiData("Today's Meetings", '${analytics?.meetingsToday ?? 0}', ''),
+        KpiData('Check-ins Today', '${analytics?.checkinsToday ?? 0}', ''),
+        KpiData('Active Members', '${analytics?.activeMembers ?? activeMembersCount}', ''),
       ];
 
   // Attendance trend and "new clubs this month" need cross-club check-in

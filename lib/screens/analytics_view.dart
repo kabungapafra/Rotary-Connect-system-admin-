@@ -6,7 +6,6 @@ import '../theme.dart';
 import '../widgets/attendance_chart.dart';
 import '../widgets/common.dart';
 import '../widgets/gap_row.dart';
-import '../widgets/progress_bar.dart';
 
 class AnalyticsView extends StatelessWidget {
   const AnalyticsView({super.key});
@@ -86,17 +85,10 @@ class _UsageRevenueCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text('Usage & Revenue', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 14),
-          _usageRow('Storage Usage', 62, state.accentColor),
-          const SizedBox(height: 14),
-          _usageRow('SMS Quota Usage', 83, AdminColors.dueSoonDot),
-          const SizedBox(height: 10),
+          const Text('Revenue', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.only(top: 10),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AdminColors.rowBorder)),
-            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -132,25 +124,6 @@ class _UsageRevenueCard extends StatelessWidget {
             ),
         ],
       ),
-    );
-  }
-
-  Widget _usageRow(String label, double percent, Color color) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 6),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
-              Text('${percent.toInt()}%', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
-            ],
-          ),
-        ),
-        ProgressBar(percent: percent, color: color),
-      ],
     );
   }
 }
