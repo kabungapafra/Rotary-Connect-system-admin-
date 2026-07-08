@@ -60,7 +60,7 @@ class _ClubRow extends StatelessWidget {
             flex: 3,
             child: Row(
               children: [
-                ClubAvatar(initialsFor(club.name)),
+                ClubAvatar(initialsFor(club.name), logo: club.logo),
                 const SizedBox(width: 9),
                 Expanded(
                   child: Text(

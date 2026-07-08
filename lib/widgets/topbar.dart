@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../state/dashboard_state.dart';
 import '../theme.dart';
+import 'hover_lift.dart';
 
 const Map<String, List<String>> _pageMeta = {
   'dashboard': ['Dashboard', 'Overview of clubs, members, and system activity'],
@@ -41,24 +42,26 @@ class AdminTopbar extends StatelessWidget {
             ],
           ),
           if (state.view == 'clubs')
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: state.openNewClub,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                  decoration: BoxDecoration(color: state.accentColor, borderRadius: BorderRadius.circular(8)),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.add, size: 14, color: Colors.white),
-                      SizedBox(width: 7),
-                      Text(
-                        'New Club',
-                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: Colors.white),
-                      ),
-                    ],
+            HoverLift(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: state.openNewClub,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                    decoration: BoxDecoration(color: state.accentColor, borderRadius: BorderRadius.circular(8)),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, size: 14, color: Colors.white),
+                        SizedBox(width: 7),
+                        Text(
+                          'New Club',
+                          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -151,14 +151,21 @@ class DashboardState extends ChangeNotifier {
   void setDraftName(String v) => _update(() => draft.name = v);
   void setDraftDistrict(String v) => _update(() => draft.district = v);
   void setDraftLocation(String v) => _update(() => draft.location = v);
+  void setDraftPresidentName(String v) => _update(() => draft.presidentName = v);
   void setDraftEmail(String v) => _update(() => draft.email = v);
   void setDraftPhone(String v) => _update(() => draft.phone = v);
   void setDraftMembers(String v) => _update(() => draft.members = v);
   void setDraftFeeAmount(String v) => _update(() => draft.feeAmount = v);
   void setDraftFirstPaymentDate(String v) => _update(() => draft.firstPaymentDate = v);
   void setDraftNextDueDate(String v) => _update(() => draft.nextDueDate = v);
+  void setDraftLogo(String? dataUrl) => _update(() => draft.logoDataUrl = dataUrl);
 
   bool get nextDisabled => wizardStep == 0 && draft.name.trim().isEmpty;
+
+  /// Credentials of the president account just created, shown once in a
+  /// modal so the admin can hand them to the Club President.
+  PresidentCredentials? presidentCredentials;
+  void dismissPresidentCredentials() => _update(() => presidentCredentials = null);
 
   Future<void> createClub() async {
     final token = authToken;
@@ -166,7 +173,7 @@ class DashboardState extends ChangeNotifier {
     _update(() => createClubLoading = true);
     try {
       final membersNum = int.tryParse(draft.members) ?? 0;
-      final club = await _api.createClub(
+      final result = await _api.createClub(
         token,
         name: draft.name,
         district: draft.district,
@@ -175,13 +182,18 @@ class DashboardState extends ChangeNotifier {
         feeAmount: int.tryParse(draft.feeAmount) ?? 0,
         firstPaymentDate: draft.firstPaymentDate.trim().isEmpty ? null : draft.firstPaymentDate.trim(),
         nextDueDate: draft.nextDueDate.trim().isEmpty ? null : draft.nextDueDate.trim(),
+        logo: draft.logoDataUrl,
+        presidentName: draft.presidentName.trim(),
+        presidentEmail: draft.email.trim(),
+        presidentPhone: draft.phone.trim(),
       );
       _update(() {
-        clubs.insert(0, club);
+        clubs.insert(0, result.club);
         createClubLoading = false;
         newClubOpen = false;
+        presidentCredentials = result.president;
       });
-      _toast('${club.name} onboarded successfully');
+      _toast('${result.club.name} onboarded successfully');
       unawaited(_refreshAnalytics());
     } on ApiException catch (e) {
       _update(() => createClubLoading = false);

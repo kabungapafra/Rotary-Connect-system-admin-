@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -80,8 +82,17 @@ class StatsModal extends StatelessWidget {
                         border: Border.all(color: Colors.white, width: 3),
                         boxShadow: [BoxShadow(color: AdminColors.modalShadow2, blurRadius: 8, offset: const Offset(0, 2))],
                       ),
+                      clipBehavior: Clip.antiAlias,
                       alignment: Alignment.center,
-                      child: const Text('Logo', style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText)),
+                      child: club.logo != null
+                          ? Image.memory(
+                              base64Decode(club.logo!.split(',').last),
+                              fit: BoxFit.contain,
+                              width: 64,
+                              height: 64,
+                            )
+                          : const Text('Logo',
+                              style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText)),
                     ),
                     const SizedBox(height: 12),
                     Text(

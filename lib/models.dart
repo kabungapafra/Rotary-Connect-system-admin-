@@ -11,6 +11,7 @@ class Club {
   String nextDueDate;
   String paymentStatus; // paid | due-soon | overdue
   String joined;
+  String? logo; // data URL uploaded at onboarding, shown across the admin
 
   Club({
     required this.id,
@@ -24,6 +25,7 @@ class Club {
     required this.nextDueDate,
     required this.paymentStatus,
     required this.joined,
+    this.logo,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) => Club(
@@ -38,6 +40,7 @@ class Club {
         nextDueDate: json['next_due_date'] as String? ?? '—',
         paymentStatus: json['payment_status'] as String,
         joined: json['joined'] as String,
+        logo: json['logo'] as String?,
       );
 }
 
@@ -71,12 +74,23 @@ class ClubDraft {
   String name = '';
   String district = '';
   String location = '';
+  String presidentName = '';
   String email = '';
   String phone = '';
   String members = '';
   String feeAmount = '';
   String firstPaymentDate = '';
   String nextDueDate = '';
+  String? logoDataUrl;
+}
+
+/// One-time credentials for a club's first administrator (the Club
+/// President), returned when the club is created.
+class PresidentCredentials {
+  final String name;
+  final String memberNumber;
+  final String pin;
+  const PresidentCredentials(this.name, this.memberNumber, this.pin);
 }
 
 /// Working copy of the "Record Payment" modal fields.

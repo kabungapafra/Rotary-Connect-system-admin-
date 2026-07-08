@@ -81,10 +81,16 @@ jobs:
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
           rsync -avz --delete build/web/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/www/rotary-admin-dashboard/
 
-      - name: Fix permissions & reload nginx
+      - name: Fix permissions, bust CDN cache & reload nginx
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
             set -e
+            # Cache-bust: version-query the JS entry chain so the Cloudflare
+            # edge fetches the new build instead of serving stale cached JS.
+            V=$(date +%s)
+            cd /var/www/rotary-admin-dashboard
+            sed -i "s|src=\"flutter_bootstrap.js\"|src=\"flutter_bootstrap.js?v=$V\"|" index.html
+            sed -i "s|\"main.dart.js\"|\"main.dart.js?v=$V\"|g" flutter_bootstrap.js
             # Keep files owned by the deploy user (not nginx) so the next
             # rsync can overwrite them without needing sudo — nginx only
             # needs read access, granted below via chmod + SELinux context.

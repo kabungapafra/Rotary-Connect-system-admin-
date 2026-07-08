@@ -5,6 +5,7 @@ import '../models.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../widgets/hover_lift.dart';
 import '../widgets/status_badge.dart';
 
 class BillingView extends StatelessWidget {
@@ -51,9 +52,17 @@ class _BillingCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  club.name,
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                child: Row(
+                  children: [
+                    ClubAvatar(initialsFor(club.name), logo: club.logo),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        club.name,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               StatusBadge(style),
@@ -66,23 +75,26 @@ class _BillingCard extends StatelessWidget {
           const SizedBox(height: 9),
           _row('Next Payment Due', club.nextDueDate),
           const SizedBox(height: 14),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => state.openPaymentModal(club.id),
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  border: Border.all(color: AdminColors.buttonBorder),
-                  borderRadius: BorderRadius.circular(8),
-                  color: AdminColors.pageBg,
-                ),
-                child: const Text(
-                  'Record Payment',
-                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+          HoverLift(
+            scale: 1.02,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => state.openPaymentModal(club.id),
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AdminColors.buttonBorder),
+                    borderRadius: BorderRadius.circular(8),
+                    color: AdminColors.pageBg,
+                  ),
+                  child: const Text(
+                    'Record Payment',
+                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                  ),
                 ),
               ),
             ),

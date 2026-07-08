@@ -37,6 +37,12 @@ class ClubStats {
   const ClubStats(this.club, this.attendancePercent);
 }
 
+class CreateClubResult {
+  final Club club;
+  final PresidentCredentials? president;
+  const CreateClubResult(this.club, this.president);
+}
+
 class ResetPasswordResult {
   final String memberName;
   final String newPin;
@@ -65,7 +71,7 @@ class ApiClient {
     return res.map((e) => Club.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<Club> createClub(
+  Future<CreateClubResult> createClub(
     String token, {
     required String name,
     required String district,
@@ -74,6 +80,10 @@ class ApiClient {
     required int feeAmount,
     String? firstPaymentDate,
     String? nextDueDate,
+    String? logo,
+    String presidentName = '',
+    String presidentEmail = '',
+    String presidentPhone = '',
   }) async {
     final res = await _post(
       '/admin/clubs',
@@ -85,10 +95,24 @@ class ApiClient {
         'fee_amount': feeAmount,
         'first_payment_date': firstPaymentDate,
         'next_due_date': nextDueDate,
+        'logo': logo,
+        'president_name': presidentName,
+        'president_email': presidentEmail,
+        'president_phone': presidentPhone,
       },
       token: token,
     );
-    return Club.fromJson(res);
+    final president = res['president'] as Map<String, dynamic>?;
+    return CreateClubResult(
+      Club.fromJson(res['club'] as Map<String, dynamic>),
+      president == null
+          ? null
+          : PresidentCredentials(
+              president['name'] as String,
+              president['member_number'] as String,
+              president['pin'] as String,
+            ),
+    );
   }
 
   Future<Club> setClubStatus(String token, int clubId, String status) async {

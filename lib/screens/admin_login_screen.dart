@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../state/dashboard_state.dart';
 import '../theme.dart';
+import '../widgets/hover_lift.dart';
 import '../widgets/nav_icons.dart';
 
 class AdminLoginScreen extends StatefulWidget {
@@ -108,23 +109,26 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 ),
               ],
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: state.loginLoading ? null : () => _submit(state),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AdminColors.accent,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  textStyle: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+              HoverLift(
+                scale: 1.02,
+                child: ElevatedButton(
+                  onPressed: state.loginLoading ? null : () => _submit(state),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AdminColors.accent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    textStyle: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+                  ),
+                  child: state.loginLoading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text('Sign In'),
                 ),
-                child: state.loginLoading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Sign In'),
               ),
             ],
           ),

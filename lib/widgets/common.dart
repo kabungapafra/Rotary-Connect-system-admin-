@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../theme.dart';
 
@@ -9,19 +11,35 @@ BoxDecoration cardDecoration({double radius = 12}) => BoxDecoration(
 
 class ClubAvatar extends StatelessWidget {
   final String initials;
-  const ClubAvatar(this.initials, {super.key});
+  final String? logo; // data URL; shown instead of initials when present
+  const ClubAvatar(this.initials, {super.key, this.logo});
 
   @override
   Widget build(BuildContext context) {
+    final dataUrl = logo;
     return Container(
       width: 26,
       height: 26,
       decoration: BoxDecoration(color: AdminColors.clubInitialsBg, borderRadius: BorderRadius.circular(7)),
+      clipBehavior: Clip.antiAlias,
       alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
-      ),
+      child: dataUrl != null
+          ? Image.memory(
+              base64Decode(dataUrl.split(',').last),
+              fit: BoxFit.contain,
+              width: 26,
+              height: 26,
+              errorBuilder: (_, error, stackTrace) => Text(
+                initials,
+                style: const TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
+              ),
+            )
+          : Text(
+              initials,
+              style: const TextStyle(
+                  fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
+            ),
     );
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../state/dashboard_state.dart';
@@ -197,6 +200,59 @@ class _StepDot extends StatelessWidget {
   }
 }
 
+/// Circular logo drop-target: click to pick an image, which is resized by
+/// the picker and stored as a data URL on the draft (and previewed here).
+class _LogoPicker extends StatelessWidget {
+  final DashboardState state;
+  const _LogoPicker({required this.state});
+
+  Future<void> _pick() async {
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    final mime = file.mimeType ?? 'image/png';
+    state.setDraftLogo('data:$mime;base64,${base64Encode(bytes)}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dataUrl = state.draft.logoDataUrl;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: _pick,
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: AdminColors.statsPlaceholderBg,
+            shape: BoxShape.circle,
+            border: Border.all(color: AdminColors.statsDashedBorder, style: BorderStyle.solid),
+          ),
+          clipBehavior: Clip.antiAlias,
+          alignment: Alignment.center,
+          child: dataUrl != null
+              ? Image.memory(
+                  base64Decode(dataUrl.split(',').last),
+                  fit: BoxFit.contain,
+                  width: 56,
+                  height: 56,
+                )
+              : const Text(
+                  'Logo',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
 class _StepContent extends StatelessWidget {
   final DashboardState state;
   const _StepContent({required this.state});
@@ -211,25 +267,11 @@ class _StepContent extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AdminColors.statsPlaceholderBg,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: AdminColors.statsDashedBorder, style: BorderStyle.solid),
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'Logo',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText),
-                  ),
-                ),
+                _LogoPicker(state: state),
                 const SizedBox(width: 14),
                 const Expanded(
                   child: Text(
-                    "Drop the club's logo here.\n\nOptional, but shows across the admin.",
+                    "Click to upload the club's logo.\n\nOptional, but shows across the admin.",
                     style: TextStyle(fontSize: 12, color: AdminColors.textMuted, height: 1.4),
                   ),
                 ),
@@ -268,6 +310,15 @@ class _StepContent extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            LabeledField(
+              key: const ValueKey('draft-presidentName'),
+              label: 'Club President Name',
+              value: state.draft.presidentName,
+              placeholder: 'e.g. Jane Doe',
+              accentColor: state.accentColor,
+              onChanged: state.setDraftPresidentName,
+            ),
+            const SizedBox(height: 13),
             LabeledField(
               key: const ValueKey('draft-email'),
               label: 'Club President Email',
