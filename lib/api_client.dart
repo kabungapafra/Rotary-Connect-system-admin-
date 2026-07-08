@@ -1,7 +1,7 @@
 /// Thin client for the Rotary Connect backend's admin endpoints
-/// (FastAPI + PostgreSQL). Base URL assumes the backend is reachable at
-/// localhost:8000 — true when running the dashboard in Chrome on the same
-/// machine as `uvicorn`.
+/// (FastAPI + PostgreSQL). Base URL defaults to localhost:8000 for local
+/// development, but is overridable at build time for deployment:
+///   flutter build web --release --dart-define=API_BASE_URL=https://api.example.com
 library;
 
 import 'dart:convert';
@@ -9,7 +9,8 @@ import 'package:http/http.dart' as http;
 
 import 'models.dart';
 
-const String apiBaseUrl = 'http://localhost:8000';
+const String apiBaseUrl =
+    String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8000');
 
 class ApiException implements Exception {
   final String message;
