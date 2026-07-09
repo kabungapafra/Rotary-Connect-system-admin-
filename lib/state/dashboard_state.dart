@@ -335,6 +335,10 @@ class DashboardState extends ChangeNotifier {
 
   void closeStatsModal() => _update(() => statsModalClubId = null);
 
+  int? qrModalClubId;
+  void openQrModal(int id) => _update(() => qrModalClubId = id);
+  void closeQrModal() => _update(() => qrModalClubId = null);
+
   // ── members ─────────────────────────────────────────────────────────
   String memberSearch = '';
   String memberClubFilter = 'all';

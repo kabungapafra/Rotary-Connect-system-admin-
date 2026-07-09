@@ -95,6 +95,7 @@ class _ClubRow extends StatelessWidget {
                   ),
                   ActionsMenuItem('Record Payment', () => state.openPaymentModal(club.id)),
                   ActionsMenuItem('View Statistics', () => state.openStatsModal(club.id)),
+                  ActionsMenuItem('Show QR Code', () => state.openQrModal(club.id)),
                   ActionsMenuItem(
                     'Delete Club',
                     () => state.askDeleteClub(club.id),
