@@ -95,6 +95,11 @@ class _ClubRow extends StatelessWidget {
                   ),
                   ActionsMenuItem('Record Payment', () => state.openPaymentModal(club.id)),
                   ActionsMenuItem('View Statistics', () => state.openStatsModal(club.id)),
+                  ActionsMenuItem(
+                    'Delete Club',
+                    () => state.askDeleteClub(club.id),
+                    color: AdminColors.overdueColor,
+                  ),
                 ],
               ),
             ),

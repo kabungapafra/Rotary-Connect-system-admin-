@@ -269,6 +269,44 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  // ── delete club (with confirmation) ───────────────────────────────
+  int? confirmDeleteClubId;
+  bool deletingClub = false;
+
+  void askDeleteClub(int id) => _update(() => confirmDeleteClubId = id);
+  void cancelDeleteClub() => _update(() => confirmDeleteClubId = null);
+
+  Club? get confirmDeleteClub {
+    final id = confirmDeleteClubId;
+    if (id == null) return null;
+    final matches = clubs.where((c) => c.id == id);
+    return matches.isEmpty ? null : matches.first;
+  }
+
+  Future<void> deleteClubConfirmed() async {
+    final token = authToken;
+    final id = confirmDeleteClubId;
+    if (token == null || id == null) return;
+    final club = clubs.firstWhere((c) => c.id == id);
+    _update(() => deletingClub = true);
+    try {
+      await _api.deleteClub(token, id);
+      _update(() {
+        clubs.removeWhere((c) => c.id == id);
+        deletingClub = false;
+        confirmDeleteClubId = null;
+      });
+      _toast('${club.name} deleted');
+      unawaited(_refreshAnalytics());
+    } on ApiException catch (e) {
+      _update(() {
+        deletingClub = false;
+        confirmDeleteClubId = null;
+      });
+      _toast(e.message);
+    }
+  }
+
   int? statsModalClubId;
   ClubStats? statsModalData;
   bool statsModalLoading = false;

@@ -148,6 +148,23 @@ class ApiClient {
     return Club.fromJson(res);
   }
 
+  /// Remove a club and everything belonging to it (members, meetings,
+  /// check-ins, events, projects).
+  Future<void> deleteClub(String token, int clubId) async {
+    final http.Response res;
+    try {
+      res = await http
+          .delete(Uri.parse('$apiBaseUrl/admin/clubs/$clubId'),
+              headers: {'Authorization': 'Bearer $token'})
+          .timeout(_requestTimeout);
+    } catch (_) {
+      throw ApiException('Could not reach the server. Check your connection.');
+    }
+    if (res.statusCode >= 400) {
+      throw ApiException(_errorDetail(res));
+    }
+  }
+
   Future<ClubStats> fetchClubStats(String token, int clubId) async {
     final res = await _get('/admin/clubs/$clubId/stats', token: token);
     return ClubStats(
