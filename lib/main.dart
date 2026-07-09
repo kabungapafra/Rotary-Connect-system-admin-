@@ -12,6 +12,7 @@ import 'state/dashboard_state.dart';
 import 'theme.dart';
 import 'widgets/club_qr_modal.dart';
 import 'widgets/delete_club_modal.dart';
+import 'widgets/delete_member_modal.dart';
 import 'widgets/new_club_wizard.dart';
 import 'widgets/president_credentials_modal.dart';
 import 'widgets/record_payment_modal.dart';
@@ -86,6 +87,7 @@ class AdminShell extends StatelessWidget {
           if (state.statsModalClubId != null) const StatsModal(),
           if (state.presidentCredentials != null) const PresidentCredentialsModal(),
           if (state.confirmDeleteClubId != null) const DeleteClubModal(),
+          if (state.confirmDeleteMemberId != null) const DeleteMemberModal(),
           if (state.qrModalClubId != null) const ClubQrModal(),
           const ToastOverlay(),
         ],

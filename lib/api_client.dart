@@ -60,6 +60,15 @@ class MemberActivity {
   const MemberActivity(this.memberName, this.checkInCount, this.lastCheckIn);
 }
 
+class SmsSummary {
+  final bool enabled;
+  final int sentToday;
+  final int failedToday;
+  final int sentTotal;
+  const SmsSummary(
+      this.enabled, this.sentToday, this.failedToday, this.sentTotal);
+}
+
 class ApiClient {
   /// Fire-and-forget ping that wakes a sleeping free-tier backend while the
   /// user is still typing their credentials.
@@ -197,6 +206,31 @@ class ApiClient {
   Future<ResetPasswordResult> resetPassword(String token, int memberId) async {
     final res = await _post('/admin/members/$memberId/reset-password', null, token: token);
     return ResetPasswordResult(res['member_name'] as String, res['new_pin'] as String);
+  }
+
+  Future<void> deleteMember(String token, int memberId) async {
+    final http.Response res;
+    try {
+      res = await http
+          .delete(Uri.parse('$apiBaseUrl/admin/members/$memberId'),
+              headers: {'Authorization': 'Bearer $token'})
+          .timeout(_requestTimeout);
+    } catch (_) {
+      throw ApiException('Could not reach the server. Check your connection.');
+    }
+    if (res.statusCode >= 400) {
+      throw ApiException(_errorDetail(res));
+    }
+  }
+
+  Future<SmsSummary> fetchSmsSummary(String token) async {
+    final res = await _get('/admin/sms/summary', token: token);
+    return SmsSummary(
+      res['enabled'] as bool,
+      res['sent_today'] as int,
+      res['failed_today'] as int,
+      res['sent_total'] as int,
+    );
   }
 
   Future<MemberActivity> fetchMemberActivity(String token, int memberId) async {

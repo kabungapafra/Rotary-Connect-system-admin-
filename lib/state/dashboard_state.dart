@@ -135,7 +135,30 @@ class DashboardState extends ChangeNotifier {
   void goMembers() => _go('members');
   void goBilling() => _go('billing');
   void goAnalytics() => _go('analytics');
-  void goSms() => _go('sms');
+
+  void goSms() {
+    _go('sms');
+    unawaited(_loadSmsSummary());
+  }
+
+  SmsSummary? smsSummary;
+  bool smsSummaryLoading = false;
+
+  Future<void> _loadSmsSummary() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() => smsSummaryLoading = true);
+    try {
+      final summary = await _api.fetchSmsSummary(token);
+      _update(() {
+        smsSummary = summary;
+        smsSummaryLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() => smsSummaryLoading = false);
+      _toast(e.message);
+    }
+  }
 
   void setAccentColor(Color c) => _update(() => accentColor = c);
 
@@ -293,6 +316,10 @@ class DashboardState extends ChangeNotifier {
       await _api.deleteClub(token, id);
       _update(() {
         clubs.removeWhere((c) => c.id == id);
+        // The backend cascades the delete to this club's members too —
+        // mirror that here so the Members view doesn't keep showing
+        // people who no longer exist until the next full reload.
+        members.removeWhere((m) => m.club == club.name);
         deletingClub = false;
         confirmDeleteClubId = null;
       });
@@ -386,6 +413,44 @@ class DashboardState extends ChangeNotifier {
       final suffix = a.lastCheckIn != null ? ', last on ${a.lastCheckIn}' : ' yet';
       _toast('${a.memberName}: ${a.checkInCount} check-in${a.checkInCount == 1 ? '' : 's'}$suffix');
     } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  // ── delete member (with confirmation) ──────────────────────────────
+  int? confirmDeleteMemberId;
+  bool deletingMember = false;
+
+  void askDeleteMember(int id) => _update(() => confirmDeleteMemberId = id);
+  void cancelDeleteMember() => _update(() => confirmDeleteMemberId = null);
+
+  Member? get confirmDeleteMember {
+    final id = confirmDeleteMemberId;
+    if (id == null) return null;
+    final matches = members.where((m) => m.id == id);
+    return matches.isEmpty ? null : matches.first;
+  }
+
+  Future<void> deleteMemberConfirmed() async {
+    final token = authToken;
+    final id = confirmDeleteMemberId;
+    if (token == null || id == null) return;
+    final member = members.firstWhere((m) => m.id == id);
+    _update(() => deletingMember = true);
+    try {
+      await _api.deleteMember(token, id);
+      _update(() {
+        members.removeWhere((m) => m.id == id);
+        deletingMember = false;
+        confirmDeleteMemberId = null;
+      });
+      _toast('${member.name} deleted');
+      unawaited(_refreshAnalytics());
+    } on ApiException catch (e) {
+      _update(() {
+        deletingMember = false;
+        confirmDeleteMemberId = null;
+      });
       _toast(e.message);
     }
   }

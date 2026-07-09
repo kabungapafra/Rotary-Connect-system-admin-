@@ -1,40 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../state/dashboard_state.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/gap_row.dart';
 
-/// SMS module. No gateway is connected yet, so every figure is an honest
-/// zero and the panel says so — nothing here is demo data.
+/// SMS module — real counts from the send log (see GET /admin/sms/summary),
+/// not static placeholders. "Delivered"/"Pending" aren't shown because
+/// there's no delivery-receipt webhook from the gateway; what we actually
+/// know is whether each send attempt was accepted or rejected.
 class SmsView extends StatelessWidget {
   const SmsView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<DashboardState>();
+    final summary = state.smsSummary;
+    final loading = state.smsSummaryLoading && summary == null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const GapRow(
+        GapRow(
           gap: 14,
           children: [
-            StatCard(label: 'Sent Today', value: '0'),
+            StatCard(label: 'Sent Today', value: loading ? '—' : '${summary?.sentToday ?? 0}'),
             StatCard(
-              label: 'Delivered',
-              value: '0',
-              labelColor: AdminColors.smsDeliveredLabel,
-              valueColor: AdminColors.smsDeliveredValue,
-            ),
-            StatCard(
-              label: 'Pending',
-              value: '0',
-              labelColor: AdminColors.smsPendingLabel,
-              valueColor: AdminColors.smsPendingValue,
-            ),
-            StatCard(
-              label: 'Failed',
-              value: '0',
+              label: 'Failed Today',
+              value: loading ? '—' : '${summary?.failedToday ?? 0}',
               labelColor: AdminColors.smsFailedLabel,
               valueColor: AdminColors.smsFailedValue,
+            ),
+            StatCard(
+              label: 'Sent All-Time',
+              value: loading ? '—' : '${summary?.sentTotal ?? 0}',
+              labelColor: AdminColors.smsDeliveredLabel,
+              valueColor: AdminColors.smsDeliveredValue,
             ),
           ],
         ),
@@ -42,20 +44,34 @@ class SmsView extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(28),
           decoration: cardDecoration(),
-          child: const Column(
+          child: Column(
             children: [
-              Icon(Icons.sms_outlined, size: 34, color: AdminColors.textMuted),
-              SizedBox(height: 12),
-              Text(
-                'No SMS gateway connected',
-                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+              Icon(
+                summary?.enabled == true ? Icons.sms_outlined : Icons.sms_failed_outlined,
+                size: 34,
+                color: AdminColors.textMuted,
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 12),
               Text(
-                'Once an SMS provider is connected, delivery stats and per-message '
-                'costs across all clubs will appear here.',
+                summary == null
+                    ? 'Loading…'
+                    : summary.enabled
+                        ? 'SMS gateway connected'
+                        : 'No SMS gateway connected',
+                style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                summary == null
+                    ? ''
+                    : summary.enabled
+                        ? 'Login credentials, birthday wishes, new fellowship '
+                            'announcements, and visitor thank-yous are sent '
+                            'automatically across every club.'
+                        : 'Once an SMS provider is connected, delivery stats '
+                            'across all clubs will appear here.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: 12.5, color: AdminColors.textMuted, height: 1.5),
               ),
             ],

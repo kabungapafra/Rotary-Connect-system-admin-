@@ -216,6 +216,11 @@ class _MemberRow extends StatelessWidget {
                   ),
                   ActionsMenuItem('Reset Password', () => state.resetPassword(member.id)),
                   ActionsMenuItem('View Activity', () => state.viewActivity(member.id)),
+                  ActionsMenuItem(
+                    'Delete Member',
+                    () => state.askDeleteMember(member.id),
+                    color: AdminColors.overdueColor,
+                  ),
                 ],
               ),
             ),
