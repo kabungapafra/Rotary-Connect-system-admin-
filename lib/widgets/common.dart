@@ -10,6 +10,10 @@ BoxDecoration cardDecoration({double radius = 12}) => BoxDecoration(
     );
 
 class ClubAvatar extends StatelessWidget {
+  // The one standard logo size everywhere on the dashboard — change it
+  // here and every club logo follows.
+  static const double size = 40;
+
   final String initials;
   final String? logo; // data URL; shown instead of initials when present
   const ClubAvatar(this.initials, {super.key, this.logo});
@@ -18,17 +22,17 @@ class ClubAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final dataUrl = logo;
     return Container(
-      width: 26,
-      height: 26,
-      decoration: BoxDecoration(color: AdminColors.clubInitialsBg, borderRadius: BorderRadius.circular(7)),
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: AdminColors.clubInitialsBg, borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAlias,
       alignment: Alignment.center,
       child: dataUrl != null
           ? Image.memory(
               base64Decode(dataUrl.split(',').last),
               fit: BoxFit.contain,
-              width: 26,
-              height: 26,
+              width: size,
+              height: size,
               errorBuilder: (_, error, stackTrace) => Text(
                 initials,
                 style: const TextStyle(
