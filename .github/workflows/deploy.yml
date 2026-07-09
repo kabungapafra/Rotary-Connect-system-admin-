@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "🏗️ Building production bundle..."
           flutter build web --release \
-            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'http://localhost:8000' }}
+            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'https://rotary-connect-backend.onrender.com' }}
           echo "✅ Build successful"
 
       - name: Verify build output
@@ -49,6 +49,17 @@ jobs:
             echo "❌ Build output missing!"
             exit 1
           fi
+          # Never ship a build that isn't pointed at the production API —
+          # a localhost build once reached production and broke login.
+          if ! grep -q "rotary-connect-backend.onrender.com" build/web/main.dart.js; then
+            echo "❌ Production API URL missing from build — refusing to deploy"
+            exit 1
+          fi
+          if grep -q "localhost:8000" build/web/main.dart.js; then
+            echo "❌ Build points at localhost — refusing to deploy"
+            exit 1
+          fi
+          echo "✅ Build verified against production API"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
