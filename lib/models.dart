@@ -6,6 +6,7 @@ class Club {
   String location;
   int members;
   String status; // active | suspended
+  String clubType; // rotary | rotaract
   int feeAmount;
   String lastPaidDate;
   String nextDueDate;
@@ -20,6 +21,7 @@ class Club {
     required this.location,
     required this.members,
     required this.status,
+    this.clubType = 'rotary',
     required this.feeAmount,
     required this.lastPaidDate,
     required this.nextDueDate,
@@ -35,6 +37,7 @@ class Club {
         location: json['location'] as String,
         members: json['members_count'] as int,
         status: json['status'] as String,
+        clubType: json['club_type'] as String? ?? 'rotary',
         feeAmount: json['fee_amount'] as int,
         lastPaidDate: json['last_paid_date'] as String? ?? '—',
         nextDueDate: json['next_due_date'] as String? ?? '—',
@@ -74,6 +77,7 @@ class ClubDraft {
   String name = '';
   String district = '';
   String location = '';
+  String clubType = 'rotary';
   String presidentName = '';
   String email = '';
   String phone = '';

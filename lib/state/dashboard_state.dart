@@ -178,6 +178,7 @@ class DashboardState extends ChangeNotifier {
   void prevStep() => _update(() => wizardStep = wizardStep > 0 ? wizardStep - 1 : 0);
 
   void setDraftName(String v) => _update(() => draft.name = v);
+  void setDraftClubType(String v) => _update(() => draft.clubType = v);
   void setDraftDistrict(String v) => _update(() => draft.district = v);
   void setDraftLocation(String v) => _update(() => draft.location = v);
   void setDraftPresidentName(String v) => _update(() => draft.presidentName = v);
@@ -207,6 +208,7 @@ class DashboardState extends ChangeNotifier {
         name: draft.name,
         district: draft.district,
         location: draft.location,
+        clubType: draft.clubType,
         membersCount: membersNum == 0 ? 10 : membersNum,
         feeAmount: int.tryParse(draft.feeAmount) ?? 0,
         firstPaymentDate: draft.firstPaymentDate.trim().isEmpty ? null : draft.firstPaymentDate.trim(),

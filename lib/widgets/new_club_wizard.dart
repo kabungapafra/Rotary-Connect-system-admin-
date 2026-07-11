@@ -41,7 +41,7 @@ class NewClubWizard extends StatelessWidget {
                     children: [
                       Text('Onboard New Club', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.17)),
                       SizedBox(height: 2),
-                      Text('Add a Rotary club to the platform', style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+                      Text('Add a club to the platform', style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
                     ],
                   ),
                   GestureDetector(
@@ -285,6 +285,34 @@ class _StepContent extends StatelessWidget {
               placeholder: 'Rotary Club of ...',
               accentColor: state.accentColor,
               onChanged: state.setDraftName,
+            ),
+            const SizedBox(height: 13),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Club Type', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: AdminColors.inputBorder),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: state.draft.clubType,
+                      isExpanded: true,
+                      items: const [
+                        DropdownMenuItem(value: 'rotary', child: Text('Rotary', style: TextStyle(fontSize: 13))),
+                        DropdownMenuItem(value: 'rotaract', child: Text('Rotaract', style: TextStyle(fontSize: 13))),
+                      ],
+                      onChanged: (v) => state.setDraftClubType(v ?? 'rotary'),
+                      icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: AdminColors.textMuted),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 13),
             LabeledField(

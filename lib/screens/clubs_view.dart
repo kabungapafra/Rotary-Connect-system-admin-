@@ -26,6 +26,7 @@ class ClubsView extends StatelessWidget {
               children: [
                 Expanded(flex: 3, child: TableHeaderCell('Club')),
                 Expanded(flex: 2, child: TableHeaderCell('District')),
+                Expanded(flex: 1, child: TableHeaderCell('Type')),
                 Expanded(flex: 2, child: TableHeaderCell('Members')),
                 Expanded(flex: 2, child: TableHeaderCell('Next Payment')),
                 Expanded(flex: 2, child: TableHeaderCell('Status')),
@@ -75,6 +76,13 @@ class _ClubRow extends StatelessWidget {
           Expanded(
             flex: 2,
             child: Text(club.district, style: const TextStyle(fontSize: 13, color: AdminColors.textMuted)),
+          ),
+          Expanded(
+            flex: 1,
+            child: Text(
+              club.clubType == 'rotaract' ? 'Rotaract' : 'Rotary',
+              style: const TextStyle(fontSize: 13, color: AdminColors.textMuted),
+            ),
           ),
           Expanded(flex: 2, child: Text('${club.members}', style: const TextStyle(fontSize: 13))),
           Expanded(
