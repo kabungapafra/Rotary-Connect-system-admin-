@@ -48,7 +48,7 @@ class _ClubRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = paymentStyleFor(club.paymentStatus);
+    final style = paymentStyleFor(club.status);
     final isActive = club.status == 'active';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
