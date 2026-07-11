@@ -48,7 +48,8 @@ class _ClubRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = paymentStyleFor(club.status);
+    final paymentStyle = paymentStyleFor(club.paymentStatus);
+    final activeStyle = paymentStyleFor(club.status);
     final isActive = club.status == 'active';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
@@ -89,7 +90,18 @@ class _ClubRow extends StatelessWidget {
             flex: 2,
             child: Text(club.nextDueDate, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
           ),
-          Expanded(flex: 2, child: StatusBadge(style)),
+          Expanded(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                StatusBadge(paymentStyle),
+                const SizedBox(height: 4),
+                StatusBadge(activeStyle),
+              ],
+            ),
+          ),
           Expanded(
             flex: 2,
             child: Align(
