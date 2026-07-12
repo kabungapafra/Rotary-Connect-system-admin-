@@ -85,12 +85,19 @@ class StatsModal extends StatelessWidget {
                       clipBehavior: Clip.antiAlias,
                       alignment: Alignment.center,
                       child: club.logo != null
-                          ? Image.memory(
-                              base64Decode(club.logo!.split(',').last),
-                              fit: BoxFit.contain,
-                              width: 64,
-                              height: 64,
-                            )
+                          ? (club.logo!.startsWith('http')
+                              ? Image.network(
+                                  club.logo!,
+                                  fit: BoxFit.contain,
+                                  width: 64,
+                                  height: 64,
+                                )
+                              : Image.memory(
+                                  base64Decode(club.logo!.split(',').last),
+                                  fit: BoxFit.contain,
+                                  width: 64,
+                                  height: 64,
+                                ))
                           : const Text('Logo',
                               style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText)),
                     ),

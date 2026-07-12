@@ -15,35 +15,40 @@ class ClubAvatar extends StatelessWidget {
   static const double size = 40;
 
   final String initials;
-  final String? logo; // data URL; shown instead of initials when present
+  final String? logo; // R2 URL (or legacy data URL); shown instead of initials
   const ClubAvatar(this.initials, {super.key, this.logo});
 
   @override
   Widget build(BuildContext context) {
-    final dataUrl = logo;
+    final value = logo;
+    final fallback = Text(
+      initials,
+      style: const TextStyle(
+          fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
+    );
+    Widget child;
+    if (value != null && value.startsWith('http')) {
+      child = Image.network(value,
+          fit: BoxFit.contain,
+          width: size,
+          height: size,
+          errorBuilder: (_, error, stackTrace) => fallback);
+    } else if (value != null && value.contains(',')) {
+      child = Image.memory(base64Decode(value.split(',').last),
+          fit: BoxFit.contain,
+          width: size,
+          height: size,
+          errorBuilder: (_, error, stackTrace) => fallback);
+    } else {
+      child = fallback;
+    }
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(color: AdminColors.clubInitialsBg, borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAlias,
       alignment: Alignment.center,
-      child: dataUrl != null
-          ? Image.memory(
-              base64Decode(dataUrl.split(',').last),
-              fit: BoxFit.contain,
-              width: size,
-              height: size,
-              errorBuilder: (_, error, stackTrace) => Text(
-                initials,
-                style: const TextStyle(
-                    fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
-              ),
-            )
-          : Text(
-              initials,
-              style: const TextStyle(
-                  fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
-            ),
+      child: child,
     );
   }
 }
