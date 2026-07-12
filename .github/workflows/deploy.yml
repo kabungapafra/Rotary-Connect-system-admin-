@@ -37,7 +37,7 @@ jobs:
         run: |
           echo "🏗️ Building production bundle..."
           flutter build web --release \
-            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'https://rotary-connect-backend.onrender.com' }}
+            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'https://rotaryapi.digiflecttech.dev' }}
           echo "✅ Build successful"
 
       - name: Verify build output
@@ -51,7 +51,7 @@ jobs:
           fi
           # Never ship a build that isn't pointed at the production API —
           # a localhost build once reached production and broke login.
-          if ! grep -q "rotary-connect-backend.onrender.com" build/web/main.dart.js; then
+          if ! grep -q "rotaryapi.digiflecttech.dev" build/web/main.dart.js; then
             echo "❌ Production API URL missing from build — refusing to deploy"
             exit 1
           fi
