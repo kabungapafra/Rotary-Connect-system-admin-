@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import 'screens/admin_login_screen.dart';
 import 'screens/analytics_view.dart';
@@ -21,13 +24,38 @@ import 'widgets/stats_modal.dart';
 import 'widgets/toast_overlay.dart';
 import 'widgets/topbar.dart';
 
+// Unset by default — no-op until a real DSN is passed at build time
+// (`flutter build web ... --dart-define=SENTRY_DSN=...`), same convention
+// the backend and member app use for optional third-party services.
+const _sentryDsn = String.fromEnvironment('SENTRY_DSN');
+
+void _reportError(Object error, StackTrace? stack) {
+  debugPrint('Uncaught error: $error');
+  if (_sentryDsn.isNotEmpty) {
+    Sentry.captureException(error, stackTrace: stack);
+  }
+}
+
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (_) => DashboardState(),
-      child: const AdminApp(),
-    ),
-  );
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // Previously the only safety net was Flutter's default error screen —
+    // an uncaught error (a bad API response shape, a null club, ...) had
+    // no logging and no visibility at all.
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      _reportError(details.exception, details.stack);
+    };
+    if (_sentryDsn.isNotEmpty) {
+      await Sentry.init((options) => options.dsn = _sentryDsn);
+    }
+    runApp(
+      ChangeNotifierProvider(
+        create: (_) => DashboardState(),
+        child: const AdminApp(),
+      ),
+    );
+  }, _reportError);
 }
 
 class AdminApp extends StatelessWidget {
