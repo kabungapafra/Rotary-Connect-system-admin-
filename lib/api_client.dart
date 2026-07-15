@@ -249,6 +249,13 @@ class ApiClient {
     return AnalyticsData.fromJson(res);
   }
 
+  Future<List<ErrorLogEntry>> fetchErrorLogs(String token) async {
+    final res = await _getList('/admin/analytics/errors', token: token);
+    return res
+        .map((e) => ErrorLogEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   // ── http plumbing ────────────────────────────────────────────────────
   Future<Map<String, dynamic>> _post(String path, Map<String, dynamic>? body,
       {String? token}) async {

@@ -174,6 +174,36 @@ class AnalyticsData {
       );
 }
 
+/// One unhandled API exception — no third-party error tracker (Sentry,
+/// etc.) is configured, so this list is the only place these are visible
+/// at all outside server logs.
+class ErrorLogEntry {
+  final int id;
+  final String method;
+  final String path;
+  final String exceptionType;
+  final String message;
+  final DateTime createdAt;
+
+  ErrorLogEntry({
+    required this.id,
+    required this.method,
+    required this.path,
+    required this.exceptionType,
+    required this.message,
+    required this.createdAt,
+  });
+
+  factory ErrorLogEntry.fromJson(Map<String, dynamic> json) => ErrorLogEntry(
+        id: json['id'] as int,
+        method: json['method'] as String,
+        path: json['path'] as String,
+        exceptionType: json['exception_type'] as String,
+        message: json['message'] as String,
+        createdAt: DateTime.parse(json['created_at'] as String),
+      );
+}
+
 String initialsFor(String name) {
   final stripped =
       name.replaceFirst(RegExp(r'^Rotary Club (of )?', caseSensitive: false), '').trim();

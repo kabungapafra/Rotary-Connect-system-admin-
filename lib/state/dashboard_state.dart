@@ -71,6 +71,10 @@ class DashboardState extends ChangeNotifier {
   final List<Club> clubs = [];
   final List<Member> members = [];
   AnalyticsData? analytics;
+  // No third-party error tracker is configured — this is the only place
+  // an unhandled backend exception is visible at all. Best-effort only:
+  // never blocks the main dashboard load or surfaces as dataError.
+  List<ErrorLogEntry> errorLogs = [];
   bool dataLoading = false;
   String? dataError;
 
@@ -101,6 +105,7 @@ class DashboardState extends ChangeNotifier {
         dataError = e.message;
       });
     }
+    unawaited(_refreshErrorLogs());
   }
 
   Future<void> _refreshAnalytics() async {
@@ -112,6 +117,18 @@ class DashboardState extends ChangeNotifier {
     } on ApiException {
       // Best-effort refresh; keep showing the last known analytics rather
       // than surfacing an error for a secondary stat refresh.
+    }
+    unawaited(_refreshErrorLogs());
+  }
+
+  Future<void> _refreshErrorLogs() async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      final logs = await _api.fetchErrorLogs(token);
+      _update(() => errorLogs = logs);
+    } on ApiException {
+      // Best-effort — the errors panel just keeps showing what it last had.
     }
   }
 

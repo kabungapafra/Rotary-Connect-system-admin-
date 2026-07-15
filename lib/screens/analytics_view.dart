@@ -34,8 +34,97 @@ class AnalyticsView extends StatelessWidget {
             _UsageRevenueCard(state: state),
           ],
         ),
+        const SizedBox(height: 16),
+        _ErrorLogCard(state: state),
       ],
     );
+  }
+}
+
+/// No third-party error tracker (Sentry, etc.) is wired up — this list
+/// (backed by main.py's global exception handler on the backend) is the
+/// only place an unhandled API exception is visible at all.
+class _ErrorLogCard extends StatelessWidget {
+  final DashboardState state;
+  const _ErrorLogCard({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final errors = state.errorLogs;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('System Errors',
+                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+              if (errors.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AdminColors.overdueColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text('${errors.length}',
+                      style: const TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w800,
+                          color: AdminColors.overdueColor)),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Unhandled backend exceptions from the last 30 days, most recent first.',
+            style: const TextStyle(fontSize: 11.5, color: AdminColors.textMuted),
+          ),
+          const SizedBox(height: 12),
+          if (errors.isEmpty)
+            const Text('No errors recorded.',
+                style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted))
+          else
+            for (final e in errors.take(10))
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${e.method} ${e.path}',
+                              style: const TextStyle(
+                                  fontSize: 12.5, fontWeight: FontWeight.w700)),
+                          Text('${e.exceptionType}: ${e.message}',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontSize: 11.5, color: AdminColors.textMuted)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(_relativeTime(e.createdAt),
+                        style: const TextStyle(fontSize: 11, color: AdminColors.textMuted)),
+                  ],
+                ),
+              ),
+        ],
+      ),
+    );
+  }
+
+  String _relativeTime(DateTime time) {
+    final diff = DateTime.now().toUtc().difference(time.toUtc());
+    if (diff.inMinutes < 1) return 'just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
   }
 }
 
