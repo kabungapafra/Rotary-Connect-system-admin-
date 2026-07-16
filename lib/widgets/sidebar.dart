@@ -14,36 +14,34 @@ class AdminSidebar extends StatelessWidget {
     final state = context.watch<DashboardState>();
     return Container(
       width: 240,
-      color: AdminColors.sidebarBg,
+      decoration: const BoxDecoration(
+        color: AdminColors.sidebarBg,
+        border: Border(right: BorderSide(color: AdminColors.borderLight)),
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Official Rotary Connect logo, used exactly as provided.
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 6, 8, 20),
-            child: Row(
-              children: [
-                Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    color: state.accentColor,
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  alignment: Alignment.center,
-                  child: const TargetLogoIcon(),
-                ),
-                const SizedBox(width: 9),
-                const Text(
-                  'Rotary Admin',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14.5,
-                    color: Colors.white,
-                    letterSpacing: -0.14,
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.fromLTRB(8, 2, 8, 6),
+            child: Image.asset(
+              'assets/images/rotary_connect_logo.png',
+              height: 64,
+              fit: BoxFit.contain,
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: Text(
+              'SYSTEM ADMIN',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w800,
+                color: AdminColors.navSectionLabel,
+                letterSpacing: 1.4,
+              ),
             ),
           ),
           const _SectionLabel('Overview', topPad: 14),
@@ -116,7 +114,8 @@ class AdminSidebar extends StatelessWidget {
                       Text(
                         state.adminName.isEmpty ? 'System Admin' : state.adminName,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Colors.white),
+                        style: const TextStyle(
+                            fontSize: 12.5, fontWeight: FontWeight.w600, color: AdminColors.textBase),
                       ),
                       Text(
                         state.adminEmail,
@@ -175,10 +174,10 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DashboardState>();
-    final bg = active ? state.accentColor : Colors.transparent;
-    final color = active ? Colors.white : AdminColors.navInactiveText;
+    final bg = active ? state.accentColor.withValues(alpha: 0.10) : Colors.transparent;
+    final color = active ? state.accentColor : AdminColors.navInactiveText;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 1),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -189,11 +188,24 @@ class _NavItem extends StatelessWidget {
             decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
             child: Row(
               children: [
+                if (active)
+                  Container(
+                    width: 3,
+                    height: 16,
+                    margin: const EdgeInsets.only(right: 7),
+                    decoration: BoxDecoration(
+                      color: AdminColors.gold,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
                 NavIcon(icon, color: color),
                 const SizedBox(width: 10),
                 Text(
                   label,
-                  style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, color: color),
+                  style: TextStyle(
+                      fontSize: 13.5,
+                      fontWeight: active ? FontWeight.w700 : FontWeight.w600,
+                      color: color),
                 ),
               ],
             ),

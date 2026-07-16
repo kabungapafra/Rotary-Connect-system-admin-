@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../api_client.dart';
 import '../models.dart';
 import '../theme.dart';
+import 'session_store.dart';
 
 /// Single shared app state for the admin dashboard. UI/navigation state
 /// (current view, open menus/modals, wizard step, form drafts) lives here
@@ -12,11 +13,25 @@ import '../theme.dart';
 /// [ApiClient] and cached in the lists below.
 class DashboardState extends ChangeNotifier {
   final ApiClient _api = ApiClient();
+  final SessionStore _session = SessionStore();
 
   DashboardState() {
     // Wake the free-tier backend as soon as the login screen appears, so
     // it's warm by the time credentials are submitted.
     _api.warmUp();
+    _restoreSession();
+  }
+
+  /// A page reload used to land back on the login screen every time; the
+  /// session now survives via localStorage (browser builds only — the
+  /// stub store keeps tests VM-safe).
+  void _restoreSession() {
+    final token = _session.read('admin_token');
+    if (token == null || token.isEmpty) return;
+    authToken = token;
+    adminName = _session.read('admin_name') ?? '';
+    adminEmail = _session.read('admin_email') ?? '';
+    unawaited(_loadAll());
   }
 
   String view = 'dashboard';
@@ -48,6 +63,10 @@ class DashboardState extends ChangeNotifier {
         adminEmail = result.admin.email;
         loginLoading = false;
       });
+      _session
+        ..write('admin_token', result.token)
+        ..write('admin_name', result.admin.name)
+        ..write('admin_email', result.admin.email);
       await _loadAll();
     } on ApiException catch (e) {
       _update(() {
@@ -57,15 +76,25 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
-  void logout() => _update(() {
-        authToken = null;
-        adminName = '';
-        adminEmail = '';
-        clubs.clear();
-        members.clear();
-        analytics = null;
-        view = 'dashboard';
-      });
+  void logout() {
+    _session
+      ..remove('admin_token')
+      ..remove('admin_name')
+      ..remove('admin_email');
+    _update(() {
+      authToken = null;
+      adminName = '';
+      adminEmail = '';
+      clubs.clear();
+      members.clear();
+      analytics = null;
+      view = 'dashboard';
+    });
+  }
+
+  /// Manual "pull latest data" — the dashboard had no way to refresh
+  /// without logging out and back in.
+  Future<void> refresh() => _loadAll();
 
   // ── data (loaded from backend) ─────────────────────────────────────
   final List<Club> clubs = [];
@@ -250,6 +279,20 @@ class DashboardState extends ChangeNotifier {
   }
 
   // ── clubs ───────────────────────────────────────────────────────────
+  String clubSearch = '';
+  void setClubSearch(String v) => _update(() => clubSearch = v);
+
+  List<Club> get filteredClubs {
+    final q = clubSearch.trim().toLowerCase();
+    if (q.isEmpty) return clubs;
+    return clubs
+        .where((c) =>
+            c.name.toLowerCase().contains(q) ||
+            c.district.toLowerCase().contains(q) ||
+            c.location.toLowerCase().contains(q))
+        .toList();
+  }
+
   void _replaceClub(Club updated) {
     final i = clubs.indexWhere((c) => c.id == updated.id);
     if (i != -1) clubs[i] = updated;

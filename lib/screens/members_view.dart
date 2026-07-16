@@ -46,6 +46,11 @@ class MembersView extends StatelessWidget {
               ],
               onChanged: (v) => state.setMemberStatusFilter(v ?? 'all'),
             ),
+            const Spacer(),
+            Text(
+              '${filtered.length} member${filtered.length == 1 ? '' : 's'}',
+              style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
         const SizedBox(height: 14),

@@ -14,29 +14,85 @@ class ClubsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DashboardState>();
-    return Container(
-      decoration: cardDecoration(),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
-            child: Row(
-              children: [
-                Expanded(flex: 3, child: TableHeaderCell('Club')),
-                Expanded(flex: 2, child: TableHeaderCell('District')),
-                Expanded(flex: 1, child: TableHeaderCell('Type')),
-                Expanded(flex: 2, child: TableHeaderCell('Members')),
-                Expanded(flex: 2, child: TableHeaderCell('Next Payment')),
-                Expanded(flex: 2, child: TableHeaderCell('Status')),
-                Expanded(flex: 2, child: TableHeaderCell('Actions', align: TextAlign.right)),
-              ],
+    final filtered = state.filteredClubs;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            SizedBox(
+              width: 280,
+              child: TextField(
+                onChanged: state.setClubSearch,
+                style: const TextStyle(fontSize: 13),
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: 'Search by name, district, or location',
+                  hintStyle: const TextStyle(fontSize: 13, color: AdminColors.placeholder),
+                  prefixIcon: const Icon(Icons.search, size: 17, color: AdminColors.textMuted),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: AdminColors.inputBorder),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: const BorderSide(color: AdminColors.inputBorder),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: state.accentColor),
+                  ),
+                ),
+              ),
             ),
+            const Spacer(),
+            Text(
+              '${filtered.length} of ${state.totalClubs} clubs · ${state.activeClubs} active',
+              style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 14),
+        Container(
+          decoration: cardDecoration(),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+                child: Row(
+                  children: [
+                    Expanded(flex: 3, child: TableHeaderCell('Club')),
+                    Expanded(flex: 2, child: TableHeaderCell('District')),
+                    Expanded(flex: 1, child: TableHeaderCell('Type')),
+                    Expanded(flex: 2, child: TableHeaderCell('Members')),
+                    Expanded(flex: 2, child: TableHeaderCell('Next Payment')),
+                    Expanded(flex: 2, child: TableHeaderCell('Status')),
+                    Expanded(flex: 2, child: TableHeaderCell('Actions', align: TextAlign.right)),
+                  ],
+                ),
+              ),
+              for (final club in filtered) _ClubRow(club: club, state: state),
+              if (filtered.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(40),
+                  child: Center(
+                    child: Text(
+                      state.clubs.isEmpty
+                          ? 'No clubs onboarded yet — use "New Club" to add the first one.'
+                          : 'No clubs match your search.',
+                      style: const TextStyle(fontSize: 13.5, color: AdminColors.textMuted),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          for (final club in state.clubs) _ClubRow(club: club, state: state),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

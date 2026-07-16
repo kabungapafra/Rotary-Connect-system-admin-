@@ -20,7 +20,10 @@ class DashboardView extends StatelessWidget {
       children: [
         GapRow(
           gap: 14,
-          children: [for (final k in state.kpis) _KpiCard(k)],
+          children: [
+            for (var i = 0; i < state.kpis.length; i++)
+              _KpiCard(state.kpis[i], icon: _kpiIcons[i % _kpiIcons.length]),
+          ],
         ),
         const SizedBox(height: 22),
         GapRow(
@@ -37,9 +40,20 @@ class DashboardView extends StatelessWidget {
   }
 }
 
+// One icon per KPI, in the same order DashboardState.kpis emits them:
+// clubs, members, today's meetings, check-ins today, active members.
+const _kpiIcons = [
+  Icons.workspaces_outline,
+  Icons.groups_outlined,
+  Icons.event_outlined,
+  Icons.how_to_reg_outlined,
+  Icons.person_outline,
+];
+
 class _KpiCard extends StatelessWidget {
   final KpiData kpi;
-  const _KpiCard(this.kpi);
+  final IconData icon;
+  const _KpiCard(this.kpi, {required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -50,16 +64,34 @@ class _KpiCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            kpi.label.toUpperCase(),
-            style: const TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w600,
-              color: AdminColors.textMuted,
-              letterSpacing: 0.3,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: AdminColors.accent.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(7),
+                ),
+                alignment: Alignment.center,
+                child: Icon(icon, size: 15, color: AdminColors.accent),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  kpi.label.toUpperCase(),
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AdminColors.textMuted,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,

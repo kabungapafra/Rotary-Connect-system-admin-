@@ -130,13 +130,42 @@ class _LoadErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final state = context.read<DashboardState>();
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 13.5, color: AdminColors.overdueColor),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.cloud_off_outlined, size: 36, color: AdminColors.textMuted),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13.5, color: AdminColors.overdueColor),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: state.refresh,
+                  icon: const Icon(Icons.refresh, size: 16),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AdminColors.accent,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                TextButton(
+                  onPressed: state.logout,
+                  child: const Text('Sign out'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

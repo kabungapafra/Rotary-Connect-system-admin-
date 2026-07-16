@@ -6,23 +6,28 @@ import 'package:google_fonts/google_fonts.dart';
 /// oklch color support, so each value was pre-converted via the standard
 /// OKLCH -> linear sRGB matrices).
 class AdminColors {
-  static const accent = Color(0xFF4F5FCB);
+  // Official Rotary brand: azure blue primary, gold secondary — matches
+  // the Rotary Connect logo lockup used on the login screen and sidebar.
+  static const accent = Color(0xFF17458F);
+  static const gold = Color(0xFFF7A81B);
   static const accentOptions = [
-    Color(0xFF4F5FCB),
-    Color(0xFF2A6FDB),
-    Color(0xFF0F766E),
-    Color(0xFFB8862E),
+    Color(0xFF17458F), // Rotary azure
+    Color(0xFF00246B), // Rotary royal blue
+    Color(0xFF0F766E), // teal
+    Color(0xFF901F93), // Rotary violet
   ];
 
-  static const pageBg = Color(0xFFF7F9FA);
+  static const pageBg = Color(0xFFF4F6FB);
   static const scrollbarThumb = Color(0xFFCACED3);
   static const placeholder = Color(0xFF83868C);
-  static const textBase = Color(0xFF0E1218);
-  static const sidebarBg = Color(0xFF0A0D13);
-  static const navSectionLabel = Color(0xFF595E66);
-  static const navInactiveText = Color(0xFF9FA5AE);
-  static const sidebarAvatarBg = Color(0xFF3C434D);
-  static const sidebarEmailText = Color(0xFF757B83);
+  static const textBase = Color(0xFF101828);
+  // The sidebar is light so the official logo (dark-blue wordmark on
+  // transparent) can be used exactly as provided.
+  static const sidebarBg = Colors.white;
+  static const navSectionLabel = Color(0xFF98A2B3);
+  static const navInactiveText = Color(0xFF475467);
+  static const sidebarAvatarBg = Color(0xFF17458F);
+  static const sidebarEmailText = Color(0xFF98A2B3);
   static const borderLight = Color(0xFFE2E5E8);
   static const textMuted = Color(0xFF646972);
   static const clubInitialsBg = Color(0xFFE5EBF9);
@@ -30,7 +35,7 @@ class AdminColors {
   static const memberAvatarBg = Color(0xFFE4E8EF);
   static const memberAvatarText = Color(0xFF434850);
   static const rowBorder = Color(0xFFECEFF1);
-  static const sidebarFooterBorder = Color(0xFF252930);
+  static const sidebarFooterBorder = Color(0xFFE2E5E8);
   static const chartGridline = Color(0xFFE5E8EC);
 
   static const paidDot = Color(0xFF0E9254);

@@ -7,6 +7,9 @@ BoxDecoration cardDecoration({double radius = 12}) => BoxDecoration(
       color: Colors.white,
       border: Border.all(color: AdminColors.borderLight),
       borderRadius: BorderRadius.circular(radius),
+      boxShadow: const [
+        BoxShadow(color: Color(0x08101828), blurRadius: 8, offset: Offset(0, 2)),
+      ],
     );
 
 class ClubAvatar extends StatelessWidget {
