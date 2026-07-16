@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
+import 'labeled_date_field.dart';
 import 'labeled_field.dart';
 import 'modal_scrim.dart';
 
@@ -18,7 +19,7 @@ class RecordPaymentModal extends StatelessWidget {
     return ModalScrim(
       onDismiss: state.closePaymentModal,
       child: Container(
-        width: 400,
+        width: 480,
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -89,20 +90,20 @@ class RecordPaymentModal extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: LabeledField(
+                        child: LabeledDateField(
                           label: 'Date Paid',
                           value: state.paymentDraft.datePaid,
-                          placeholder: 'e.g. 08 Jul 2026',
+                          placeholder: 'Pick a date',
                           accentColor: state.accentColor,
                           onChanged: state.setPaymentDatePaid,
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: LabeledField(
+                        child: LabeledDateField(
                           label: 'Next Due',
                           value: state.paymentDraft.nextDue,
-                          placeholder: 'e.g. 08 Aug 2026',
+                          placeholder: 'Pick a date',
                           accentColor: state.accentColor,
                           onChanged: state.setPaymentNextDue,
                         ),

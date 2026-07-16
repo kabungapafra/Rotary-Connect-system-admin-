@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
 import '../widgets/attendance_chart.dart';
 import '../widgets/common.dart';
 import '../widgets/gap_row.dart';
+import '../widgets/progress_bar.dart';
 
 class AnalyticsView extends StatelessWidget {
   const AnalyticsView({super.key});
@@ -13,6 +15,7 @@ class AnalyticsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DashboardState>();
+    final engagement = state.analytics?.engagement ?? const EngagementData();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -22,6 +25,16 @@ class AnalyticsView extends StatelessWidget {
             StatCard(label: 'New Clubs This Month', value: '${state.newClubsThisMonth}'),
             StatCard(label: 'Active Members', value: '${state.activeMembersCount}'),
             StatCard(label: 'Avg. Attendance', value: '${state.avgAttendancePercent}%'),
+          ],
+        ),
+        const SizedBox(height: 14),
+        GapRow(
+          gap: 14,
+          children: [
+            StatCard(label: 'Check-ins (30d)', value: '${engagement.checkins30d}'),
+            StatCard(label: 'Guest Visits (30d)', value: '${engagement.guestVisits30d}'),
+            StatCard(label: 'Apologies (30d)', value: '${engagement.apologies30d}'),
+            StatCard(label: 'Photos Uploaded (30d)', value: '${engagement.galleryUploads30d}'),
           ],
         ),
         const SizedBox(height: 16),
@@ -35,8 +48,85 @@ class AnalyticsView extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
+        _ClubAttendanceCard(items: state.analytics?.clubAttendance ?? const []),
+        const SizedBox(height: 16),
         _ErrorLogCard(state: state),
       ],
+    );
+  }
+}
+
+/// Per-club attendance over the last 4 weeks — the platform totals hide
+/// which specific clubs are engaged and which are going quiet.
+class _ClubAttendanceCard extends StatelessWidget {
+  final List<ClubAttendanceItem> items;
+  const _ClubAttendanceCard({required this.items});
+
+  Color _barColor(int pct) {
+    if (pct >= 60) return AdminColors.paidDot;
+    if (pct >= 30) return AdminColors.dueSoonDot;
+    return AdminColors.overdueDot;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text('Attendance by Club',
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          const Text(
+            'Average attendance over the last 4 weeks, best first. Clubs with no meetings show 0%.',
+            style: TextStyle(fontSize: 11.5, color: AdminColors.textMuted),
+          ),
+          const SizedBox(height: 14),
+          if (items.isEmpty)
+            const Text('No clubs to analyze yet.',
+                style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted))
+          else
+            for (final item in items)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 220,
+                      child: Text(item.clubName,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: ProgressBar(
+                        percent: item.attendancePercent.toDouble(),
+                        color: _barColor(item.attendancePercent),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    SizedBox(
+                      width: 44,
+                      child: Text('${item.attendancePercent}%',
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                    ),
+                    const SizedBox(width: 14),
+                    SizedBox(
+                      width: 130,
+                      child: Text(
+                        '${item.meetingsHeld} meeting${item.meetingsHeld == 1 ? '' : 's'} · ${item.memberCount} members',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(fontSize: 11.5, color: AdminColors.textMuted),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+        ],
+      ),
     );
   }
 }

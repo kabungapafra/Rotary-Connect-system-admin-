@@ -140,6 +140,8 @@ class AnalyticsData {
   final List<LegendItem> paymentLegend;
   final List<String> attendanceLabels;
   final List<int> attendanceValues;
+  final List<ClubAttendanceItem> clubAttendance;
+  final EngagementData engagement;
 
   AnalyticsData({
     required this.totalClubs,
@@ -154,6 +156,8 @@ class AnalyticsData {
     required this.paymentLegend,
     required this.attendanceLabels,
     required this.attendanceValues,
+    this.clubAttendance = const [],
+    this.engagement = const EngagementData(),
   });
 
   factory AnalyticsData.fromJson(Map<String, dynamic> json) => AnalyticsData(
@@ -171,6 +175,54 @@ class AnalyticsData {
             .toList(),
         attendanceLabels: (json['attendance_labels'] as List).cast<String>(),
         attendanceValues: (json['attendance_values'] as List).cast<int>(),
+        clubAttendance: (json['club_attendance'] as List<dynamic>? ?? const [])
+            .map((e) => ClubAttendanceItem.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        engagement: json['engagement'] == null
+            ? const EngagementData()
+            : EngagementData.fromJson(json['engagement'] as Map<String, dynamic>),
+      );
+}
+
+class ClubAttendanceItem {
+  final String clubName;
+  final int attendancePercent;
+  final int meetingsHeld;
+  final int memberCount;
+
+  ClubAttendanceItem({
+    required this.clubName,
+    required this.attendancePercent,
+    required this.meetingsHeld,
+    required this.memberCount,
+  });
+
+  factory ClubAttendanceItem.fromJson(Map<String, dynamic> json) => ClubAttendanceItem(
+        clubName: json['club_name'] as String,
+        attendancePercent: json['attendance_percent'] as int,
+        meetingsHeld: json['meetings_held'] as int,
+        memberCount: json['member_count'] as int,
+      );
+}
+
+class EngagementData {
+  final int checkins30d;
+  final int guestVisits30d;
+  final int apologies30d;
+  final int galleryUploads30d;
+
+  const EngagementData({
+    this.checkins30d = 0,
+    this.guestVisits30d = 0,
+    this.apologies30d = 0,
+    this.galleryUploads30d = 0,
+  });
+
+  factory EngagementData.fromJson(Map<String, dynamic> json) => EngagementData(
+        checkins30d: json['checkins_30d'] as int? ?? 0,
+        guestVisits30d: json['guest_visits_30d'] as int? ?? 0,
+        apologies30d: json['apologies_30d'] as int? ?? 0,
+        galleryUploads30d: json['gallery_uploads_30d'] as int? ?? 0,
       );
 }
 

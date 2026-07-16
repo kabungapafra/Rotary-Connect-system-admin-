@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../state/dashboard_state.dart';
 import '../theme.dart';
+import 'labeled_date_field.dart';
 import 'labeled_field.dart';
 import 'modal_scrim.dart';
 
@@ -18,7 +19,7 @@ class NewClubWizard extends StatelessWidget {
     return ModalScrim(
       onDismiss: state.closeNewClub,
       child: Container(
-        width: 500,
+        width: 560,
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -431,20 +432,20 @@ class _StepContent extends StatelessWidget {
               onChanged: state.setDraftFeeAmount,
             ),
             const SizedBox(height: 13),
-            LabeledField(
+            LabeledDateField(
               key: const ValueKey('draft-firstPaymentDate'),
               label: 'First Payment Date',
               value: state.draft.firstPaymentDate,
-              placeholder: 'e.g. 08 Jul 2026',
+              placeholder: 'Pick a date',
               accentColor: state.accentColor,
               onChanged: state.setDraftFirstPaymentDate,
             ),
             const SizedBox(height: 13),
-            LabeledField(
+            LabeledDateField(
               key: const ValueKey('draft-nextDueDate'),
               label: 'Next Payment Due',
               value: state.draft.nextDueDate,
-              placeholder: 'e.g. 08 Aug 2026',
+              placeholder: 'Pick a date',
               accentColor: state.accentColor,
               onChanged: state.setDraftNextDueDate,
             ),
