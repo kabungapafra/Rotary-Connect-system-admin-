@@ -24,10 +24,10 @@ class AdminSidebar extends StatelessWidget {
         children: [
           // Official Rotary Connect logo, used exactly as provided.
           Padding(
-            padding: const EdgeInsets.fromLTRB(8, 2, 8, 6),
+            padding: const EdgeInsets.fromLTRB(4, 0, 4, 4),
             child: Image.asset(
               'assets/images/rotary_connect_logo.png',
-              height: 64,
+              height: 92,
               fit: BoxFit.contain,
             ),
           ),

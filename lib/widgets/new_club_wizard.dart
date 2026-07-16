@@ -30,18 +30,36 @@ class NewClubWizard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
+            Container(
               padding: const EdgeInsets.fromLTRB(26, 22, 26, 18),
+              decoration: BoxDecoration(
+                color: state.accentColor.withValues(alpha: 0.05),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
                     children: [
-                      Text('Onboard New Club', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.17)),
-                      SizedBox(height: 2),
-                      Text('Add a club to the platform', style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: state.accentColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.add_business_outlined, size: 18, color: Colors.white),
+                      ),
+                      const SizedBox(width: 12),
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Onboard New Club', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.17)),
+                          SizedBox(height: 2),
+                          Text('Add a club to the platform', style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+                        ],
+                      ),
                     ],
                   ),
                   GestureDetector(
@@ -52,7 +70,7 @@ class NewClubWizard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(26, 0, 26, 20),
+              padding: const EdgeInsets.fromLTRB(26, 18, 26, 20),
               child: _StepIndicator(state: state),
             ),
             Container(
@@ -165,7 +183,11 @@ class _StepDot extends StatelessWidget {
     final done = index < state.wizardStep;
     final active = index == state.wizardStep;
     final isFilled = done || active;
-    final circleBg = isFilled ? state.accentColor : AdminColors.wizardInactiveBar;
+    final circleBg = done
+        ? AdminColors.gold
+        : active
+            ? state.accentColor
+            : AdminColors.wizardInactiveBar;
     final circleColor = isFilled ? Colors.white : AdminColors.textMuted;
     final labelColor = isFilled ? AdminColors.wizardActiveLabel : AdminColors.wizardTodoLabel;
 
@@ -226,12 +248,17 @@ class _LogoPicker extends StatelessWidget {
       child: GestureDetector(
         onTap: _pick,
         child: Container(
-          width: 56,
-          height: 56,
+          width: 84,
+          height: 84,
           decoration: BoxDecoration(
-            color: AdminColors.statsPlaceholderBg,
-            shape: BoxShape.circle,
-            border: Border.all(color: AdminColors.statsDashedBorder, style: BorderStyle.solid),
+            color: state.accentColor.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: dataUrl != null
+                  ? AdminColors.borderLight
+                  : state.accentColor.withValues(alpha: 0.4),
+              width: 1.5,
+            ),
           ),
           clipBehavior: Clip.antiAlias,
           alignment: Alignment.center,
@@ -239,13 +266,20 @@ class _LogoPicker extends StatelessWidget {
               ? Image.memory(
                   base64Decode(dataUrl.split(',').last),
                   fit: BoxFit.contain,
-                  width: 56,
-                  height: 56,
+                  width: 84,
+                  height: 84,
                 )
-              : const Text(
-                  'Logo',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText),
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.add_photo_alternate_outlined, size: 24, color: state.accentColor),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Upload',
+                      style: TextStyle(
+                          fontSize: 11, fontWeight: FontWeight.w700, color: state.accentColor),
+                    ),
+                  ],
                 ),
         ),
       ),
@@ -268,11 +302,20 @@ class _StepContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _LogoPicker(state: state),
-                const SizedBox(width: 14),
+                const SizedBox(width: 16),
                 const Expanded(
-                  child: Text(
-                    "Click to upload the club's logo.\n\nOptional, but shows across the admin.",
-                    style: TextStyle(fontSize: 12, color: AdminColors.textMuted, height: 1.4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Club Logo',
+                          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                      SizedBox(height: 4),
+                      Text(
+                        'Click the box to upload. Optional — it shows next to the club '
+                        'everywhere in the admin and in the member app.',
+                        style: TextStyle(fontSize: 12, color: AdminColors.textMuted, height: 1.45),
+                      ),
+                    ],
                   ),
                 ),
               ],
