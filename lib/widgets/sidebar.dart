@@ -83,6 +83,13 @@ class AdminSidebar extends StatelessWidget {
             active: state.view == 'sms',
             onTap: state.goSms,
           ),
+          const _SectionLabel('Monitor', topPad: 16),
+          _NavItem(
+            icon: NavIconShape.health,
+            label: 'System Health',
+            active: state.view == 'health',
+            onTap: state.goHealth,
+          ),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),

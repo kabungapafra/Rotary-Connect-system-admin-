@@ -9,6 +9,7 @@ import 'screens/analytics_view.dart';
 import 'screens/billing_view.dart';
 import 'screens/clubs_view.dart';
 import 'screens/dashboard_view.dart';
+import 'screens/health_view.dart';
 import 'screens/members_view.dart';
 import 'screens/sms_view.dart';
 import 'state/dashboard_state.dart';
@@ -189,6 +190,8 @@ class _CurrentView extends StatelessWidget {
         return const AnalyticsView();
       case 'sms':
         return const SmsView();
+      case 'health':
+        return const HealthView();
       default:
         return const DashboardView();
     }

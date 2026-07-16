@@ -30,7 +30,7 @@ class NavIcon extends StatelessWidget {
   }
 }
 
-enum NavIconShape { dashboard, analytics, clubs, members, billing, sms }
+enum NavIconShape { dashboard, analytics, clubs, members, billing, sms, health }
 
 class _NavIconPainter extends CustomPainter {
   final NavIconShape shape;
@@ -104,6 +104,23 @@ class _NavIconPainter extends CustomPainter {
           ..close();
         paint.color = color.withValues(alpha: 0.5);
         canvas.drawPath(path, paint);
+        break;
+      case NavIconShape.health:
+        // Heartbeat pulse line, stroked to match the other icons' weight.
+        final pulse = Path()
+          ..moveTo(1, 9.5)
+          ..lineTo(5, 9.5)
+          ..lineTo(7, 4)
+          ..lineTo(10.5, 14)
+          ..lineTo(12.5, 9.5)
+          ..lineTo(17, 9.5);
+        final stroke = Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.8
+          ..strokeJoin = StrokeJoin.round
+          ..strokeCap = StrokeCap.round;
+        canvas.drawPath(pulse, stroke);
         break;
     }
     canvas.restore();

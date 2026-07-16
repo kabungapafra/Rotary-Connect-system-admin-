@@ -187,6 +187,41 @@ class DashboardState extends ChangeNotifier {
     unawaited(_loadSmsSummary());
   }
 
+  void goHealth() {
+    _go('health');
+    unawaited(loadMonitoring());
+  }
+
+  // ── system health ───────────────────────────────────────────────────
+  MonitoringData? monitoring;
+  bool monitoringLoading = false;
+  // Round-trip time of the live /health probe; null while unknown, -1 for
+  // "API unreachable" so the page can tell "still measuring" from "down".
+  int? healthLatencyMs;
+
+  Future<void> loadMonitoring() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() {
+      monitoringLoading = true;
+      healthLatencyMs = null;
+    });
+    unawaited(_api.pingHealth().then((ms) {
+      _update(() => healthLatencyMs = ms ?? -1);
+    }));
+    try {
+      final data = await _api.fetchMonitoring(token);
+      _update(() {
+        monitoring = data;
+        monitoringLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() => monitoringLoading = false);
+      _toast(e.message);
+    }
+    unawaited(_refreshErrorLogs());
+  }
+
   SmsSummary? smsSummary;
   bool smsSummaryLoading = false;
 

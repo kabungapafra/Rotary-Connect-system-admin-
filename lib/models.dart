@@ -204,6 +204,88 @@ class ErrorLogEntry {
       );
 }
 
+class MemberEventEntry {
+  final int id;
+  final String kind;
+  final String identifier;
+  final String? memberName;
+  final String? clubName;
+  final String detail;
+  final DateTime createdAt;
+
+  MemberEventEntry({
+    required this.id,
+    required this.kind,
+    required this.identifier,
+    required this.memberName,
+    required this.clubName,
+    required this.detail,
+    required this.createdAt,
+  });
+
+  factory MemberEventEntry.fromJson(Map<String, dynamic> json) => MemberEventEntry(
+        id: json['id'] as int,
+        kind: json['kind'] as String,
+        identifier: json['identifier'] as String,
+        memberName: json['member_name'] as String?,
+        clubName: json['club_name'] as String?,
+        detail: json['detail'] as String,
+        createdAt: DateTime.parse(json['created_at'] as String),
+      );
+}
+
+class SlowRequestEntry {
+  final int id;
+  final String method;
+  final String path;
+  final int statusCode;
+  final int durationMs;
+  final DateTime createdAt;
+
+  SlowRequestEntry({
+    required this.id,
+    required this.method,
+    required this.path,
+    required this.statusCode,
+    required this.durationMs,
+    required this.createdAt,
+  });
+
+  factory SlowRequestEntry.fromJson(Map<String, dynamic> json) => SlowRequestEntry(
+        id: json['id'] as int,
+        method: json['method'] as String,
+        path: json['path'] as String,
+        statusCode: json['status_code'] as int,
+        durationMs: json['duration_ms'] as int,
+        createdAt: DateTime.parse(json['created_at'] as String),
+      );
+}
+
+class MonitoringData {
+  final List<MemberEventEntry> memberEvents;
+  final List<SlowRequestEntry> slowRequests;
+  final int eventsToday;
+  final int slowToday;
+
+  MonitoringData({
+    required this.memberEvents,
+    required this.slowRequests,
+    required this.eventsToday,
+    required this.slowToday,
+  });
+
+  factory MonitoringData.fromJson(Map<String, dynamic> json) => MonitoringData(
+        memberEvents: (json['member_events'] as List<dynamic>)
+            .map((e) => MemberEventEntry.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        slowRequests: (json['slow_requests'] as List<dynamic>)
+            .map((e) => SlowRequestEntry.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        eventsToday: json['events_today'] as int,
+        slowToday: json['slow_today'] as int,
+      );
+}
+
 String initialsFor(String name) {
   final stripped =
       name.replaceFirst(RegExp(r'^Rotary Club (of )?', caseSensitive: false), '').trim();

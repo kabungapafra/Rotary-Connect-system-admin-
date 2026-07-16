@@ -15,6 +15,10 @@ const Map<String, List<String>> _pageMeta = {
   'billing': ['Billing', 'Track club payments and upcoming due dates'],
   'analytics': ['Analytics', 'Growth, engagement, and usage across all clubs'],
   'sms': ['SMS Dashboard', 'Delivery status and cost for club messaging'],
+  'health': [
+    'System Health',
+    'Member sign-in problems, API speed, and backend errors',
+  ],
 };
 
 class AdminTopbar extends StatelessWidget {

@@ -249,6 +249,27 @@ class ApiClient {
     return AnalyticsData.fromJson(res);
   }
 
+  Future<MonitoringData> fetchMonitoring(String token) async {
+    final res = await _get('/admin/analytics/monitoring', token: token);
+    return MonitoringData.fromJson(res);
+  }
+
+  /// Times a round-trip to /health so the System Health page can show
+  /// live latency. Returns milliseconds, or null when the API is down.
+  Future<int?> pingHealth() async {
+    final sw = Stopwatch()..start();
+    try {
+      final res = await http
+          .get(Uri.parse('$apiBaseUrl/health'))
+          .timeout(const Duration(seconds: 15));
+      sw.stop();
+      if (res.statusCode >= 400) return null;
+      return sw.elapsedMilliseconds;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<List<ErrorLogEntry>> fetchErrorLogs(String token) async {
     final res = await _getList('/admin/analytics/errors', token: token);
     return res
