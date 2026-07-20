@@ -169,6 +169,7 @@ class _ClubRow extends StatelessWidget {
                     () => state.toggleClubStatus(club.id),
                     color: isActive ? AdminColors.overdueColor : AdminColors.paidColor,
                   ),
+                  ActionsMenuItem('Add Member', () => state.openAddMemberModal(club.id)),
                   ActionsMenuItem('Record Payment', () => state.openPaymentModal(club.id)),
                   ActionsMenuItem('View Statistics', () => state.openStatsModal(club.id)),
                   ActionsMenuItem('Show QR Code', () => state.openQrModal(club.id)),

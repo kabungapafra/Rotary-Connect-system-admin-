@@ -431,6 +431,81 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  // ── add member (directly from a club row) ─────────────────────────
+  int? addMemberModalClubId;
+  AddMemberDraft addMemberDraft = AddMemberDraft();
+  bool addMemberSaving = false;
+
+  /// One-time credentials for a member just added this way, shown once
+  /// so the admin can hand them over — same "shown once, never again"
+  /// contract as [presidentCredentials].
+  CreateMemberResult? newMemberCredentials;
+  void dismissNewMemberCredentials() => _update(() => newMemberCredentials = null);
+
+  Club? get addMemberModalClub {
+    final id = addMemberModalClubId;
+    if (id == null) return null;
+    final matches = clubs.where((c) => c.id == id);
+    return matches.isEmpty ? null : matches.first;
+  }
+
+  void openAddMemberModal(int clubId) {
+    _update(() {
+      addMemberModalClubId = clubId;
+      addMemberDraft = AddMemberDraft();
+    });
+  }
+
+  void closeAddMemberModal() {
+    if (addMemberSaving) return;
+    _update(() => addMemberModalClubId = null);
+  }
+
+  void setAddMemberName(String v) => _update(() => addMemberDraft.name = v);
+  void setAddMemberPhone(String v) => _update(() => addMemberDraft.phone = v);
+  void setAddMemberEmail(String v) => _update(() => addMemberDraft.email = v);
+  void setAddMemberDob(String v) => _update(() => addMemberDraft.dob = v);
+  void setAddMemberRole(String v) => _update(() => addMemberDraft.role = v);
+
+  Future<void> saveNewMember() async {
+    final token = authToken;
+    final clubId = addMemberModalClubId;
+    if (token == null || clubId == null) return;
+    final name = addMemberDraft.name.trim();
+    final phone = addMemberDraft.phone.trim();
+    if (name.isEmpty || phone.isEmpty) {
+      _toast('Name and phone are required');
+      return;
+    }
+    final club = clubs.firstWhere((c) => c.id == clubId);
+    _update(() => addMemberSaving = true);
+    try {
+      final result = await _api.createMember(
+        token,
+        clubId: clubId,
+        name: name,
+        phone: phone,
+        email: addMemberDraft.email.trim(),
+        dob: addMemberDraft.dob.trim(),
+        role: addMemberDraft.role.trim().isEmpty ? 'Member' : addMemberDraft.role.trim(),
+      );
+      _update(() {
+        members.insert(
+          0,
+          Member(id: result.id, name: result.name, phone: result.phone, club: club.name, status: 'active'),
+        );
+        club.members += 1;
+        addMemberSaving = false;
+        addMemberModalClubId = null;
+        newMemberCredentials = result;
+      });
+      _toast('${result.name} added to ${club.name}');
+    } on ApiException catch (e) {
+      _update(() => addMemberSaving = false);
+      _toast(e.message);
+    }
+  }
+
   int? statsModalClubId;
   ClubStats? statsModalData;
   bool statsModalLoading = false;

@@ -97,6 +97,40 @@ class PresidentCredentials {
   const PresidentCredentials(this.name, this.memberNumber, this.pin);
 }
 
+/// Working copy of the "Add Member" modal fields.
+class AddMemberDraft {
+  String name;
+  String phone;
+  String email;
+  String dob;
+  String role;
+  AddMemberDraft({
+    this.name = '',
+    this.phone = '',
+    this.email = '',
+    this.dob = '',
+    this.role = 'Member',
+  });
+}
+
+/// Result of the admin adding a member directly to a club — the new
+/// member's id (so it can be inserted into the local Members list) plus
+/// the one-time login credentials to hand over.
+class CreateMemberResult {
+  final int id;
+  final String name;
+  final String phone;
+  final String memberNumber;
+  final String pin;
+  const CreateMemberResult({
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.memberNumber,
+    required this.pin,
+  });
+}
+
 /// Working copy of the "Record Payment" modal fields.
 class PaymentDraft {
   String amount;

@@ -205,6 +205,42 @@ class ApiClient {
     return Member.fromJson(res);
   }
 
+  /// Adds a member directly to [clubId] — bootstraps a club whose only
+  /// member was removed, or adds one without routing through that club's
+  /// own president.
+  Future<CreateMemberResult> createMember(
+    String token, {
+    required int clubId,
+    required String name,
+    required String phone,
+    String email = '',
+    String dob = '',
+    String role = 'Member',
+    bool isBoard = false,
+  }) async {
+    final res = await _post(
+      '/admin/members',
+      {
+        'club_id': clubId,
+        'name': name,
+        'phone': phone,
+        'email': email,
+        'dob': dob,
+        'role': role,
+        'is_board': isBoard,
+      },
+      token: token,
+    );
+    final member = res['member'] as Map<String, dynamic>;
+    return CreateMemberResult(
+      id: member['id'] as int,
+      name: member['name'] as String,
+      phone: member['phone'] as String,
+      memberNumber: member['member_number'] as String,
+      pin: res['pin'] as String,
+    );
+  }
+
   Future<ResetPasswordResult> resetPassword(String token, int memberId) async {
     final res = await _post('/admin/members/$memberId/reset-password', null, token: token);
     return ResetPasswordResult(res['member_name'] as String, res['new_pin'] as String);
