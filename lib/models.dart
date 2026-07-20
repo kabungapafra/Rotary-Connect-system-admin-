@@ -81,6 +81,7 @@ class ClubDraft {
   String presidentName = '';
   String email = '';
   String phone = '';
+  String dob = '';
   String members = '';
   String feeAmount = '';
   String firstPaymentDate = '';

@@ -409,6 +409,15 @@ class _StepContent extends StatelessWidget {
               onChanged: state.setDraftPhone,
             ),
             const SizedBox(height: 13),
+            LabeledDateField(
+              key: const ValueKey('draft-dob'),
+              label: 'Club President Date of Birth (optional)',
+              value: state.draft.dob,
+              placeholder: 'Pick a date',
+              accentColor: state.accentColor,
+              onChanged: state.setDraftDob,
+            ),
+            const SizedBox(height: 13),
             LabeledField(
               key: const ValueKey('draft-members'),
               label: 'Estimated Members',

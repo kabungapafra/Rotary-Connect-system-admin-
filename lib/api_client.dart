@@ -107,6 +107,7 @@ class ApiClient {
     String presidentName = '',
     String presidentEmail = '',
     String presidentPhone = '',
+    String presidentDob = '',
   }) async {
     final res = await _post(
       '/admin/clubs',
@@ -123,6 +124,7 @@ class ApiClient {
         'president_name': presidentName,
         'president_email': presidentEmail,
         'president_phone': presidentPhone,
+        'president_dob': presidentDob,
       },
       token: token,
     );

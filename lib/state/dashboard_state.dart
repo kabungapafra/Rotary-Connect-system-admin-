@@ -265,6 +265,7 @@ class DashboardState extends ChangeNotifier {
   void setDraftPresidentName(String v) => _update(() => draft.presidentName = v);
   void setDraftEmail(String v) => _update(() => draft.email = v);
   void setDraftPhone(String v) => _update(() => draft.phone = v);
+  void setDraftDob(String v) => _update(() => draft.dob = v);
   void setDraftMembers(String v) => _update(() => draft.members = v);
   void setDraftFeeAmount(String v) => _update(() => draft.feeAmount = v);
   void setDraftFirstPaymentDate(String v) => _update(() => draft.firstPaymentDate = v);
@@ -298,6 +299,7 @@ class DashboardState extends ChangeNotifier {
         presidentName: draft.presidentName.trim(),
         presidentEmail: draft.email.trim(),
         presidentPhone: draft.phone.trim(),
+        presidentDob: draft.dob.trim(),
       );
       _update(() {
         clubs.insert(0, result.club);
