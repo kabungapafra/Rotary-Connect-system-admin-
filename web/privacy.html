@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — Rotary Connect</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0;
+    padding: 40px 20px 80px;
+    background: #F4F6FA;
+    color: #1A2437;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 40px clamp(20px, 5vw, 48px);
+    box-shadow: 0 8px 24px rgba(23, 69, 143, .10);
+  }
+  h1 { font-size: 26px; font-weight: 800; margin: 0 0 4px; color: #17458F; }
+  .updated { color: #6B7688; font-size: 13px; margin-bottom: 32px; }
+  h2 { font-size: 17px; font-weight: 800; color: #17458F; margin: 32px 0 10px; }
+  p, li { font-size: 14.5px; color: #1A2437; }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { margin-bottom: 6px; }
+  a { color: #17458F; font-weight: 700; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #EEF1F6; vertical-align: top; }
+  th { color: #6B7688; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .note {
+    background: #EEF2F9;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: #4A5670;
+    margin: 16px 0;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Rotary Connect — Privacy Policy</h1>
+  <p class="updated">Last updated: 20 July 2026</p>
+
+  <p>
+    Rotary Connect is a club-management app used by Rotary and Rotaract clubs
+    for attendance, membership, events, communications, and record-keeping.
+    This policy explains what information the app and its backend collect,
+    why, and how it's handled. It covers the Rotary Connect mobile app and
+    its companion admin dashboard.
+  </p>
+
+  <h2>Information we collect</h2>
+  <p>What's collected depends on how you use the app — a signed-in club
+  member, a club officer, or a walk-in guest checking in.</p>
+  <table>
+    <tr><th>Category</th><th>Details</th></tr>
+    <tr>
+      <td>Member profile</td>
+      <td>Name, role/title, club, phone number, email (optional), date of
+      birth, member number, and a PIN. The PIN is stored as a one-way hash —
+      we never store or can see it in plain text.</td>
+    </tr>
+    <tr>
+      <td>Attendance</td>
+      <td>Meeting check-in timestamps tied to your member record.</td>
+    </tr>
+    <tr>
+      <td>Guest / visitor check-in</td>
+      <td>Name and phone number entered at check-in, the host member's name,
+      visit type, and date — used to log the visit and send a one-time
+      thank-you text.</td>
+    </tr>
+    <tr>
+      <td>Photos</td>
+      <td>Photos uploaded to a club's gallery, along with which member
+      uploaded them.</td>
+    </tr>
+    <tr>
+      <td>Club records</td>
+      <td>Meeting minutes, documents, polls and votes, event RSVPs,
+      apologies, project updates, and (for treasurers) dues and ledger
+      entries — all scoped to your own club and visible only to that club's
+      members and officers.</td>
+    </tr>
+    <tr>
+      <td>Push notification token</td>
+      <td>A device identifier issued by Firebase Cloud Messaging, used to
+      deliver notifications (e.g. meeting reminders, dues reminders) to your
+      device. Not used for advertising.</td>
+    </tr>
+    <tr>
+      <td>Technical / diagnostic data</td>
+      <td>Basic request metadata (endpoint, error type, stack trace) when
+      something goes wrong, kept for up to 30 days to fix bugs. No content
+      of your messages or club records is included.</td>
+    </tr>
+  </table>
+
+  <div class="note">
+    We do not run ads, and we do not sell or share your data with
+    advertisers or data brokers.
+  </div>
+
+  <h2>How we use this information</h2>
+  <ul>
+    <li>To run the app's core features: logging you in, recording
+    attendance, showing your club's events/minutes/gallery, and letting
+    officers manage membership and dues.</li>
+    <li>To send SMS or push notifications you'd expect from a club app —
+    check-in confirmations, birthday wishes, dues reminders, guest
+    thank-you texts.</li>
+    <li>To diagnose crashes and errors so we can fix them.</li>
+  </ul>
+
+  <h2>Who we share it with</h2>
+  <p>We use a small number of service providers to run the app. They
+  process data on our behalf and don't use it for their own purposes:</p>
+  <ul>
+    <li><strong>Firebase Cloud Messaging</strong> (Google) — delivers push
+    notifications.</li>
+    <li><strong>Cloudflare R2</strong> — stores uploaded gallery photos.</li>
+    <li>An SMS provider — sends check-in, birthday, and reminder texts to
+    the phone number on file.</li>
+    <li>A crash-reporting service, when enabled — receives error details as
+    described above, never your club's private records.</li>
+  </ul>
+  <p>Within a club, member and guest data is visible only to that club's
+  own officers and members through the app — never to other clubs.</p>
+
+  <h2>Permissions the app requests</h2>
+  <ul>
+    <li><strong>Camera</strong> — to scan a QR code for meeting check-in.
+    No photo or video is captured or stored from this; only the code's
+    content is read.</li>
+    <li><strong>Notifications</strong> — to deliver the push notifications
+    described above.</li>
+  </ul>
+
+  <h2>Data retention</h2>
+  <p>Club and member records are kept for as long as your club uses Rotary
+  Connect. Diagnostic error logs are automatically deleted after 30 days.
+  A club officer can remove a member's or guest's record on request (see
+  Contact below).</p>
+
+  <h2>Your choices</h2>
+  <ul>
+    <li>You can reset your PIN yourself from the login screen.</li>
+    <li>You can ask your club's officers, or us directly, to correct or
+    delete your personal information.</li>
+    <li>You can decline camera or notification permissions; check-in via QR
+    scan and push reminders simply won't be available.</li>
+  </ul>
+
+  <h2>Children's privacy</h2>
+  <p>Rotary Connect is built for adult Rotary/Rotaract club members and is
+  not directed at children.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes materially, we'll update the date at the top of
+  this page.</p>
+
+  <h2>Contact</h2>
+  <p>Questions, or want to access, correct, or delete your data? Email
+  <a href="mailto:digiflecttech@gmail.com">digiflecttech@gmail.com</a>.</p>
+</main>
+</body>
+</html>
