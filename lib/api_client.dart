@@ -134,7 +134,9 @@ class ApiClient {
       president == null
           ? null
           : PresidentCredentials(
+              president['id'] as int,
               president['name'] as String,
+              president['phone'] as String,
               president['member_number'] as String,
               president['pin'] as String,
             ),

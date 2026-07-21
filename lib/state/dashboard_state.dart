@@ -303,6 +303,19 @@ class DashboardState extends ChangeNotifier {
       );
       _update(() {
         clubs.insert(0, result.club);
+        final president = result.president;
+        if (president != null) {
+          members.insert(
+            0,
+            Member(
+              id: president.id,
+              name: president.name,
+              phone: president.phone,
+              club: result.club.name,
+              status: 'active',
+            ),
+          );
+        }
         createClubLoading = false;
         newClubOpen = false;
         presidentCredentials = result.president;

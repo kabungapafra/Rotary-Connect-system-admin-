@@ -92,10 +92,12 @@ class ClubDraft {
 /// One-time credentials for a club's first administrator (the Club
 /// President), returned when the club is created.
 class PresidentCredentials {
+  final int id;
   final String name;
+  final String phone;
   final String memberNumber;
   final String pin;
-  const PresidentCredentials(this.name, this.memberNumber, this.pin);
+  const PresidentCredentials(this.id, this.name, this.phone, this.memberNumber, this.pin);
 }
 
 /// Working copy of the "Add Member" modal fields.
