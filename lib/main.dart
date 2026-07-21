@@ -22,6 +22,7 @@ import 'widgets/member_credentials_modal.dart';
 import 'widgets/new_club_wizard.dart';
 import 'widgets/president_credentials_modal.dart';
 import 'widgets/record_payment_modal.dart';
+import 'widgets/reset_password_modal.dart';
 import 'widgets/sidebar.dart';
 import 'widgets/stats_modal.dart';
 import 'widgets/toast_overlay.dart';
@@ -119,6 +120,7 @@ class AdminShell extends StatelessWidget {
           if (state.presidentCredentials != null) const PresidentCredentialsModal(),
           if (state.addMemberModalClubId != null) const AddMemberModal(),
           if (state.newMemberCredentials != null) const MemberCredentialsModal(),
+          if (state.resetPasswordResult != null) const ResetPasswordModal(),
           if (state.confirmDeleteClubId != null) const DeleteClubModal(),
           if (state.confirmDeleteMemberId != null) const DeleteMemberModal(),
           if (state.qrModalClubId != null) const ClubQrModal(),

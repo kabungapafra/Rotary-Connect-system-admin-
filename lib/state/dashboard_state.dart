@@ -581,12 +581,15 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  ResetPasswordResult? resetPasswordResult;
+  void dismissResetPasswordResult() => _update(() => resetPasswordResult = null);
+
   Future<void> resetPassword(int id) async {
     final token = authToken;
     if (token == null) return;
     try {
       final result = await _api.resetPassword(token, id);
-      _toast('New PIN ${result.newPin} generated for ${result.memberName}');
+      _update(() => resetPasswordResult = result);
     } on ApiException catch (e) {
       _toast(e.message);
     }
