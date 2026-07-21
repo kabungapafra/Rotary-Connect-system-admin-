@@ -43,7 +43,7 @@ class LabeledDateField extends StatelessWidget {
     final picked = await showDatePicker(
       context: context,
       initialDate: _parseAdminDate(value) ?? now,
-      firstDate: DateTime(now.year - 5),
+      firstDate: DateTime(now.year - 100),
       lastDate: DateTime(now.year + 5),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
