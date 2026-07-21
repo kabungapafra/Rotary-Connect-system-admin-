@@ -29,7 +29,7 @@ class ToastOverlay extends StatelessWidget {
                   key: ValueKey(message),
                   padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 13),
                   decoration: BoxDecoration(
-                    color: AdminColors.sidebarBg,
+                    color: AdminColors.toastBg,
                     borderRadius: BorderRadius.circular(9),
                     boxShadow: [
                       BoxShadow(color: AdminColors.modalShadow, blurRadius: 32, offset: const Offset(0, 12)),

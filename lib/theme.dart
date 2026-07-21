@@ -37,6 +37,7 @@ class AdminColors {
   static const rowBorder = Color(0xFFECEFF1);
   static const sidebarFooterBorder = Color(0xFFE2E5E8);
   static const chartGridline = Color(0xFFE5E8EC);
+  static const toastBg = Color(0xFF101828);
 
   static const paidDot = Color(0xFF0E9254);
   static const paidColor = Color(0xFF005129);
