@@ -14,6 +14,13 @@ class Club {
   String joined;
   String? logo; // data URL uploaded at onboarding, shown across the admin
 
+  /// Mirrors the backend's is_club_access_blocked(): the app also suspends
+  /// access when dues are overdue, not just when status is manually set to
+  /// 'suspended'. Self-heals back to 'active' once a payment moves
+  /// paymentStatus off 'overdue' — no separate unsuspend action needed.
+  String get effectiveStatus =>
+      (status == 'suspended' || paymentStatus == 'overdue') ? 'suspended' : 'active';
+
   Club({
     required this.id,
     required this.name,
