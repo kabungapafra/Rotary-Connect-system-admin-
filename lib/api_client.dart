@@ -160,6 +160,15 @@ class ApiClient {
     return res.map((c) => Club.fromJson(c as Map<String, dynamic>)).toList();
   }
 
+  Future<Club> setClubSmsTypes(
+    String token,
+    int clubId,
+    Map<String, bool> smsTypes,
+  ) async {
+    final res = await _patch('/admin/clubs/$clubId/sms-types', smsTypes, token: token);
+    return Club.fromJson(res);
+  }
+
   Future<Club> recordPayment(
     String token,
     int clubId, {

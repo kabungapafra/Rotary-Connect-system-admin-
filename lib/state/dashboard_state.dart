@@ -379,6 +379,55 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  // ── per-club, per-message-type SMS toggles ─────────────────────────────
+  int? smsTypesModalClubId;
+  Map<String, bool>? smsTypesDraft; // working copy while the modal is open
+  bool smsTypesSaving = false;
+
+  Club? get smsTypesModalClub {
+    final id = smsTypesModalClubId;
+    if (id == null) return null;
+    final matches = clubs.where((c) => c.id == id);
+    return matches.isEmpty ? null : matches.first;
+  }
+
+  void openSmsTypesModal(int id) {
+    final club = clubs.firstWhere((c) => c.id == id);
+    _update(() {
+      smsTypesModalClubId = id;
+      smsTypesDraft = Map<String, bool>.from(club.smsTypes);
+    });
+  }
+
+  void closeSmsTypesModal() => _update(() {
+        smsTypesModalClubId = null;
+        smsTypesDraft = null;
+      });
+
+  void toggleSmsTypeDraft(String key) =>
+      _update(() => smsTypesDraft?[key] = !(smsTypesDraft?[key] ?? true));
+
+  Future<void> saveSmsTypesModal() async {
+    final token = authToken;
+    final id = smsTypesModalClubId;
+    final draft = smsTypesDraft;
+    if (token == null || id == null || draft == null) return;
+    _update(() => smsTypesSaving = true);
+    try {
+      final updated = await _api.setClubSmsTypes(token, id, draft);
+      _update(() {
+        _replaceClub(updated);
+        smsTypesSaving = false;
+        smsTypesModalClubId = null;
+        smsTypesDraft = null;
+      });
+      _toast('${updated.name} SMS preferences saved');
+    } on ApiException catch (e) {
+      _update(() => smsTypesSaving = false);
+      _toast(e.message);
+    }
+  }
+
   // ── bulk SMS suspend/activate (all clubs at once, with confirmation) ──
   bool? confirmBulkSmsEnabled; // null = no confirmation pending
   bool bulkSmsSaving = false;

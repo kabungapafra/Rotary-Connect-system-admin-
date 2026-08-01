@@ -178,6 +178,10 @@ class _ClubRow extends StatelessWidget {
                     () => state.toggleClubSms(club.id),
                     color: club.smsEnabled ? AdminColors.overdueColor : AdminColors.paidColor,
                   ),
+                  ActionsMenuItem(
+                    'SMS Preferences…',
+                    () => state.openSmsTypesModal(club.id),
+                  ),
                   ActionsMenuItem('Add Member', () => state.openAddMemberModal(club.id)),
                   ActionsMenuItem('Record Payment', () => state.openPaymentModal(club.id)),
                   ActionsMenuItem('View Statistics', () => state.openStatsModal(club.id)),

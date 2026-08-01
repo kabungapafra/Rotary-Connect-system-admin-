@@ -1,3 +1,17 @@
+/// Every per-message-type SMS toggle, keyed by its JSON field name (also
+/// what PATCH /admin/clubs/{id}/sms-types expects back) — labels are what
+/// the SMS-types modal shows next to each switch.
+const Map<String, String> smsTypeLabels = {
+  'sms_birthday_enabled': 'Birthday wishes',
+  'sms_guest_thank_you_enabled': 'Guest thank-you',
+  'sms_event_reminder_enabled': 'Event reminders',
+  'sms_event_thank_you_enabled': 'Event/meeting thank-you',
+  'sms_new_member_enabled': 'New member welcome (login credentials)',
+  'sms_new_president_enabled': 'New club president welcome',
+  'sms_admin_pin_reset_enabled': 'PIN reset (admin-initiated)',
+  'sms_self_service_pin_reset_enabled': 'PIN reset (self-service / forgot PIN)',
+};
+
 /// A Rotary club onboarded onto the platform.
 class Club {
   final int id;
@@ -14,6 +28,7 @@ class Club {
   String joined;
   String? logo; // data URL uploaded at onboarding, shown across the admin
   bool smsEnabled;
+  Map<String, bool> smsTypes;
 
   /// Mirrors the backend's is_club_access_blocked(): the app also suspends
   /// access when dues are overdue, not just when status is manually set to
@@ -37,7 +52,8 @@ class Club {
     required this.joined,
     this.logo,
     this.smsEnabled = true,
-  });
+    Map<String, bool>? smsTypes,
+  }) : smsTypes = smsTypes ?? {for (final k in smsTypeLabels.keys) k: true};
 
   factory Club.fromJson(Map<String, dynamic> json) => Club(
         id: json['id'] as int,
@@ -54,6 +70,9 @@ class Club {
         joined: json['joined'] as String,
         logo: json['logo'] as String?,
         smsEnabled: json['sms_enabled'] as bool? ?? true,
+        smsTypes: {
+          for (final k in smsTypeLabels.keys) k: json[k] as bool? ?? true,
+        },
       );
 }
 
