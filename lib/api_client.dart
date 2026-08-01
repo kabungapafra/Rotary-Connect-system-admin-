@@ -148,6 +148,12 @@ class ApiClient {
     return Club.fromJson(res);
   }
 
+  Future<Club> setClubSmsEnabled(String token, int clubId, bool enabled) async {
+    final res = await _patch(
+        '/admin/clubs/$clubId/sms', {'sms_enabled': enabled}, token: token);
+    return Club.fromJson(res);
+  }
+
   Future<Club> recordPayment(
     String token,
     int clubId, {

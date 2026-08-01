@@ -362,6 +362,23 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  /// Independent of [toggleClubStatus] — a club can stay fully active
+  /// while its SMS specifically is withheld (e.g. hasn't paid for SMS
+  /// credits).
+  Future<void> toggleClubSms(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    final club = clubs.firstWhere((c) => c.id == id);
+    final nextEnabled = !club.smsEnabled;
+    try {
+      final updated = await _api.setClubSmsEnabled(token, id, nextEnabled);
+      _update(() => _replaceClub(updated));
+      _toast('${updated.name} SMS ${nextEnabled ? 'activated' : 'suspended'}');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
   int? paymentModalClubId;
   PaymentDraft paymentDraft = PaymentDraft();
   bool paymentSaving = false;

@@ -94,6 +94,9 @@ const Map<String, StatusStyle> clubStatusStyles = {
 StatusStyle paymentStyleFor(String key) => paymentStatusStyles[key] ?? paymentStatusStyles['paid']!;
 StatusStyle clubStyleFor(String key) => clubStatusStyles[key] ?? clubStatusStyles['active']!;
 
+const StatusStyle smsOffStyle =
+    StatusStyle('SMS Off', AdminColors.overdueDot, AdminColors.overdueColor, AdminColors.overdueTint);
+
 ThemeData buildAdminTheme(Color accent) {
   final textTheme = GoogleFonts.manropeTextTheme();
   return ThemeData(

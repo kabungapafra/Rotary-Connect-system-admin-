@@ -155,6 +155,10 @@ class _ClubRow extends StatelessWidget {
                 StatusBadge(paymentStyle),
                 const SizedBox(height: 4),
                 StatusBadge(activeStyle),
+                if (!club.smsEnabled) ...[
+                  const SizedBox(height: 4),
+                  const StatusBadge(smsOffStyle),
+                ],
               ],
             ),
           ),
@@ -168,6 +172,11 @@ class _ClubRow extends StatelessWidget {
                     isActive ? 'Suspend Club' : 'Activate Club',
                     () => state.toggleClubStatus(club.id),
                     color: isActive ? AdminColors.overdueColor : AdminColors.paidColor,
+                  ),
+                  ActionsMenuItem(
+                    club.smsEnabled ? 'Suspend SMS' : 'Activate SMS',
+                    () => state.toggleClubSms(club.id),
+                    color: club.smsEnabled ? AdminColors.overdueColor : AdminColors.paidColor,
                   ),
                   ActionsMenuItem('Add Member', () => state.openAddMemberModal(club.id)),
                   ActionsMenuItem('Record Payment', () => state.openPaymentModal(club.id)),

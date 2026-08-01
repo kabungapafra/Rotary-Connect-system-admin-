@@ -13,6 +13,7 @@ class Club {
   String paymentStatus; // paid | due-soon | overdue
   String joined;
   String? logo; // data URL uploaded at onboarding, shown across the admin
+  bool smsEnabled;
 
   /// Mirrors the backend's is_club_access_blocked(): the app also suspends
   /// access when dues are overdue, not just when status is manually set to
@@ -35,6 +36,7 @@ class Club {
     required this.paymentStatus,
     required this.joined,
     this.logo,
+    this.smsEnabled = true,
   });
 
   factory Club.fromJson(Map<String, dynamic> json) => Club(
@@ -51,6 +53,7 @@ class Club {
         paymentStatus: json['payment_status'] as String,
         joined: json['joined'] as String,
         logo: json['logo'] as String?,
+        smsEnabled: json['sms_enabled'] as bool? ?? true,
       );
 }
 
