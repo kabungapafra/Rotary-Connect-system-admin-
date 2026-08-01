@@ -379,6 +379,37 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  // ── bulk SMS suspend/activate (all clubs at once, with confirmation) ──
+  bool? confirmBulkSmsEnabled; // null = no confirmation pending
+  bool bulkSmsSaving = false;
+
+  void askBulkSms(bool enabled) => _update(() => confirmBulkSmsEnabled = enabled);
+  void cancelBulkSms() => _update(() => confirmBulkSmsEnabled = null);
+
+  Future<void> confirmBulkSmsAction() async {
+    final token = authToken;
+    final enabled = confirmBulkSmsEnabled;
+    if (token == null || enabled == null) return;
+    _update(() => bulkSmsSaving = true);
+    try {
+      final updated = await _api.setAllClubsSmsEnabled(token, enabled);
+      _update(() {
+        clubs
+          ..clear()
+          ..addAll(updated);
+        bulkSmsSaving = false;
+        confirmBulkSmsEnabled = null;
+      });
+      _toast('SMS ${enabled ? 'activated' : 'suspended'} for every club');
+    } on ApiException catch (e) {
+      _update(() {
+        bulkSmsSaving = false;
+        confirmBulkSmsEnabled = null;
+      });
+      _toast(e.message);
+    }
+  }
+
   int? paymentModalClubId;
   PaymentDraft paymentDraft = PaymentDraft();
   bool paymentSaving = false;

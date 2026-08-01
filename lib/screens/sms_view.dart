@@ -18,6 +18,7 @@ class SmsView extends StatelessWidget {
     final state = context.watch<DashboardState>();
     final summary = state.smsSummary;
     final loading = state.smsSummaryLoading && summary == null;
+    final suspendedCount = state.clubs.where((c) => !c.smsEnabled).length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,6 +74,62 @@ class SmsView extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                     fontSize: 12.5, color: AdminColors.textMuted, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: cardDecoration(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Per-club SMS',
+                style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                suspendedCount == 0
+                    ? 'Every club currently has SMS on. Suspend an individual '
+                        'club from the Clubs tab, or use the bulk actions '
+                        'below to affect every club at once.'
+                    : '$suspendedCount of ${state.clubs.length} club'
+                        '${state.clubs.length == 1 ? '' : 's'} currently '
+                        'has SMS suspended.',
+                style: const TextStyle(
+                    fontSize: 12.5, color: AdminColors.textMuted, height: 1.5),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () => state.askBulkSms(false),
+                    icon: const Icon(Icons.sms_failed_outlined, size: 16),
+                    label: const Text('Suspend All'),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AdminColors.overdueColor),
+                      foregroundColor: AdminColors.overdueColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  OutlinedButton.icon(
+                    onPressed: () => state.askBulkSms(true),
+                    icon: const Icon(Icons.sms_outlined, size: 16),
+                    label: const Text('Activate All'),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AdminColors.paidColor),
+                      foregroundColor: AdminColors.paidColor,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

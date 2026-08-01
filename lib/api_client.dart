@@ -154,6 +154,12 @@ class ApiClient {
     return Club.fromJson(res);
   }
 
+  Future<List<Club>> setAllClubsSmsEnabled(String token, bool enabled) async {
+    final res =
+        await _patchList('/admin/clubs/sms', {'sms_enabled': enabled}, token: token);
+    return res.map((c) => Club.fromJson(c as Map<String, dynamic>)).toList();
+  }
+
   Future<Club> recordPayment(
     String token,
     int clubId, {
@@ -353,6 +359,24 @@ class ApiClient {
       throw ApiException('Could not reach the server. Check your connection.');
     }
     return _decode(res);
+  }
+
+  Future<List<dynamic>> _patchList(String path, Map<String, dynamic> body,
+      {String? token}) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+    final http.Response res;
+    try {
+      res = await http
+          .patch(Uri.parse('$apiBaseUrl$path'), headers: headers, body: jsonEncode(body))
+          .timeout(_requestTimeout);
+    } catch (_) {
+      throw ApiException('Could not reach the server. Check your connection.');
+    }
+    if (res.statusCode >= 400) {
+      throw ApiException(_errorDetail(res));
+    }
+    return jsonDecode(res.body) as List<dynamic>;
   }
 
   Future<Map<String, dynamic>> _get(String path, {String? token}) =>

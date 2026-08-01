@@ -15,6 +15,7 @@ import 'screens/sms_view.dart';
 import 'state/dashboard_state.dart';
 import 'theme.dart';
 import 'widgets/add_member_modal.dart';
+import 'widgets/bulk_sms_modal.dart';
 import 'widgets/club_qr_modal.dart';
 import 'widgets/delete_club_modal.dart';
 import 'widgets/delete_member_modal.dart';
@@ -122,6 +123,7 @@ class AdminShell extends StatelessWidget {
           if (state.newMemberCredentials != null) const MemberCredentialsModal(),
           if (state.resetPasswordResult != null) const ResetPasswordModal(),
           if (state.confirmDeleteClubId != null) const DeleteClubModal(),
+          if (state.confirmBulkSmsEnabled != null) const BulkSmsModal(),
           if (state.confirmDeleteMemberId != null) const DeleteMemberModal(),
           if (state.qrModalClubId != null) const ClubQrModal(),
           const ToastOverlay(),
