@@ -32,11 +32,19 @@ class ClubQrModal extends StatelessWidget {
       onDismiss: state.closeQrModal,
       child: Container(
         width: 380,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -46,7 +54,9 @@ class ClubQrModal extends StatelessWidget {
             Container(
               padding: const EdgeInsets.fromLTRB(22, 20, 22, 16),
               decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AdminColors.borderLight)),
+                border: Border(
+                  bottom: BorderSide(color: AdminColors.borderLight),
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -55,17 +65,31 @@ class ClubQrModal extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Check-in QR code',
-                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                        const Text(
+                          'Check-in QR code',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text(club.name,
-                            style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+                        Text(
+                          club.name,
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            color: AdminColors.textMuted,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   GestureDetector(
                     onTap: state.closeQrModal,
-                    child: const Icon(Icons.close, size: 19, color: AdminColors.closeIcon),
+                    child: const Icon(
+                      Icons.close,
+                      size: 19,
+                      color: AdminColors.closeIcon,
+                    ),
                   ),
                 ],
               ),
@@ -95,7 +119,11 @@ class ClubQrModal extends StatelessWidget {
                     'no account needed, and returning visitors won\'t be asked '
                     'for their details again.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: AdminColors.textMuted,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),

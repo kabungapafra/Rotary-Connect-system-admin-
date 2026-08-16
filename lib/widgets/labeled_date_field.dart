@@ -2,8 +2,18 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 
 const List<String> _months = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 /// "08 Jul 2026" — the one format the backend's date parser accepts
@@ -15,7 +25,8 @@ DateTime? _parseAdminDate(String value) {
   final parts = value.trim().split(RegExp(r'\s+'));
   if (parts.length != 3) return null;
   final day = int.tryParse(parts[0]);
-  final month = _months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase()) + 1;
+  final month =
+      _months.indexWhere((m) => m.toLowerCase() == parts[1].toLowerCase()) + 1;
   final year = int.tryParse(parts[2]);
   if (day == null || month == 0 || year == null) return null;
   return DateTime(year, month, day);
@@ -64,7 +75,10 @@ class LabeledDateField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: 6),
         MouseRegion(
           cursor: SystemMouseCursors.click,
@@ -81,7 +95,9 @@ class LabeledDateField extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      value.trim().isEmpty ? (placeholder ?? 'Pick a date') : value,
+                      value.trim().isEmpty
+                          ? (placeholder ?? 'Pick a date')
+                          : value,
                       style: TextStyle(
                         fontSize: 13,
                         color: value.trim().isEmpty
@@ -90,7 +106,11 @@ class LabeledDateField extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(Icons.calendar_today_outlined, size: 15, color: accentColor),
+                  Icon(
+                    Icons.calendar_today_outlined,
+                    size: 15,
+                    color: accentColor,
+                  ),
                 ],
               ),
             ),

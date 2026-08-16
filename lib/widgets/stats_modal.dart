@@ -27,11 +27,19 @@ class StatsModal extends StatelessWidget {
       onDismiss: state.closeStatsModal,
       child: Container(
         width: 420,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -48,18 +56,42 @@ class StatsModal extends StatelessWidget {
                     right: -4,
                     child: GestureDetector(
                       onTap: state.closeStatsModal,
-                      child: const Icon(Icons.close, size: 19, color: AdminColors.closeIcon),
+                      child: const Icon(
+                        Icons.close,
+                        size: 19,
+                        color: AdminColors.closeIcon,
+                      ),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Container(width: 6, height: 6, decoration: BoxDecoration(color: style.dot, shape: BoxShape.circle)),
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: style.dot,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
                         const SizedBox(width: 6),
-                        Text(style.label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: style.color)),
+                        Text(
+                          style.label,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: style.color,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -80,62 +112,110 @@ class StatsModal extends StatelessWidget {
                         color: AdminColors.statsPlaceholderBg,
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 3),
-                        boxShadow: [BoxShadow(color: AdminColors.modalShadow2, blurRadius: 8, offset: const Offset(0, 2))],
+                        boxShadow: [
+                          BoxShadow(
+                            color: AdminColors.modalShadow2,
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       clipBehavior: Clip.antiAlias,
                       alignment: Alignment.center,
                       child: club.logo != null
                           ? (club.logo!.startsWith('http')
-                              ? Image.network(
-                                  club.logo!,
-                                  fit: BoxFit.contain,
-                                  width: 64,
-                                  height: 64,
-                                )
-                              : Image.memory(
-                                  base64Decode(club.logo!.split(',').last),
-                                  fit: BoxFit.contain,
-                                  width: 64,
-                                  height: 64,
-                                ))
-                          : const Text('Logo',
-                              style: TextStyle(fontSize: 10.5, color: AdminColors.statsPlaceholderText)),
+                                ? Image.network(
+                                    club.logo!,
+                                    fit: BoxFit.contain,
+                                    width: 64,
+                                    height: 64,
+                                  )
+                                : Image.memory(
+                                    base64Decode(club.logo!.split(',').last),
+                                    fit: BoxFit.contain,
+                                    width: 64,
+                                    height: 64,
+                                  ))
+                          : const Text(
+                              'Logo',
+                              style: TextStyle(
+                                fontSize: 10.5,
+                                color: AdminColors.statsPlaceholderText,
+                              ),
+                            ),
                     ),
                     const SizedBox(height: 12),
                     Text(
                       club.name,
-                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.17),
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.17,
+                      ),
                     ),
                     const SizedBox(height: 2),
-                    Text(club.location, style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+                    Text(
+                      club.location,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AdminColors.textMuted,
+                      ),
+                    ),
                     const SizedBox(height: 18),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Attendance', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AdminColors.textMuted)),
+                        const Text(
+                          'Attendance',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: AdminColors.textMuted,
+                          ),
+                        ),
                         state.statsModalLoading
                             ? const SizedBox(
                                 width: 12,
                                 height: 12,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
-                            : Text('$attendance%', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                            : Text(
+                                '$attendance%',
+                                style: const TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    ProgressBar(percent: attendance.toDouble(), color: state.accentColor),
+                    ProgressBar(
+                      percent: attendance.toDouble(),
+                      color: state.accentColor,
+                    ),
                     const SizedBox(height: 18),
                     Row(
                       children: [
-                        Expanded(child: _StatCell('Members', '${club.members}')),
+                        Expanded(
+                          child: _StatCell('Members', '${club.members}'),
+                        ),
                         const SizedBox(width: 10),
-                        Expanded(child: _StatCell('Monthly Fee', '${formatUgx(club.feeAmount)}/mo')),
+                        Expanded(
+                          child: _StatCell(
+                            'Monthly Fee',
+                            '${formatUgx(club.feeAmount)}/mo',
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
-                        Expanded(child: _StatCell('Next Due', club.nextDueDate)),
+                        Expanded(
+                          child: _StatCell('Next Due', club.nextDueDate),
+                        ),
                         const SizedBox(width: 10),
                         Expanded(child: _StatCell('Joined', club.joined)),
                       ],
@@ -160,16 +240,27 @@ class _StatCell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(color: AdminColors.pageBg, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: AdminColors.pageBg,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label.toUpperCase(),
-            style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: AdminColors.textMuted, letterSpacing: 0.3),
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              color: AdminColors.textMuted,
+              letterSpacing: 0.3,
+            ),
           ),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+          ),
         ],
       ),
     );

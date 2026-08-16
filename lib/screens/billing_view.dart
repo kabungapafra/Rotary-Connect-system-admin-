@@ -59,7 +59,10 @@ class _BillingCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         club.name,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -69,7 +72,11 @@ class _BillingCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          _row('Monthly Fee', '${formatUgx(club.feeAmount)}/mo', valueWeight: FontWeight.w700),
+          _row(
+            'Monthly Fee',
+            '${formatUgx(club.feeAmount)}/mo',
+            valueWeight: FontWeight.w700,
+          ),
           const SizedBox(height: 9),
           _row('Last Paid', club.lastPaidDate),
           const SizedBox(height: 9),
@@ -93,7 +100,10 @@ class _BillingCard extends StatelessWidget {
                   ),
                   child: const Text(
                     'Record Payment',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
@@ -104,11 +114,18 @@ class _BillingCard extends StatelessWidget {
     );
   }
 
-  Widget _row(String label, String value, {FontWeight valueWeight = FontWeight.w600}) {
+  Widget _row(
+    String label,
+    String value, {
+    FontWeight valueWeight = FontWeight.w600,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted),
+        ),
         Text(value, style: TextStyle(fontSize: 12.5, fontWeight: valueWeight)),
       ],
     );

@@ -37,7 +37,10 @@ class _LabeledFieldState extends State<LabeledField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.label, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+        Text(
+          widget.label,
+          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: 6),
         TextField(
           controller: _controller,
@@ -46,8 +49,14 @@ class _LabeledFieldState extends State<LabeledField> {
           decoration: InputDecoration(
             isDense: true,
             hintText: widget.placeholder,
-            hintStyle: const TextStyle(fontSize: 13, color: AdminColors.placeholder),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+            hintStyle: const TextStyle(
+              fontSize: 13,
+              color: AdminColors.placeholder,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 9,
+            ),
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(

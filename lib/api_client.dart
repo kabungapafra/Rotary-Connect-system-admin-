@@ -85,16 +85,57 @@ class ClubUsage {
   );
 }
 
+/// One of a club's three key officers. Null on [ClubOverview] when nobody
+/// holds that post — a vacancy the screen shows rather than hides.
+class ClubOfficer {
+  final int id;
+  final String name;
+  final String role;
+  final String memberNumber;
+  final String phone;
+  final String email;
+  final String status;
+
+  const ClubOfficer({
+    required this.id,
+    required this.name,
+    required this.role,
+    required this.memberNumber,
+    required this.phone,
+    required this.email,
+    required this.status,
+  });
+
+  static ClubOfficer? fromJsonOrNull(Object? json) {
+    if (json is! Map<String, dynamic>) return null;
+    return ClubOfficer(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      role: json['role'] as String,
+      memberNumber: json['member_number'] as String,
+      phone: json['phone'] as String,
+      email: json['email'] as String,
+      status: json['status'] as String,
+    );
+  }
+}
+
 class ClubOverview {
   final Club club;
   final int attendancePercent;
   final ClubUsage usage;
+  final ClubOfficer? president;
+  final ClubOfficer? presidentElect;
+  final ClubOfficer? secretary;
   final List<ErrorLogEntry> recentErrors;
 
   const ClubOverview({
     required this.club,
     required this.attendancePercent,
     required this.usage,
+    this.president,
+    this.presidentElect,
+    this.secretary,
     required this.recentErrors,
   });
 }
@@ -283,6 +324,9 @@ class ApiClient {
       club: Club.fromJson(res['club'] as Map<String, dynamic>),
       attendancePercent: res['attendance_percent'] as int,
       usage: ClubUsage.fromJson(res['usage'] as Map<String, dynamic>),
+      president: ClubOfficer.fromJsonOrNull(res['president']),
+      presidentElect: ClubOfficer.fromJsonOrNull(res['president_elect']),
+      secretary: ClubOfficer.fromJsonOrNull(res['secretary']),
       recentErrors: (res['recent_errors'] as List)
           .map((e) => ErrorLogEntry.fromJson(e as Map<String, dynamic>))
           .toList(),

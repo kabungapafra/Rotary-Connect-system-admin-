@@ -20,11 +20,19 @@ class DeleteClubModal extends StatelessWidget {
       onDismiss: state.deletingClub ? null : state.cancelDeleteClub,
       child: Container(
         width: 420,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -58,17 +66,24 @@ class DeleteClubModal extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Text.rich(
                 TextSpan(
-                  style: const TextStyle(fontSize: 13, color: AdminColors.textBase, height: 1.6),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AdminColors.textBase,
+                    height: 1.6,
+                  ),
                   children: [
                     const TextSpan(text: 'Delete '),
                     TextSpan(
-                        text: club.name,
-                        style: const TextStyle(fontWeight: FontWeight.w800)),
+                      text: club.name,
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
                     const TextSpan(
-                        text: ' permanently? All of its members, meetings, '
-                            'check-in history, events, and projects will be '
-                            'removed, and its members will no longer be able '
-                            'to sign in to the app.'),
+                      text:
+                          ' permanently? All of its members, meetings, '
+                          'check-in history, events, and projects will be '
+                          'removed, and its members will no longer be able '
+                          'to sign in to the app.',
+                    ),
                   ],
                 ),
               ),
@@ -83,33 +98,56 @@ class DeleteClubModal extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   OutlinedButton(
-                    onPressed: state.deletingClub ? null : state.cancelDeleteClub,
+                    onPressed: state.deletingClub
+                        ? null
+                        : state.cancelDeleteClub,
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AdminColors.inputBorder),
                       backgroundColor: Colors.white,
                       foregroundColor: AdminColors.textBase,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 9),
                   ElevatedButton(
-                    onPressed: state.deletingClub ? null : state.deleteClubConfirmed,
+                    onPressed: state.deletingClub
+                        ? null
+                        : state.deleteClubConfirmed,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AdminColors.overdueDot,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: state.deletingClub
                         ? const SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Delete Club'),
                   ),

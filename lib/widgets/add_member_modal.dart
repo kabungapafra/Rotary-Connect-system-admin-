@@ -23,11 +23,19 @@ class AddMemberModal extends StatelessWidget {
       onDismiss: state.addMemberSaving ? null : state.closeAddMemberModal,
       child: Container(
         width: 420,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -52,7 +60,10 @@ class AddMemberModal extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     club.name,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ],
               ),
@@ -119,33 +130,56 @@ class AddMemberModal extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   OutlinedButton(
-                    onPressed: state.addMemberSaving ? null : state.closeAddMemberModal,
+                    onPressed: state.addMemberSaving
+                        ? null
+                        : state.closeAddMemberModal,
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AdminColors.inputBorder),
                       backgroundColor: Colors.white,
                       foregroundColor: AdminColors.textBase,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 9),
                   ElevatedButton(
-                    onPressed: state.addMemberSaving ? null : state.saveNewMember,
+                    onPressed: state.addMemberSaving
+                        ? null
+                        : state.saveNewMember,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: state.accentColor,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: state.addMemberSaving
                         ? const SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Add Member'),
                   ),

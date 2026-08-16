@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 
 BoxDecoration cardDecoration({double radius = 12}) => BoxDecoration(
-      color: Colors.white,
-      border: Border.all(color: AdminColors.borderLight),
-      borderRadius: BorderRadius.circular(radius),
-      boxShadow: const [
-        BoxShadow(color: Color(0x08101828), blurRadius: 8, offset: Offset(0, 2)),
-      ],
-    );
+  color: Colors.white,
+  border: Border.all(color: AdminColors.borderLight),
+  borderRadius: BorderRadius.circular(radius),
+  boxShadow: const [
+    BoxShadow(color: Color(0x08101828), blurRadius: 8, offset: Offset(0, 2)),
+  ],
+);
 
 class ClubAvatar extends StatelessWidget {
   // The one standard logo size everywhere on the dashboard — change it
@@ -27,28 +27,38 @@ class ClubAvatar extends StatelessWidget {
     final fallback = Text(
       initials,
       style: const TextStyle(
-          fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.clubInitialsText),
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        color: AdminColors.clubInitialsText,
+      ),
     );
     Widget child;
     if (value != null && value.startsWith('http')) {
-      child = Image.network(value,
-          fit: BoxFit.contain,
-          width: size,
-          height: size,
-          errorBuilder: (_, error, stackTrace) => fallback);
+      child = Image.network(
+        value,
+        fit: BoxFit.contain,
+        width: size,
+        height: size,
+        errorBuilder: (_, error, stackTrace) => fallback,
+      );
     } else if (value != null && value.contains(',')) {
-      child = Image.memory(base64Decode(value.split(',').last),
-          fit: BoxFit.contain,
-          width: size,
-          height: size,
-          errorBuilder: (_, error, stackTrace) => fallback);
+      child = Image.memory(
+        base64Decode(value.split(',').last),
+        fit: BoxFit.contain,
+        width: size,
+        height: size,
+        errorBuilder: (_, error, stackTrace) => fallback,
+      );
     } else {
       child = fallback;
     }
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(color: AdminColors.clubInitialsBg, borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: AdminColors.clubInitialsBg,
+        borderRadius: BorderRadius.circular(10),
+      ),
       clipBehavior: Clip.antiAlias,
       alignment: Alignment.center,
       child: child,
@@ -65,11 +75,18 @@ class MemberAvatar extends StatelessWidget {
     return Container(
       width: 26,
       height: 26,
-      decoration: const BoxDecoration(color: AdminColors.memberAvatarBg, shape: BoxShape.circle),
+      decoration: const BoxDecoration(
+        color: AdminColors.memberAvatarBg,
+        shape: BoxShape.circle,
+      ),
       alignment: Alignment.center,
       child: Text(
         initials,
-        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AdminColors.memberAvatarText),
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          color: AdminColors.memberAvatarText,
+        ),
       ),
     );
   }
@@ -100,7 +117,13 @@ class StatCard extends StatelessWidget {
   final String value;
   final Color? valueColor;
   final Color? labelColor;
-  const StatCard({super.key, required this.label, required this.value, this.valueColor, this.labelColor});
+  const StatCard({
+    super.key,
+    required this.label,
+    required this.value,
+    this.valueColor,
+    this.labelColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +145,11 @@ class StatCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: valueColor ?? AdminColors.textBase),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: valueColor ?? AdminColors.textBase,
+            ),
           ),
         ],
       ),

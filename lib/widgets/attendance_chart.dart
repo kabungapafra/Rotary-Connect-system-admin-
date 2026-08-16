@@ -7,7 +7,11 @@ import '../theme.dart';
 class AttendanceChart extends StatelessWidget {
   final List<int> values;
   final Color accentColor;
-  const AttendanceChart({super.key, required this.values, required this.accentColor});
+  const AttendanceChart({
+    super.key,
+    required this.values,
+    required this.accentColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +43,11 @@ class _ChartPainter extends CustomPainter {
       ..color = AdminColors.chartGridline
       ..strokeWidth = 1;
     for (final y in const [20.0, 55.0, 90.0]) {
-      canvas.drawLine(Offset(0, y * scaleY), Offset(size.width, y * scaleY), gridPaint);
+      canvas.drawLine(
+        Offset(0, y * scaleY),
+        Offset(size.width, y * scaleY),
+        gridPaint,
+      );
     }
 
     if (values.isEmpty) return;
@@ -67,7 +75,10 @@ class _ChartPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [accentColor.withValues(alpha: 0.28), accentColor.withValues(alpha: 0)],
+        colors: [
+          accentColor.withValues(alpha: 0.28),
+          accentColor.withValues(alpha: 0),
+        ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
     canvas.drawPath(areaPath, areaPaint);
 

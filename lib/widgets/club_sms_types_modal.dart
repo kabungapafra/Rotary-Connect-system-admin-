@@ -30,7 +30,13 @@ class ClubSmsTypesModal extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -52,12 +58,22 @@ class ClubSmsTypesModal extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(club.name, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  Text(
+                    club.name,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   const Text(
                     'On top of this club\'s overall SMS switch — turn off just '
                     'one kind of message without affecting the rest.',
-                    style: TextStyle(fontSize: 12, color: AdminColors.textMuted, height: 1.4),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AdminColors.textMuted,
+                      height: 1.4,
+                    ),
                   ),
                 ],
               ),
@@ -70,8 +86,13 @@ class ClubSmsTypesModal extends StatelessWidget {
                     for (final entry in smsTypeLabels.entries)
                       SwitchListTile(
                         dense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                        title: Text(entry.value, style: const TextStyle(fontSize: 13)),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                        ),
+                        title: Text(
+                          entry.value,
+                          style: const TextStyle(fontSize: 13),
+                        ),
                         value: draft[entry.key] ?? true,
                         activeThumbColor: state.accentColor,
                         onChanged: state.smsTypesSaving
@@ -93,33 +114,56 @@ class ClubSmsTypesModal extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   OutlinedButton(
-                    onPressed: state.smsTypesSaving ? null : state.closeSmsTypesModal,
+                    onPressed: state.smsTypesSaving
+                        ? null
+                        : state.closeSmsTypesModal,
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AdminColors.inputBorder),
                       backgroundColor: Colors.white,
                       foregroundColor: AdminColors.textBase,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 9),
                   ElevatedButton(
-                    onPressed: state.smsTypesSaving ? null : state.saveSmsTypesModal,
+                    onPressed: state.smsTypesSaving
+                        ? null
+                        : state.saveSmsTypesModal,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: state.accentColor,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: state.smsTypesSaving
                         ? const SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Save'),
                   ),

@@ -57,7 +57,9 @@ class _KpiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deltaColor = kpi.isPositive ? const Color(0xFF1F7A45) : AdminColors.textMuted;
+    final deltaColor = kpi.isPositive
+        ? const Color(0xFF1F7A45)
+        : AdminColors.textMuted;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: cardDecoration(),
@@ -96,12 +98,23 @@ class _KpiCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(kpi.value, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+              Text(
+                kpi.value,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.3,
+                ),
+              ),
               if (kpi.delta.isNotEmpty) ...[
                 const SizedBox(width: 8),
                 Text(
                   kpi.delta,
-                  style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: deltaColor),
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: deltaColor,
+                  ),
                 ),
               ],
             ],
@@ -127,7 +140,9 @@ class _RecentClubsCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AdminColors.borderLight)),
+              border: Border(
+                bottom: BorderSide(color: AdminColors.borderLight),
+              ),
             ),
             child: const Text(
               'Recently Onboarded Clubs',
@@ -176,7 +191,10 @@ class _ClubRow extends StatelessWidget {
                   child: Text(
                     club.name,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -184,9 +202,21 @@ class _ClubRow extends StatelessWidget {
           ),
           Expanded(
             flex: 2,
-            child: Text(club.district, style: const TextStyle(fontSize: 13, color: AdminColors.textMuted)),
+            child: Text(
+              club.district,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AdminColors.textMuted,
+              ),
+            ),
           ),
-          Expanded(flex: 2, child: Text('${club.members}', style: const TextStyle(fontSize: 13))),
+          Expanded(
+            flex: 2,
+            child: Text(
+              '${club.members}',
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
           Expanded(flex: 2, child: StatusBadge(style)),
         ],
       ),
@@ -207,7 +237,10 @@ class _PaymentStatusCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Payment Status', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700)),
+          const Text(
+            'Payment Status',
+            style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 14),
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -219,8 +252,21 @@ class _PaymentStatusCard extends StatelessWidget {
                 center: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('${state.totalClubs}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                    const Text('clubs', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AdminColors.textMuted)),
+                    Text(
+                      '${state.totalClubs}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const Text(
+                      'clubs',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                        color: AdminColors.textMuted,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -246,10 +292,19 @@ class _PaymentStatusCard extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 7),
-                                Text(item.name, style: const TextStyle(fontSize: 12.5)),
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(fontSize: 12.5),
+                                ),
                               ],
                             ),
-                            Text('${item.count}', style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                            Text(
+                              '${item.count}',
+                              style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -267,8 +322,20 @@ class _PaymentStatusCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Expected Monthly Revenue', style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
-                Text(state.mrrFormatted, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                const Text(
+                  'Expected Monthly Revenue',
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    color: AdminColors.textMuted,
+                  ),
+                ),
+                Text(
+                  state.mrrFormatted,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ],
             ),
           ),

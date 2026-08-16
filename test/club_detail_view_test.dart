@@ -15,9 +15,7 @@ import 'package:provider/provider.dart';
 Widget _wrap(DashboardState state) => MaterialApp(
   home: ChangeNotifierProvider.value(
     value: state,
-    child: const Scaffold(
-      body: SingleChildScrollView(child: ClubDetailView()),
-    ),
+    child: const Scaffold(body: SingleChildScrollView(child: ClubDetailView())),
   ),
 );
 
@@ -36,6 +34,17 @@ Club _club({String status = 'active', bool smsEnabled = true}) => Club(
   smsEnabled: smsEnabled,
 );
 
+ClubOfficer _officer(String name, String role, {String status = 'active'}) =>
+    ClubOfficer(
+      id: 1,
+      name: name,
+      role: role,
+      memberNumber: 'RCM-0042',
+      phone: '256772111222',
+      email: 'officer@example.com',
+      status: status,
+    );
+
 ClubOverview _overview({
   int membersActive = 18,
   int membersTotal = 20,
@@ -43,9 +52,15 @@ ClubOverview _overview({
   int storageBytes = 4404019,
   List<ErrorLogEntry> errors = const [],
   int errorsTotal = 0,
+  ClubOfficer? president,
+  ClubOfficer? presidentElect,
+  ClubOfficer? secretary,
 }) => ClubOverview(
   club: _club(),
   attendancePercent: 65,
+  president: president,
+  presidentElect: presidentElect,
+  secretary: secretary,
   usage: ClubUsage(
     membersTotal: membersTotal,
     membersActive: membersActive,
@@ -140,11 +155,53 @@ void main() {
     await tester.pumpWidget(_wrap(state));
 
     expect(
-      find.text(
-        'Nothing has failed for this club since error tracking began.',
-      ),
+      find.text('Nothing has failed for this club since error tracking began.'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('names the three officers with their contact details', (
+    tester,
+  ) async {
+    await setDesktopSize(tester);
+    final state = DashboardState()
+      ..openClubId = 7
+      ..clubs.add(_club())
+      ..clubOverview = _overview(
+        president: _officer('Grace Nakato', 'Club President'),
+        presidentElect: _officer('Peter Okello', 'President-Elect'),
+        secretary: _officer('Sarah Nabirye', 'Secretary'),
+      );
+
+    await tester.pumpWidget(_wrap(state));
+
+    expect(find.text('PRESIDENT'), findsOneWidget);
+    expect(find.text('PRESIDENT-ELECT'), findsOneWidget);
+    expect(find.text('SECRETARY'), findsOneWidget);
+    expect(find.text('Grace Nakato'), findsOneWidget);
+    expect(find.text('Peter Okello'), findsOneWidget);
+    expect(find.text('Sarah Nabirye'), findsOneWidget);
+    // Contact details are the point of the card — an admin uses them to
+    // reach the club, so a name alone is not enough.
+    expect(find.text('256772111222'), findsNWidgets(3));
+  });
+
+  testWidgets('an unfilled officer post is shown, not hidden', (tester) async {
+    await setDesktopSize(tester);
+    // A club with no Secretary cannot file minutes or documents, so the
+    // vacancy has to be visible rather than the slot silently disappearing.
+    final state = DashboardState()
+      ..openClubId = 7
+      ..clubs.add(_club())
+      ..clubOverview = _overview(
+        president: _officer('Grace Nakato', 'Club President'),
+      );
+
+    await tester.pumpWidget(_wrap(state));
+
+    expect(find.text('SECRETARY'), findsOneWidget);
+    expect(find.text('PRESIDENT-ELECT'), findsOneWidget);
+    expect(find.text('Not assigned'), findsNWidgets(2));
   });
 
   testWidgets('deleting the club from this screen falls back, not crashes', (

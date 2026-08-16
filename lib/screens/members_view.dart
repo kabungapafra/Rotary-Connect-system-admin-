@@ -32,7 +32,8 @@ class MembersView extends StatelessWidget {
               value: state.memberClubFilter,
               items: [
                 const DropdownMenuItem(value: 'all', child: Text('All Clubs')),
-                for (final name in state.clubNameOptions) DropdownMenuItem(value: name, child: Text(name)),
+                for (final name in state.clubNameOptions)
+                  DropdownMenuItem(value: name, child: Text(name)),
               ],
               onChanged: (v) => state.setMemberClubFilter(v ?? 'all'),
             ),
@@ -49,7 +50,11 @@ class MembersView extends StatelessWidget {
             const Spacer(),
             Text(
               '${filtered.length} member${filtered.length == 1 ? '' : 's'}',
-              style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 12.5,
+                color: AdminColors.textMuted,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
@@ -68,7 +73,10 @@ class MembersView extends StatelessWidget {
                     Expanded(flex: 3, child: TableHeaderCell('Phone')),
                     Expanded(flex: 3, child: TableHeaderCell('Club')),
                     Expanded(flex: 2, child: TableHeaderCell('Status')),
-                    Expanded(flex: 2, child: TableHeaderCell('Actions', align: TextAlign.right)),
+                    Expanded(
+                      flex: 2,
+                      child: TableHeaderCell('Actions', align: TextAlign.right),
+                    ),
                   ],
                 ),
               ),
@@ -79,7 +87,10 @@ class MembersView extends StatelessWidget {
                   child: Center(
                     child: Text(
                       'No members match your filters.',
-                      style: TextStyle(fontSize: 13.5, color: AdminColors.textMuted),
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        color: AdminColors.textMuted,
+                      ),
                     ),
                   ),
                 ),
@@ -118,8 +129,14 @@ class _SearchFieldState extends State<_SearchField> {
       decoration: InputDecoration(
         isDense: true,
         hintText: 'Search by name or phone',
-        hintStyle: const TextStyle(fontSize: 13, color: AdminColors.placeholder),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 12),
+        hintStyle: const TextStyle(
+          fontSize: 13,
+          color: AdminColors.placeholder,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 13,
+          vertical: 12,
+        ),
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
@@ -132,7 +149,9 @@ class _SearchFieldState extends State<_SearchField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: context.watch<DashboardState>().accentColor),
+          borderSide: BorderSide(
+            color: context.watch<DashboardState>().accentColor,
+          ),
         ),
       ),
     );
@@ -143,7 +162,11 @@ class _FilterDropdown<T> extends StatelessWidget {
   final T value;
   final List<DropdownMenuItem<T>> items;
   final ValueChanged<T?> onChanged;
-  const _FilterDropdown({required this.value, required this.items, required this.onChanged});
+  const _FilterDropdown({
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +183,11 @@ class _FilterDropdown<T> extends StatelessWidget {
           items: items,
           onChanged: onChanged,
           style: const TextStyle(fontSize: 13, color: AdminColors.textBase),
-          icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: AdminColors.textMuted),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            size: 18,
+            color: AdminColors.textMuted,
+          ),
         ),
       ),
     );
@@ -193,7 +220,10 @@ class _MemberRow extends StatelessWidget {
                   child: Text(
                     member.name,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -201,11 +231,21 @@ class _MemberRow extends StatelessWidget {
           ),
           Expanded(
             flex: 3,
-            child: Text(member.phone, style: const TextStyle(fontSize: 13, color: AdminColors.textMuted)),
+            child: Text(
+              member.phone,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AdminColors.textMuted,
+              ),
+            ),
           ),
           Expanded(
             flex: 3,
-            child: Text(member.club, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
+            child: Text(
+              member.club,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13),
+            ),
           ),
           Expanded(flex: 2, child: StatusBadge(style)),
           Expanded(
@@ -217,10 +257,18 @@ class _MemberRow extends StatelessWidget {
                   ActionsMenuItem(
                     isActive ? 'Suspend Member' : 'Activate Member',
                     () => state.toggleMemberStatus(member.id),
-                    color: isActive ? AdminColors.overdueColor : AdminColors.paidColor,
+                    color: isActive
+                        ? AdminColors.overdueColor
+                        : AdminColors.paidColor,
                   ),
-                  ActionsMenuItem('Reset Password', () => state.resetPassword(member.id)),
-                  ActionsMenuItem('View Activity', () => state.viewActivity(member.id)),
+                  ActionsMenuItem(
+                    'Reset Password',
+                    () => state.resetPassword(member.id),
+                  ),
+                  ActionsMenuItem(
+                    'View Activity',
+                    () => state.viewActivity(member.id),
+                  ),
                   ActionsMenuItem(
                     'Delete Member',
                     () => state.askDeleteMember(member.id),

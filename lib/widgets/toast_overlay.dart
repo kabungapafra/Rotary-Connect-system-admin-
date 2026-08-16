@@ -19,7 +19,10 @@ class ToastOverlay extends StatelessWidget {
           transitionBuilder: (child, animation) => FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(animation),
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.15),
+                end: Offset.zero,
+              ).animate(animation),
               child: child,
             ),
           ),
@@ -27,17 +30,28 @@ class ToastOverlay extends StatelessWidget {
               ? const SizedBox.shrink(key: ValueKey('empty'))
               : Container(
                   key: ValueKey(message),
-                  padding: const EdgeInsets.symmetric(horizontal: 19, vertical: 13),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 19,
+                    vertical: 13,
+                  ),
                   decoration: BoxDecoration(
                     color: AdminColors.toastBg,
                     borderRadius: BorderRadius.circular(9),
                     boxShadow: [
-                      BoxShadow(color: AdminColors.modalShadow, blurRadius: 32, offset: const Offset(0, 12)),
+                      BoxShadow(
+                        color: AdminColors.modalShadow,
+                        blurRadius: 32,
+                        offset: const Offset(0, 12),
+                      ),
                     ],
                   ),
                   child: Text(
                     message,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
         ),

@@ -20,10 +20,7 @@ class ModalScrim extends StatelessWidget {
             ),
           ),
           Center(
-            child: GestureDetector(
-              onTap: () {},
-              child: child,
-            ),
+            child: GestureDetector(onTap: () {}, child: child),
           ),
         ],
       ),

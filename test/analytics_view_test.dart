@@ -11,11 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 Widget _wrap(DashboardState state) => MaterialApp(
-      home: ChangeNotifierProvider.value(
-        value: state,
-        child: const Scaffold(body: SingleChildScrollView(child: AnalyticsView())),
-      ),
-    );
+  home: ChangeNotifierProvider.value(
+    value: state,
+    child: const Scaffold(body: SingleChildScrollView(child: AnalyticsView())),
+  ),
+);
 
 void main() {
   // This dashboard is desktop-width by design (fixed sidebar + content
@@ -29,16 +29,18 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
   }
 
-  testWidgets('shows the empty state when there are no logged errors',
-      (tester) async {
+  testWidgets('shows the empty state when there are no logged errors', (
+    tester,
+  ) async {
     await setDesktopSize(tester);
     final state = DashboardState();
     await tester.pumpWidget(_wrap(state));
     expect(find.text('No errors recorded.'), findsOneWidget);
   });
 
-  testWidgets('renders a logged error with method, path, and count badge',
-      (tester) async {
+  testWidgets('renders a logged error with method, path, and count badge', (
+    tester,
+  ) async {
     await setDesktopSize(tester);
     final state = DashboardState()
       ..errorLogs = [

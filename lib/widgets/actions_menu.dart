@@ -44,7 +44,10 @@ class _ActionsMenuState extends State<ActionsMenu> {
                 targetAnchor: Alignment.bottomRight,
                 followerAnchor: Alignment.topRight,
                 offset: const Offset(0, 6),
-                child: _MenuBody(items: widget.items, onSelect: _controller.hide),
+                child: _MenuBody(
+                  items: widget.items,
+                  onSelect: _controller.hide,
+                ),
               ),
             ],
           );
@@ -75,7 +78,11 @@ class _ActionsButton extends StatelessWidget {
           ),
           child: const Text(
             'Actions ▾',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AdminColors.buttonText),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AdminColors.buttonText,
+            ),
           ),
         ),
       ),
@@ -103,7 +110,13 @@ class _MenuBody extends StatelessWidget {
             color: Colors.white,
             border: Border.all(color: AdminColors.buttonBorder),
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [BoxShadow(color: AdminColors.dropdownShadow, blurRadius: 28, offset: const Offset(0, 12))],
+            boxShadow: [
+              BoxShadow(
+                color: AdminColors.dropdownShadow,
+                blurRadius: 28,
+                offset: const Offset(0, 12),
+              ),
+            ],
           ),
           clipBehavior: Clip.antiAlias,
           child: Column(
@@ -117,9 +130,16 @@ class _MenuBody extends StatelessWidget {
                     items[i].onTap();
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 9,
+                    ),
                     decoration: BoxDecoration(
-                      border: i > 0 ? const Border(top: BorderSide(color: AdminColors.rowBorder)) : null,
+                      border: i > 0
+                          ? const Border(
+                              top: BorderSide(color: AdminColors.rowBorder),
+                            )
+                          : null,
                     ),
                     child: Text(
                       items[i].label,

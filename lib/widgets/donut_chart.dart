@@ -58,7 +58,10 @@ class DonutChart extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(14),
       child: Container(
-        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
         alignment: Alignment.center,
         child: center,
       ),

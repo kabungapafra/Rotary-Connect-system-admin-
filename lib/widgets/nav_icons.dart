@@ -8,17 +8,17 @@ class NavIcon extends StatelessWidget {
   const NavIcon(this.shape, {super.key, required this.color});
 
   const NavIcon.dashboard({Key? key, required Color color})
-      : this(NavIconShape.dashboard, key: key, color: color);
+    : this(NavIconShape.dashboard, key: key, color: color);
   const NavIcon.analytics({Key? key, required Color color})
-      : this(NavIconShape.analytics, key: key, color: color);
+    : this(NavIconShape.analytics, key: key, color: color);
   const NavIcon.clubs({Key? key, required Color color})
-      : this(NavIconShape.clubs, key: key, color: color);
+    : this(NavIconShape.clubs, key: key, color: color);
   const NavIcon.members({Key? key, required Color color})
-      : this(NavIconShape.members, key: key, color: color);
+    : this(NavIconShape.members, key: key, color: color);
   const NavIcon.billing({Key? key, required Color color})
-      : this(NavIconShape.billing, key: key, color: color);
+    : this(NavIconShape.billing, key: key, color: color);
   const NavIcon.sms({Key? key, required Color color})
-      : this(NavIconShape.sms, key: key, color: color);
+    : this(NavIconShape.sms, key: key, color: color);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +44,14 @@ class _NavIconPainter extends CustomPainter {
     canvas.scale(scale, scale);
     final paint = Paint()..style = PaintingStyle.fill;
 
-    void rrect(double x, double y, double w, double h, double r, double opacity) {
+    void rrect(
+      double x,
+      double y,
+      double w,
+      double h,
+      double r,
+      double opacity,
+    ) {
       paint.color = color.withValues(alpha: opacity);
       canvas.drawRRect(
         RRect.fromRectAndRadius(Rect.fromLTWH(x, y, w, h), Radius.circular(r)),
@@ -165,5 +172,6 @@ class _TargetPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _TargetPainter oldDelegate) => oldDelegate.color != color;
+  bool shouldRepaint(covariant _TargetPainter oldDelegate) =>
+      oldDelegate.color != color;
 }

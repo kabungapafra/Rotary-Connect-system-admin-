@@ -95,7 +95,9 @@ class AdminSidebar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             margin: const EdgeInsets.only(top: 8),
             decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AdminColors.sidebarFooterBorder)),
+              border: Border(
+                top: BorderSide(color: AdminColors.sidebarFooterBorder),
+              ),
             ),
             child: Row(
               children: [
@@ -108,8 +110,16 @@ class AdminSidebar extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    memberInitialsFor(state.adminName.isEmpty ? 'System Admin' : state.adminName),
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+                    memberInitialsFor(
+                      state.adminName.isEmpty
+                          ? 'System Admin'
+                          : state.adminName,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 9),
@@ -119,15 +129,23 @@ class AdminSidebar extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        state.adminName.isEmpty ? 'System Admin' : state.adminName,
+                        state.adminName.isEmpty
+                            ? 'System Admin'
+                            : state.adminName,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontSize: 12.5, fontWeight: FontWeight.w600, color: AdminColors.textBase),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                          color: AdminColors.textBase,
+                        ),
                       ),
                       Text(
                         state.adminEmail,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 11, color: AdminColors.sidebarEmailText),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AdminColors.sidebarEmailText,
+                        ),
                       ),
                     ],
                   ),
@@ -137,7 +155,11 @@ class AdminSidebar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6),
                   child: const Padding(
                     padding: EdgeInsets.all(4),
-                    child: Icon(Icons.logout, size: 15, color: AdminColors.navInactiveText),
+                    child: Icon(
+                      Icons.logout,
+                      size: 15,
+                      color: AdminColors.navInactiveText,
+                    ),
                   ),
                 ),
               ],
@@ -176,12 +198,19 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool active;
   final VoidCallback onTap;
-  const _NavItem({required this.icon, required this.label, required this.active, required this.onTap});
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final state = context.watch<DashboardState>();
-    final bg = active ? state.accentColor.withValues(alpha: 0.10) : Colors.transparent;
+    final bg = active
+        ? state.accentColor.withValues(alpha: 0.10)
+        : Colors.transparent;
     final color = active ? state.accentColor : AdminColors.navInactiveText;
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
@@ -192,7 +221,10 @@ class _NavItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(8),
+            ),
             child: Row(
               children: [
                 if (active)
@@ -210,9 +242,10 @@ class _NavItem extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: active ? FontWeight.w700 : FontWeight.w600,
-                      color: color),
+                    fontSize: 13.5,
+                    fontWeight: active ? FontWeight.w700 : FontWeight.w600,
+                    color: color,
+                  ),
                 ),
               ],
             ),

@@ -26,7 +26,10 @@ class SmsView extends StatelessWidget {
         GapRow(
           gap: 14,
           children: [
-            StatCard(label: 'Sent Today', value: loading ? '—' : '${summary?.sentToday ?? 0}'),
+            StatCard(
+              label: 'Sent Today',
+              value: loading ? '—' : '${summary?.sentToday ?? 0}',
+            ),
             StatCard(
               label: 'Failed Today',
               value: loading ? '—' : '${summary?.failedToday ?? 0}',
@@ -48,7 +51,9 @@ class SmsView extends StatelessWidget {
           child: Column(
             children: [
               Icon(
-                summary?.enabled == true ? Icons.sms_outlined : Icons.sms_failed_outlined,
+                summary?.enabled == true
+                    ? Icons.sms_outlined
+                    : Icons.sms_failed_outlined,
                 size: 34,
                 color: AdminColors.textMuted,
               ),
@@ -57,23 +62,29 @@ class SmsView extends StatelessWidget {
                 summary == null
                     ? 'Loading…'
                     : summary.enabled
-                        ? 'SMS gateway connected'
-                        : 'No SMS gateway connected',
-                style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800),
+                    ? 'SMS gateway connected'
+                    : 'No SMS gateway connected',
+                style: const TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 6),
               Text(
                 summary == null
                     ? ''
                     : summary.enabled
-                        ? 'Login credentials, birthday wishes, new fellowship '
-                            'announcements, and visitor thank-yous are sent '
-                            'automatically across every club.'
-                        : 'Once an SMS provider is connected, delivery stats '
-                            'across all clubs will appear here.',
+                    ? 'Login credentials, birthday wishes, new fellowship '
+                          'announcements, and visitor thank-yous are sent '
+                          'automatically across every club.'
+                    : 'Once an SMS provider is connected, delivery stats '
+                          'across all clubs will appear here.',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    fontSize: 12.5, color: AdminColors.textMuted, height: 1.5),
+                  fontSize: 12.5,
+                  color: AdminColors.textMuted,
+                  height: 1.5,
+                ),
               ),
             ],
           ),
@@ -93,13 +104,16 @@ class SmsView extends StatelessWidget {
               Text(
                 suspendedCount == 0
                     ? 'Every club currently has SMS on. Suspend an individual '
-                        'club from the Clubs tab, or use the bulk actions '
-                        'below to affect every club at once.'
+                          'club from the Clubs tab, or use the bulk actions '
+                          'below to affect every club at once.'
                     : '$suspendedCount of ${state.clubs.length} club'
-                        '${state.clubs.length == 1 ? '' : 's'} currently '
-                        'has SMS suspended.',
+                          '${state.clubs.length == 1 ? '' : 's'} currently '
+                          'has SMS suspended.',
                 style: const TextStyle(
-                    fontSize: 12.5, color: AdminColors.textMuted, height: 1.5),
+                  fontSize: 12.5,
+                  color: AdminColors.textMuted,
+                  height: 1.5,
+                ),
               ),
               const SizedBox(height: 14),
               Row(
@@ -111,9 +125,17 @@ class SmsView extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AdminColors.overdueColor),
                       foregroundColor: AdminColors.overdueColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -124,9 +146,17 @@ class SmsView extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: AdminColors.paidColor),
                       foregroundColor: AdminColors.paidColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],

@@ -49,6 +49,8 @@ class ClubDetailView extends StatelessWidget {
         else ...[
           _UsageGrid(overview: overview, accent: state.accentColor),
           const SizedBox(height: 18),
+          _OfficersCard(overview: overview),
+          const SizedBox(height: 18),
           _AttendanceCard(
             percent: overview.attendancePercent,
             accent: state.accentColor,
@@ -386,6 +388,159 @@ class _UsageTile extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _OfficersCard extends StatelessWidget {
+  final ClubOverview overview;
+  const _OfficersCard({required this.overview});
+
+  @override
+  Widget build(BuildContext context) {
+    final slots = <(String, ClubOfficer?)>[
+      ('President', overview.president),
+      ('President-Elect', overview.presidentElect),
+      ('Secretary', overview.secretary),
+    ];
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Club leadership',
+            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 14),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              // Three across when there's room, stacked when there isn't.
+              final columns = constraints.maxWidth < 720 ? 1 : 3;
+              const gap = 12.0;
+              final width =
+                  (constraints.maxWidth - gap * (columns - 1)) / columns;
+              return Wrap(
+                spacing: gap,
+                runSpacing: gap,
+                children: [
+                  for (final (title, officer) in slots)
+                    SizedBox(
+                      width: width,
+                      child: _OfficerCell(title: title, officer: officer),
+                    ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OfficerCell extends StatelessWidget {
+  final String title;
+  final ClubOfficer? officer;
+  const _OfficerCell({required this.title, required this.officer});
+
+  @override
+  Widget build(BuildContext context) {
+    final o = officer;
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AdminColors.pageBg,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              color: AdminColors.textMuted,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (o == null)
+            // An unfilled post is worth seeing: it means nobody in this club
+            // can do what the role gates (a missing Secretary blocks minutes
+            // and documents; a missing President-Elect blocks the rollover).
+            const Text(
+              'Not assigned',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AdminColors.overdueColor,
+              ),
+            )
+          else ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    o.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+                if (o.status != 'active') ...[
+                  const SizedBox(width: 6),
+                  Text(
+                    o.status,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AdminColors.overdueColor,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 5),
+            _OfficerLine(Icons.badge_outlined, o.memberNumber),
+            if (o.phone.isNotEmpty) ...[
+              const SizedBox(height: 3),
+              _OfficerLine(Icons.phone_outlined, o.phone),
+            ],
+            if (o.email.isNotEmpty) ...[
+              const SizedBox(height: 3),
+              _OfficerLine(Icons.mail_outline, o.email),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _OfficerLine extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  const _OfficerLine(this.icon, this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 13, color: AdminColors.textMuted),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            value,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: AdminColors.textMuted),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -81,21 +81,52 @@ class StatusStyle {
 }
 
 const Map<String, StatusStyle> paymentStatusStyles = {
-  'paid': StatusStyle('Paid', AdminColors.paidDot, AdminColors.paidColor, AdminColors.paidTint),
-  'due-soon': StatusStyle('Due Soon', AdminColors.dueSoonDot, AdminColors.dueSoonColor, AdminColors.dueSoonTint),
-  'overdue': StatusStyle('Overdue', AdminColors.overdueDot, AdminColors.overdueColor, AdminColors.overdueTint),
+  'paid': StatusStyle(
+    'Paid',
+    AdminColors.paidDot,
+    AdminColors.paidColor,
+    AdminColors.paidTint,
+  ),
+  'due-soon': StatusStyle(
+    'Due Soon',
+    AdminColors.dueSoonDot,
+    AdminColors.dueSoonColor,
+    AdminColors.dueSoonTint,
+  ),
+  'overdue': StatusStyle(
+    'Overdue',
+    AdminColors.overdueDot,
+    AdminColors.overdueColor,
+    AdminColors.overdueTint,
+  ),
 };
 
 const Map<String, StatusStyle> clubStatusStyles = {
-  'active': StatusStyle('Active', AdminColors.paidDot, AdminColors.paidColor, AdminColors.paidTint),
-  'suspended': StatusStyle('Suspended', AdminColors.overdueDot, AdminColors.overdueColor, AdminColors.overdueTint),
+  'active': StatusStyle(
+    'Active',
+    AdminColors.paidDot,
+    AdminColors.paidColor,
+    AdminColors.paidTint,
+  ),
+  'suspended': StatusStyle(
+    'Suspended',
+    AdminColors.overdueDot,
+    AdminColors.overdueColor,
+    AdminColors.overdueTint,
+  ),
 };
 
-StatusStyle paymentStyleFor(String key) => paymentStatusStyles[key] ?? paymentStatusStyles['paid']!;
-StatusStyle clubStyleFor(String key) => clubStatusStyles[key] ?? clubStatusStyles['active']!;
+StatusStyle paymentStyleFor(String key) =>
+    paymentStatusStyles[key] ?? paymentStatusStyles['paid']!;
+StatusStyle clubStyleFor(String key) =>
+    clubStatusStyles[key] ?? clubStatusStyles['active']!;
 
-const StatusStyle smsOffStyle =
-    StatusStyle('SMS Off', AdminColors.overdueDot, AdminColors.overdueColor, AdminColors.overdueTint);
+const StatusStyle smsOffStyle = StatusStyle(
+  'SMS Off',
+  AdminColors.overdueDot,
+  AdminColors.overdueColor,
+  AdminColors.overdueTint,
+);
 
 ThemeData buildAdminTheme(Color accent) {
   final textTheme = GoogleFonts.manropeTextTheme();

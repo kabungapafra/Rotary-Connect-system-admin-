@@ -20,11 +20,19 @@ class NewClubWizard extends StatelessWidget {
       onDismiss: state.closeNewClub,
       child: Container(
         width: 560,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -50,22 +58,43 @@ class NewClubWizard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: const Icon(Icons.add_business_outlined, size: 18, color: Colors.white),
+                        child: const Icon(
+                          Icons.add_business_outlined,
+                          size: 18,
+                          color: Colors.white,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Onboard New Club', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.17)),
+                          Text(
+                            'Onboard New Club',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.17,
+                            ),
+                          ),
                           SizedBox(height: 2),
-                          Text('Add a club to the platform', style: TextStyle(fontSize: 12.5, color: AdminColors.textMuted)),
+                          Text(
+                            'Add a club to the platform',
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: AdminColors.textMuted,
+                            ),
+                          ),
                         ],
                       ),
                     ],
                   ),
                   GestureDetector(
                     onTap: state.closeNewClub,
-                    child: const Icon(Icons.close, size: 19, color: AdminColors.textMuted),
+                    child: const Icon(
+                      Icons.close,
+                      size: 19,
+                      color: AdminColors.textMuted,
+                    ),
                   ),
                 ],
               ),
@@ -99,29 +128,50 @@ class NewClubWizard extends StatelessWidget {
                         side: const BorderSide(color: AdminColors.inputBorder),
                         backgroundColor: Colors.white,
                         foregroundColor: AdminColors.textBase,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                        textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 9,
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       child: const Text('Back'),
                     ),
                   ),
                   if (state.wizardStep == 2)
                     ElevatedButton(
-                      onPressed: state.createClubLoading ? null : state.createClub,
+                      onPressed: state.createClubLoading
+                          ? null
+                          : state.createClub,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: state.accentColor,
                         foregroundColor: Colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 9),
-                        textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 22,
+                          vertical: 9,
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       child: state.createClubLoading
                           ? const SizedBox(
                               width: 14,
                               height: 14,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
                           : const Text('Create Club'),
                     )
@@ -134,9 +184,17 @@ class NewClubWizard extends StatelessWidget {
                           backgroundColor: state.accentColor,
                           foregroundColor: Colors.white,
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 9),
-                          textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 9,
+                          ),
+                          textStyle: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                         child: const Text('Next'),
                       ),
@@ -162,10 +220,17 @@ class _StepIndicator extends StatelessWidget {
     final items = <Widget>[];
     for (var i = 0; i < _labels.length; i++) {
       if (i > 0) {
-        final lineColor = i <= state.wizardStep ? state.accentColor : AdminColors.wizardInactiveBar;
-        items.add(Expanded(
-          child: SizedBox(height: 26, child: Center(child: Container(height: 2, color: lineColor))),
-        ));
+        final lineColor = i <= state.wizardStep
+            ? state.accentColor
+            : AdminColors.wizardInactiveBar;
+        items.add(
+          Expanded(
+            child: SizedBox(
+              height: 26,
+              child: Center(child: Container(height: 2, color: lineColor)),
+            ),
+          ),
+        );
       }
       items.add(_StepDot(index: i, label: _labels[i], state: state));
     }
@@ -177,7 +242,11 @@ class _StepDot extends StatelessWidget {
   final int index;
   final String label;
   final DashboardState state;
-  const _StepDot({required this.index, required this.label, required this.state});
+  const _StepDot({
+    required this.index,
+    required this.label,
+    required this.state,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -187,10 +256,12 @@ class _StepDot extends StatelessWidget {
     final circleBg = done
         ? AdminColors.gold
         : active
-            ? state.accentColor
-            : AdminColors.wizardInactiveBar;
+        ? state.accentColor
+        : AdminColors.wizardInactiveBar;
     final circleColor = isFilled ? Colors.white : AdminColors.textMuted;
-    final labelColor = isFilled ? AdminColors.wizardActiveLabel : AdminColors.wizardTodoLabel;
+    final labelColor = isFilled
+        ? AdminColors.wizardActiveLabel
+        : AdminColors.wizardTodoLabel;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -206,7 +277,11 @@ class _StepDot extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             done ? '✓' : '${index + 1}',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: circleColor),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: circleColor,
+            ),
           ),
         ),
         const SizedBox(height: 6),
@@ -215,7 +290,11 @@ class _StepDot extends StatelessWidget {
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: labelColor),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: labelColor,
+            ),
           ),
         ),
       ],
@@ -273,12 +352,19 @@ class _LogoPicker extends StatelessWidget {
               : Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.add_photo_alternate_outlined, size: 24, color: state.accentColor),
+                    Icon(
+                      Icons.add_photo_alternate_outlined,
+                      size: 24,
+                      color: state.accentColor,
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       'Upload',
                       style: TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.w700, color: state.accentColor),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: state.accentColor,
+                      ),
                     ),
                   ],
                 ),
@@ -308,13 +394,22 @@ class _StepContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Club Logo',
-                          style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                      Text(
+                        'Club Logo',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                       SizedBox(height: 4),
                       Text(
                         'Click the box to upload. Optional — it shows next to the club '
                         'everywhere in the admin and in the member app.',
-                        style: TextStyle(fontSize: 12, color: AdminColors.textMuted, height: 1.45),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AdminColors.textMuted,
+                          height: 1.45,
+                        ),
                       ),
                     ],
                   ),
@@ -334,7 +429,10 @@ class _StepContent extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Club Type', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                const Text(
+                  'Club Type',
+                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                ),
                 const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -348,11 +446,24 @@ class _StepContent extends StatelessWidget {
                       value: state.draft.clubType,
                       isExpanded: true,
                       items: const [
-                        DropdownMenuItem(value: 'rotary', child: Text('Rotary', style: TextStyle(fontSize: 13))),
-                        DropdownMenuItem(value: 'rotaract', child: Text('Rotaract', style: TextStyle(fontSize: 13))),
+                        DropdownMenuItem(
+                          value: 'rotary',
+                          child: Text('Rotary', style: TextStyle(fontSize: 13)),
+                        ),
+                        DropdownMenuItem(
+                          value: 'rotaract',
+                          child: Text(
+                            'Rotaract',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ),
                       ],
                       onChanged: (v) => state.setDraftClubType(v ?? 'rotary'),
-                      icon: const Icon(Icons.keyboard_arrow_down, size: 18, color: AdminColors.textMuted),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 18,
+                        color: AdminColors.textMuted,
+                      ),
                     ),
                   ),
                 ),

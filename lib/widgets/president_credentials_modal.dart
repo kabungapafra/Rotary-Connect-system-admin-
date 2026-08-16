@@ -20,11 +20,19 @@ class PresidentCredentialsModal extends StatelessWidget {
     return ModalScrim(
       child: Container(
         width: 420,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -68,7 +76,11 @@ class PresidentCredentialsModal extends StatelessWidget {
                   const Text(
                     'The PIN is shown only once and cannot be recovered — only reset. '
                     'The president signs in to the club app with the member number (or phone) and this PIN.',
-                    style: TextStyle(fontSize: 12, color: AdminColors.textMuted, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AdminColors.textMuted,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -87,9 +99,17 @@ class PresidentCredentialsModal extends StatelessWidget {
                     backgroundColor: state.accentColor,
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 9),
-                    textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 9,
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   child: const Text('Done'),
                 ),

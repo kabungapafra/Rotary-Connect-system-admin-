@@ -20,7 +20,9 @@ class GapRow extends StatelessWidget {
     final items = <Widget>[];
     for (var i = 0; i < children.length; i++) {
       if (i > 0) items.add(SizedBox(width: gap));
-      items.add(Expanded(flex: flexes != null ? flexes![i] : 1, child: children[i]));
+      items.add(
+        Expanded(flex: flexes != null ? flexes![i] : 1, child: children[i]),
+      );
     }
     // IntrinsicHeight gives the Row a bounded height before `stretch` is
     // applied — without it, a Row inside an unbounded-height ancestor (e.g.

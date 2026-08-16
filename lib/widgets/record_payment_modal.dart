@@ -20,11 +20,19 @@ class RecordPaymentModal extends StatelessWidget {
       onDismiss: state.closePaymentModal,
       child: Container(
         width: 480,
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.92),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.92,
+        ),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: AdminColors.modalShadow, blurRadius: 64, offset: const Offset(0, 24))],
+          boxShadow: [
+            BoxShadow(
+              color: AdminColors.modalShadow,
+              blurRadius: 64,
+              offset: const Offset(0, 24),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -41,7 +49,11 @@ class RecordPaymentModal extends StatelessWidget {
                     right: -4,
                     child: GestureDetector(
                       onTap: state.closePaymentModal,
-                      child: const Icon(Icons.close, size: 19, color: AdminColors.closeIcon),
+                      child: const Icon(
+                        Icons.close,
+                        size: 19,
+                        color: AdminColors.closeIcon,
+                      ),
                     ),
                   ),
                   Column(
@@ -59,7 +71,11 @@ class RecordPaymentModal extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         club.name,
-                        style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.17),
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.17,
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Row(
@@ -128,9 +144,17 @@ class RecordPaymentModal extends StatelessWidget {
                       side: const BorderSide(color: AdminColors.inputBorder),
                       backgroundColor: Colors.white,
                       foregroundColor: AdminColors.textBase,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: const Text('Cancel'),
                   ),
@@ -141,15 +165,26 @@ class RecordPaymentModal extends StatelessWidget {
                       backgroundColor: state.accentColor,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-                      textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 9,
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     child: state.paymentSaving
                         ? const SizedBox(
                             width: 14,
                             height: 14,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Save Payment'),
                   ),
@@ -168,10 +203,17 @@ class RecordPaymentModal extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w600, color: AdminColors.clubInitialsText),
+          style: const TextStyle(
+            fontSize: 10.5,
+            fontWeight: FontWeight.w600,
+            color: AdminColors.clubInitialsText,
+          ),
         ),
         const SizedBox(height: 2),
-        Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+        ),
       ],
     );
   }
