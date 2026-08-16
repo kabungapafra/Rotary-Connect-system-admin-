@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../models.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
-import '../widgets/actions_menu.dart';
 import '../widgets/common.dart';
 import '../widgets/status_badge.dart';
 
@@ -90,10 +89,6 @@ class ClubsView extends StatelessWidget {
                     Expanded(flex: 2, child: TableHeaderCell('Members')),
                     Expanded(flex: 2, child: TableHeaderCell('Next Payment')),
                     Expanded(flex: 2, child: TableHeaderCell('Status')),
-                    Expanded(
-                      flex: 2,
-                      child: TableHeaderCell('Actions', align: TextAlign.right),
-                    ),
                   ],
                 ),
               ),
@@ -130,11 +125,8 @@ class _ClubRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final paymentStyle = paymentStyleFor(club.paymentStatus);
     final activeStyle = clubStyleFor(club.effectiveStatus);
-    final isActive = club.status == 'active';
-    // The whole row opens the club's management screen. The actions menu
-    // stays a child of it rather than being replaced: it's hit-tested
-    // first, so one-off actions (suspend, record payment) are still one
-    // click from the list without opening the club.
+    // The whole row opens the club's management screen, which is where
+    // every per-club action now lives — the row itself carries none.
     return InkWell(
       onTap: () => state.openClubScreen(club.id),
       child: Container(
@@ -214,55 +206,6 @@ class _ClubRow extends StatelessWidget {
                     const StatusBadge(smsOffStyle),
                   ],
                 ],
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: ActionsMenu(
-                  items: [
-                    ActionsMenuItem(
-                      isActive ? 'Suspend Club' : 'Activate Club',
-                      () => state.toggleClubStatus(club.id),
-                      color: isActive
-                          ? AdminColors.overdueColor
-                          : AdminColors.paidColor,
-                    ),
-                    ActionsMenuItem(
-                      club.smsEnabled ? 'Suspend SMS' : 'Activate SMS',
-                      () => state.toggleClubSms(club.id),
-                      color: club.smsEnabled
-                          ? AdminColors.overdueColor
-                          : AdminColors.paidColor,
-                    ),
-                    ActionsMenuItem(
-                      'SMS Preferences…',
-                      () => state.openSmsTypesModal(club.id),
-                    ),
-                    ActionsMenuItem(
-                      'Add Member',
-                      () => state.openAddMemberModal(club.id),
-                    ),
-                    ActionsMenuItem(
-                      'Record Payment',
-                      () => state.openPaymentModal(club.id),
-                    ),
-                    ActionsMenuItem(
-                      'View Statistics',
-                      () => state.openStatsModal(club.id),
-                    ),
-                    ActionsMenuItem(
-                      'Show QR Code',
-                      () => state.openQrModal(club.id),
-                    ),
-                    ActionsMenuItem(
-                      'Delete Club',
-                      () => state.askDeleteClub(club.id),
-                      color: AdminColors.overdueColor,
-                    ),
-                  ],
-                ),
               ),
             ),
           ],
