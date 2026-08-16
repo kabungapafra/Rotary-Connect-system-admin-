@@ -8,6 +8,10 @@ import 'hover_lift.dart';
 const Map<String, List<String>> _pageMeta = {
   'dashboard': ['Dashboard', 'Overview of clubs, members, and system activity'],
   'clubs': ['Club Management', 'Onboard, suspend, and manage Rotary clubs'],
+  // The single-club management screen. Every view must have an entry —
+  // the lookup below is a hard null-check, so a missing key white-screens
+  // the whole dashboard rather than just the topbar.
+  'club': ['Club', 'Usage, problems, and actions for one club'],
   'members': [
     'Member Management',
     'Search, filter, and manage members across clubs',

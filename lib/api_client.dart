@@ -9,8 +9,10 @@ import 'package:http/http.dart' as http;
 
 import 'models.dart';
 
-const String apiBaseUrl =
-    String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8000');
+const String apiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://localhost:8000',
+);
 
 // Long enough to ride out Render's free-tier cold start (~30-60s after the
 // service has been idle), which is far longer than a normal request.
@@ -41,6 +43,62 @@ class ClubStats {
   const ClubStats(this.club, this.attendancePercent);
 }
 
+/// Resource usage for one club, as shown on the club management screen.
+///
+/// [smsSent], [smsFailed] and [errorsTotal] count only activity recorded
+/// after the API started attributing those rows to a club, so they read as
+/// "since tracking began" rather than all-time. [storageBytes] has no such
+/// gap — it was backfilled from R2.
+class ClubUsage {
+  final int membersTotal;
+  final int membersActive;
+  final int membersSuspended;
+  final int smsSent;
+  final int smsFailed;
+  final int storageBytes;
+  final int storagePhotos;
+  final int storageDocuments;
+  final int errorsTotal;
+
+  const ClubUsage({
+    required this.membersTotal,
+    required this.membersActive,
+    required this.membersSuspended,
+    required this.smsSent,
+    required this.smsFailed,
+    required this.storageBytes,
+    required this.storagePhotos,
+    required this.storageDocuments,
+    required this.errorsTotal,
+  });
+
+  factory ClubUsage.fromJson(Map<String, dynamic> json) => ClubUsage(
+    membersTotal: json['members_total'] as int,
+    membersActive: json['members_active'] as int,
+    membersSuspended: json['members_suspended'] as int,
+    smsSent: json['sms_sent'] as int,
+    smsFailed: json['sms_failed'] as int,
+    storageBytes: json['storage_bytes'] as int,
+    storagePhotos: json['storage_photos'] as int,
+    storageDocuments: json['storage_documents'] as int,
+    errorsTotal: json['errors_total'] as int,
+  );
+}
+
+class ClubOverview {
+  final Club club;
+  final int attendancePercent;
+  final ClubUsage usage;
+  final List<ErrorLogEntry> recentErrors;
+
+  const ClubOverview({
+    required this.club,
+    required this.attendancePercent,
+    required this.usage,
+    required this.recentErrors,
+  });
+}
+
 class CreateClubResult {
   final Club club;
   final PresidentCredentials? president;
@@ -66,21 +124,25 @@ class SmsSummary {
   final int failedToday;
   final int sentTotal;
   const SmsSummary(
-      this.enabled, this.sentToday, this.failedToday, this.sentTotal);
+    this.enabled,
+    this.sentToday,
+    this.failedToday,
+    this.sentTotal,
+  );
 }
 
 class ApiClient {
   /// Fire-and-forget ping that wakes a sleeping free-tier backend while the
   /// user is still typing their credentials.
   void warmUp() {
-    http
-        .get(Uri.parse('$apiBaseUrl/health'))
-        .timeout(_requestTimeout)
-        .ignore();
+    http.get(Uri.parse('$apiBaseUrl/health')).timeout(_requestTimeout).ignore();
   }
 
   Future<AdminLoginResult> adminLogin(String email, String password) async {
-    final res = await _post('/admin/auth/login', {'email': email, 'password': password});
+    final res = await _post('/admin/auth/login', {
+      'email': email,
+      'password': password,
+    });
     final admin = res['admin'] as Map<String, dynamic>;
     return AdminLoginResult(
       res['access_token'] as String,
@@ -109,25 +171,21 @@ class ApiClient {
     String presidentPhone = '',
     String presidentDob = '',
   }) async {
-    final res = await _post(
-      '/admin/clubs',
-      {
-        'name': name,
-        'district': district,
-        'location': location,
-        'club_type': clubType,
-        'members_count': membersCount,
-        'fee_amount': feeAmount,
-        'first_payment_date': firstPaymentDate,
-        'next_due_date': nextDueDate,
-        'logo': logo,
-        'president_name': presidentName,
-        'president_email': presidentEmail,
-        'president_phone': presidentPhone,
-        'president_dob': presidentDob,
-      },
-      token: token,
-    );
+    final res = await _post('/admin/clubs', {
+      'name': name,
+      'district': district,
+      'location': location,
+      'club_type': clubType,
+      'members_count': membersCount,
+      'fee_amount': feeAmount,
+      'first_payment_date': firstPaymentDate,
+      'next_due_date': nextDueDate,
+      'logo': logo,
+      'president_name': presidentName,
+      'president_email': presidentEmail,
+      'president_phone': presidentPhone,
+      'president_dob': presidentDob,
+    }, token: token);
     final president = res['president'] as Map<String, dynamic>?;
     return CreateClubResult(
       Club.fromJson(res['club'] as Map<String, dynamic>),
@@ -144,19 +202,23 @@ class ApiClient {
   }
 
   Future<Club> setClubStatus(String token, int clubId, String status) async {
-    final res = await _patch('/admin/clubs/$clubId/status', {'status': status}, token: token);
+    final res = await _patch('/admin/clubs/$clubId/status', {
+      'status': status,
+    }, token: token);
     return Club.fromJson(res);
   }
 
   Future<Club> setClubSmsEnabled(String token, int clubId, bool enabled) async {
-    final res = await _patch(
-        '/admin/clubs/$clubId/sms', {'sms_enabled': enabled}, token: token);
+    final res = await _patch('/admin/clubs/$clubId/sms', {
+      'sms_enabled': enabled,
+    }, token: token);
     return Club.fromJson(res);
   }
 
   Future<List<Club>> setAllClubsSmsEnabled(String token, bool enabled) async {
-    final res =
-        await _patchList('/admin/clubs/sms', {'sms_enabled': enabled}, token: token);
+    final res = await _patchList('/admin/clubs/sms', {
+      'sms_enabled': enabled,
+    }, token: token);
     return res.map((c) => Club.fromJson(c as Map<String, dynamic>)).toList();
   }
 
@@ -165,7 +227,11 @@ class ApiClient {
     int clubId,
     Map<String, bool> smsTypes,
   ) async {
-    final res = await _patch('/admin/clubs/$clubId/sms-types', smsTypes, token: token);
+    final res = await _patch(
+      '/admin/clubs/$clubId/sms-types',
+      smsTypes,
+      token: token,
+    );
     return Club.fromJson(res);
   }
 
@@ -176,11 +242,11 @@ class ApiClient {
     String? datePaid,
     String? nextDue,
   }) async {
-    final res = await _post(
-      '/admin/clubs/$clubId/payment',
-      {'amount': amount, 'date_paid': datePaid, 'next_due': nextDue},
-      token: token,
-    );
+    final res = await _post('/admin/clubs/$clubId/payment', {
+      'amount': amount,
+      'date_paid': datePaid,
+      'next_due': nextDue,
+    }, token: token);
     return Club.fromJson(res);
   }
 
@@ -190,8 +256,10 @@ class ApiClient {
     final http.Response res;
     try {
       res = await http
-          .delete(Uri.parse('$apiBaseUrl/admin/clubs/$clubId'),
-              headers: {'Authorization': 'Bearer $token'})
+          .delete(
+            Uri.parse('$apiBaseUrl/admin/clubs/$clubId'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
           .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
@@ -209,24 +277,43 @@ class ApiClient {
     );
   }
 
+  Future<ClubOverview> fetchClubOverview(String token, int clubId) async {
+    final res = await _get('/admin/clubs/$clubId/overview', token: token);
+    return ClubOverview(
+      club: Club.fromJson(res['club'] as Map<String, dynamic>),
+      attendancePercent: res['attendance_percent'] as int,
+      usage: ClubUsage.fromJson(res['usage'] as Map<String, dynamic>),
+      recentErrors: (res['recent_errors'] as List)
+          .map((e) => ErrorLogEntry.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
   Future<List<Member>> fetchMembers(
     String token, {
     String search = '',
     String club = 'all',
     String status = 'all',
   }) async {
-    final uri = Uri.parse('$apiBaseUrl/admin/members').replace(queryParameters: {
-      'search': search,
-      'club': club,
-      'status_filter': status,
-    });
+    final uri = Uri.parse('$apiBaseUrl/admin/members').replace(
+      queryParameters: {
+        'search': search,
+        'club': club,
+        'status_filter': status,
+      },
+    );
     final res = await _getListUri(uri, token: token);
     return res.map((e) => Member.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<Member> setMemberStatus(String token, int memberId, String status) async {
-    final res =
-        await _patch('/admin/members/$memberId/status', {'status': status}, token: token);
+  Future<Member> setMemberStatus(
+    String token,
+    int memberId,
+    String status,
+  ) async {
+    final res = await _patch('/admin/members/$memberId/status', {
+      'status': status,
+    }, token: token);
     return Member.fromJson(res);
   }
 
@@ -243,19 +330,15 @@ class ApiClient {
     String role = 'Member',
     bool isBoard = false,
   }) async {
-    final res = await _post(
-      '/admin/members',
-      {
-        'club_id': clubId,
-        'name': name,
-        'phone': phone,
-        'email': email,
-        'dob': dob,
-        'role': role,
-        'is_board': isBoard,
-      },
-      token: token,
-    );
+    final res = await _post('/admin/members', {
+      'club_id': clubId,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'dob': dob,
+      'role': role,
+      'is_board': isBoard,
+    }, token: token);
     final member = res['member'] as Map<String, dynamic>;
     return CreateMemberResult(
       id: member['id'] as int,
@@ -267,16 +350,25 @@ class ApiClient {
   }
 
   Future<ResetPasswordResult> resetPassword(String token, int memberId) async {
-    final res = await _post('/admin/members/$memberId/reset-password', null, token: token);
-    return ResetPasswordResult(res['member_name'] as String, res['new_pin'] as String);
+    final res = await _post(
+      '/admin/members/$memberId/reset-password',
+      null,
+      token: token,
+    );
+    return ResetPasswordResult(
+      res['member_name'] as String,
+      res['new_pin'] as String,
+    );
   }
 
   Future<void> deleteMember(String token, int memberId) async {
     final http.Response res;
     try {
       res = await http
-          .delete(Uri.parse('$apiBaseUrl/admin/members/$memberId'),
-              headers: {'Authorization': 'Bearer $token'})
+          .delete(
+            Uri.parse('$apiBaseUrl/admin/members/$memberId'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
           .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
@@ -339,15 +431,21 @@ class ApiClient {
   }
 
   // ── http plumbing ────────────────────────────────────────────────────
-  Future<Map<String, dynamic>> _post(String path, Map<String, dynamic>? body,
-      {String? token}) async {
+  Future<Map<String, dynamic>> _post(
+    String path,
+    Map<String, dynamic>? body, {
+    String? token,
+  }) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) headers['Authorization'] = 'Bearer $token';
     final http.Response res;
     try {
       res = await http
-          .post(Uri.parse('$apiBaseUrl$path'),
-              headers: headers, body: body == null ? null : jsonEncode(body))
+          .post(
+            Uri.parse('$apiBaseUrl$path'),
+            headers: headers,
+            body: body == null ? null : jsonEncode(body),
+          )
           .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
@@ -355,14 +453,21 @@ class ApiClient {
     return _decode(res);
   }
 
-  Future<Map<String, dynamic>> _patch(String path, Map<String, dynamic> body,
-      {String? token}) async {
+  Future<Map<String, dynamic>> _patch(
+    String path,
+    Map<String, dynamic> body, {
+    String? token,
+  }) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) headers['Authorization'] = 'Bearer $token';
     final http.Response res;
     try {
       res = await http
-          .patch(Uri.parse('$apiBaseUrl$path'), headers: headers, body: jsonEncode(body))
+          .patch(
+            Uri.parse('$apiBaseUrl$path'),
+            headers: headers,
+            body: jsonEncode(body),
+          )
           .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');
@@ -370,14 +475,21 @@ class ApiClient {
     return _decode(res);
   }
 
-  Future<List<dynamic>> _patchList(String path, Map<String, dynamic> body,
-      {String? token}) async {
+  Future<List<dynamic>> _patchList(
+    String path,
+    Map<String, dynamic> body, {
+    String? token,
+  }) async {
     final headers = {'Content-Type': 'application/json'};
     if (token != null) headers['Authorization'] = 'Bearer $token';
     final http.Response res;
     try {
       res = await http
-          .patch(Uri.parse('$apiBaseUrl$path'), headers: headers, body: jsonEncode(body))
+          .patch(
+            Uri.parse('$apiBaseUrl$path'),
+            headers: headers,
+            body: jsonEncode(body),
+          )
           .timeout(_requestTimeout);
     } catch (_) {
       throw ApiException('Could not reach the server. Check your connection.');

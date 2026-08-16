@@ -174,7 +174,15 @@ class DashboardState extends ChangeNotifier {
     });
   }
 
-  void _go(String v) => _update(() => view = v);
+  void _go(String v) => _update(() {
+    view = v;
+    // Leaving via the sidebar closes the club management screen too —
+    // otherwise its data lingers and reappears on the next visit to a
+    // different club until the fresh fetch lands.
+    openClubId = null;
+    clubOverview = null;
+    clubOverviewError = null;
+  });
 
   void goDashboard() => _go('dashboard');
   void goClubs() => _go('clubs');
@@ -206,9 +214,11 @@ class DashboardState extends ChangeNotifier {
       monitoringLoading = true;
       healthLatencyMs = null;
     });
-    unawaited(_api.pingHealth().then((ms) {
-      _update(() => healthLatencyMs = ms ?? -1);
-    }));
+    unawaited(
+      _api.pingHealth().then((ms) {
+        _update(() => healthLatencyMs = ms ?? -1);
+      }),
+    );
     try {
       final data = await _api.fetchMonitoring(token);
       _update(() {
@@ -250,34 +260,40 @@ class DashboardState extends ChangeNotifier {
   bool createClubLoading = false;
 
   void openNewClub() => _update(() {
-        newClubOpen = true;
-        wizardStep = 0;
-        draft = ClubDraft();
-      });
+    newClubOpen = true;
+    wizardStep = 0;
+    draft = ClubDraft();
+  });
   void closeNewClub() => _update(() => newClubOpen = false);
-  void nextStep() => _update(() => wizardStep = wizardStep < 2 ? wizardStep + 1 : 2);
-  void prevStep() => _update(() => wizardStep = wizardStep > 0 ? wizardStep - 1 : 0);
+  void nextStep() =>
+      _update(() => wizardStep = wizardStep < 2 ? wizardStep + 1 : 2);
+  void prevStep() =>
+      _update(() => wizardStep = wizardStep > 0 ? wizardStep - 1 : 0);
 
   void setDraftName(String v) => _update(() => draft.name = v);
   void setDraftClubType(String v) => _update(() => draft.clubType = v);
   void setDraftDistrict(String v) => _update(() => draft.district = v);
   void setDraftLocation(String v) => _update(() => draft.location = v);
-  void setDraftPresidentName(String v) => _update(() => draft.presidentName = v);
+  void setDraftPresidentName(String v) =>
+      _update(() => draft.presidentName = v);
   void setDraftEmail(String v) => _update(() => draft.email = v);
   void setDraftPhone(String v) => _update(() => draft.phone = v);
   void setDraftDob(String v) => _update(() => draft.dob = v);
   void setDraftMembers(String v) => _update(() => draft.members = v);
   void setDraftFeeAmount(String v) => _update(() => draft.feeAmount = v);
-  void setDraftFirstPaymentDate(String v) => _update(() => draft.firstPaymentDate = v);
+  void setDraftFirstPaymentDate(String v) =>
+      _update(() => draft.firstPaymentDate = v);
   void setDraftNextDueDate(String v) => _update(() => draft.nextDueDate = v);
-  void setDraftLogo(String? dataUrl) => _update(() => draft.logoDataUrl = dataUrl);
+  void setDraftLogo(String? dataUrl) =>
+      _update(() => draft.logoDataUrl = dataUrl);
 
   bool get nextDisabled => wizardStep == 0 && draft.name.trim().isEmpty;
 
   /// Credentials of the president account just created, shown once in a
   /// modal so the admin can hand them to the Club President.
   PresidentCredentials? presidentCredentials;
-  void dismissPresidentCredentials() => _update(() => presidentCredentials = null);
+  void dismissPresidentCredentials() =>
+      _update(() => presidentCredentials = null);
 
   Future<void> createClub() async {
     final token = authToken;
@@ -293,8 +309,12 @@ class DashboardState extends ChangeNotifier {
         clubType: draft.clubType,
         membersCount: membersNum == 0 ? 10 : membersNum,
         feeAmount: int.tryParse(draft.feeAmount) ?? 0,
-        firstPaymentDate: draft.firstPaymentDate.trim().isEmpty ? null : draft.firstPaymentDate.trim(),
-        nextDueDate: draft.nextDueDate.trim().isEmpty ? null : draft.nextDueDate.trim(),
+        firstPaymentDate: draft.firstPaymentDate.trim().isEmpty
+            ? null
+            : draft.firstPaymentDate.trim(),
+        nextDueDate: draft.nextDueDate.trim().isEmpty
+            ? null
+            : draft.nextDueDate.trim(),
         logo: draft.logoDataUrl,
         presidentName: draft.presidentName.trim(),
         presidentEmail: draft.email.trim(),
@@ -336,10 +356,12 @@ class DashboardState extends ChangeNotifier {
     final q = clubSearch.trim().toLowerCase();
     if (q.isEmpty) return clubs;
     return clubs
-        .where((c) =>
-            c.name.toLowerCase().contains(q) ||
-            c.district.toLowerCase().contains(q) ||
-            c.location.toLowerCase().contains(q))
+        .where(
+          (c) =>
+              c.name.toLowerCase().contains(q) ||
+              c.district.toLowerCase().contains(q) ||
+              c.location.toLowerCase().contains(q),
+        )
         .toList();
   }
 
@@ -356,7 +378,9 @@ class DashboardState extends ChangeNotifier {
     try {
       final updated = await _api.setClubStatus(token, id, nextStatus);
       _update(() => _replaceClub(updated));
-      _toast('${updated.name} ${nextStatus == 'suspended' ? 'suspended' : 'activated'}');
+      _toast(
+        '${updated.name} ${nextStatus == 'suspended' ? 'suspended' : 'activated'}',
+      );
     } on ApiException catch (e) {
       _toast(e.message);
     }
@@ -400,9 +424,9 @@ class DashboardState extends ChangeNotifier {
   }
 
   void closeSmsTypesModal() => _update(() {
-        smsTypesModalClubId = null;
-        smsTypesDraft = null;
-      });
+    smsTypesModalClubId = null;
+    smsTypesDraft = null;
+  });
 
   void toggleSmsTypeDraft(String key) =>
       _update(() => smsTypesDraft?[key] = !(smsTypesDraft?[key] ?? true));
@@ -432,7 +456,8 @@ class DashboardState extends ChangeNotifier {
   bool? confirmBulkSmsEnabled; // null = no confirmation pending
   bool bulkSmsSaving = false;
 
-  void askBulkSms(bool enabled) => _update(() => confirmBulkSmsEnabled = enabled);
+  void askBulkSms(bool enabled) =>
+      _update(() => confirmBulkSmsEnabled = enabled);
   void cancelBulkSms() => _update(() => confirmBulkSmsEnabled = null);
 
   Future<void> confirmBulkSmsAction() async {
@@ -467,7 +492,9 @@ class DashboardState extends ChangeNotifier {
     final club = clubs.firstWhere((c) => c.id == id);
     _update(() {
       paymentModalClubId = id;
-      paymentDraft = PaymentDraft(amount: club.feeAmount > 0 ? club.feeAmount.toString() : '');
+      paymentDraft = PaymentDraft(
+        amount: club.feeAmount > 0 ? club.feeAmount.toString() : '',
+      );
     });
   }
 
@@ -486,8 +513,12 @@ class DashboardState extends ChangeNotifier {
         token,
         id,
         amount: int.tryParse(paymentDraft.amount) ?? 0,
-        datePaid: paymentDraft.datePaid.trim().isEmpty ? null : paymentDraft.datePaid.trim(),
-        nextDue: paymentDraft.nextDue.trim().isEmpty ? null : paymentDraft.nextDue.trim(),
+        datePaid: paymentDraft.datePaid.trim().isEmpty
+            ? null
+            : paymentDraft.datePaid.trim(),
+        nextDue: paymentDraft.nextDue.trim().isEmpty
+            ? null
+            : paymentDraft.nextDue.trim(),
       );
       _update(() {
         _replaceClub(updated);
@@ -552,7 +583,8 @@ class DashboardState extends ChangeNotifier {
   /// so the admin can hand them over — same "shown once, never again"
   /// contract as [presidentCredentials].
   CreateMemberResult? newMemberCredentials;
-  void dismissNewMemberCredentials() => _update(() => newMemberCredentials = null);
+  void dismissNewMemberCredentials() =>
+      _update(() => newMemberCredentials = null);
 
   Club? get addMemberModalClub {
     final id = addMemberModalClubId;
@@ -599,12 +631,20 @@ class DashboardState extends ChangeNotifier {
         phone: phone,
         email: addMemberDraft.email.trim(),
         dob: addMemberDraft.dob.trim(),
-        role: addMemberDraft.role.trim().isEmpty ? 'Member' : addMemberDraft.role.trim(),
+        role: addMemberDraft.role.trim().isEmpty
+            ? 'Member'
+            : addMemberDraft.role.trim(),
       );
       _update(() {
         members.insert(
           0,
-          Member(id: result.id, name: result.name, phone: result.phone, club: club.name, status: 'active'),
+          Member(
+            id: result.id,
+            name: result.name,
+            phone: result.phone,
+            club: club.name,
+            status: 'active',
+          ),
         );
         club.members += 1;
         addMemberSaving = false;
@@ -650,6 +690,74 @@ class DashboardState extends ChangeNotifier {
   void openQrModal(int id) => _update(() => qrModalClubId = id);
   void closeQrModal() => _update(() => qrModalClubId = null);
 
+  // ── club management screen ──────────────────────────────────────────
+  // A full view rather than a modal (view = 'club'), because it carries
+  // the club's whole management surface — usage, errors and every action
+  // — which is more than a dialog can hold without becoming a scroll trap.
+  int? openClubId;
+  ClubOverview? clubOverview;
+  bool clubOverviewLoading = false;
+  String? clubOverviewError;
+
+  /// The club the management screen is showing, re-read from [clubs] so it
+  /// reflects edits made from the screen itself (suspend, SMS toggle, …)
+  /// without waiting for a fresh overview fetch. Null if it was deleted.
+  Club? get openClub {
+    final id = openClubId;
+    if (id == null) return null;
+    final matches = clubs.where((c) => c.id == id);
+    return matches.isEmpty ? null : matches.first;
+  }
+
+  Future<void> openClubScreen(int id) async {
+    _update(() {
+      openClubId = id;
+      view = 'club';
+      clubOverview = null;
+      clubOverviewError = null;
+      clubOverviewLoading = true;
+    });
+    await _loadClubOverview(id);
+  }
+
+  Future<void> _loadClubOverview(int id) async {
+    final token = authToken;
+    if (token == null) {
+      _update(() => clubOverviewLoading = false);
+      return;
+    }
+    try {
+      final overview = await _api.fetchClubOverview(token, id);
+      // Guard against a slow response landing after the admin has already
+      // navigated to a different club (or back to the list).
+      if (openClubId != id) return;
+      _update(() {
+        clubOverview = overview;
+        clubOverviewLoading = false;
+      });
+    } on ApiException catch (e) {
+      if (openClubId != id) return;
+      _update(() {
+        clubOverviewLoading = false;
+        clubOverviewError = e.message;
+      });
+    }
+  }
+
+  /// Re-fetch the open club's figures after an action changed them.
+  Future<void> refreshClubOverview() async {
+    final id = openClubId;
+    if (id == null) return;
+    await _loadClubOverview(id);
+  }
+
+  void closeClubScreen() => _update(() {
+    openClubId = null;
+    clubOverview = null;
+    clubOverviewError = null;
+    view = 'clubs';
+  });
+
   // ── members ─────────────────────────────────────────────────────────
   String memberSearch = '';
   String memberClubFilter = 'all';
@@ -672,14 +780,17 @@ class DashboardState extends ChangeNotifier {
     try {
       final updated = await _api.setMemberStatus(token, id, nextStatus);
       _update(() => _replaceMember(updated));
-      _toast('${updated.name} ${nextStatus == 'suspended' ? 'suspended' : 'reactivated'}');
+      _toast(
+        '${updated.name} ${nextStatus == 'suspended' ? 'suspended' : 'reactivated'}',
+      );
     } on ApiException catch (e) {
       _toast(e.message);
     }
   }
 
   ResetPasswordResult? resetPasswordResult;
-  void dismissResetPasswordResult() => _update(() => resetPasswordResult = null);
+  void dismissResetPasswordResult() =>
+      _update(() => resetPasswordResult = null);
 
   Future<void> resetPassword(int id) async {
     final token = authToken;
@@ -697,8 +808,12 @@ class DashboardState extends ChangeNotifier {
     if (token == null) return;
     try {
       final a = await _api.fetchMemberActivity(token, id);
-      final suffix = a.lastCheckIn != null ? ', last on ${a.lastCheckIn}' : ' yet';
-      _toast('${a.memberName}: ${a.checkInCount} check-in${a.checkInCount == 1 ? '' : 's'}$suffix');
+      final suffix = a.lastCheckIn != null
+          ? ', last on ${a.lastCheckIn}'
+          : ' yet';
+      _toast(
+        '${a.memberName}: ${a.checkInCount} check-in${a.checkInCount == 1 ? '' : 's'}$suffix',
+      );
     } on ApiException catch (e) {
       _toast(e.message);
     }
@@ -746,7 +861,8 @@ class DashboardState extends ChangeNotifier {
   int get totalClubs => clubs.length;
   int get totalMembers => clubs.fold(0, (sum, c) => sum + c.members);
   int get activeClubs => clubs.where((c) => c.status == 'active').length;
-  int get activeMembersCount => members.where((m) => m.status == 'active').length;
+  int get activeMembersCount =>
+      members.where((m) => m.status == 'active').length;
 
   List<Club> get recentClubs => clubs.take(5).toList();
   List<String> get clubNameOptions => clubs.map((c) => c.name).toList();
@@ -754,9 +870,12 @@ class DashboardState extends ChangeNotifier {
   List<Member> get filteredMembers {
     final q = memberSearch.trim().toLowerCase();
     return members.where((m) {
-      final matchesQ = q.isEmpty || m.name.toLowerCase().contains(q) || m.phone.contains(q);
-      final matchesClub = memberClubFilter == 'all' || m.club == memberClubFilter;
-      final matchesStatus = memberStatusFilter == 'all' || m.status == memberStatusFilter;
+      final matchesQ =
+          q.isEmpty || m.name.toLowerCase().contains(q) || m.phone.contains(q);
+      final matchesClub =
+          memberClubFilter == 'all' || m.club == memberClubFilter;
+      final matchesStatus =
+          memberStatusFilter == 'all' || m.status == memberStatusFilter;
       return matchesQ && matchesClub && matchesStatus;
     }).toList();
   }
@@ -778,22 +897,29 @@ class DashboardState extends ChangeNotifier {
         .toList();
   }
 
-  String get mrrFormatted => formatUgx(clubs.fold(0, (sum, c) => sum + c.feeAmount));
+  String get mrrFormatted =>
+      formatUgx(clubs.fold(0, (sum, c) => sum + c.feeAmount));
 
   List<KpiData> get kpis => [
-        KpiData('Total Clubs', '$totalClubs', '$activeClubs active'),
-        KpiData('Total Members', commas(totalMembers), ''),
-        KpiData("Today's Meetings", '${analytics?.meetingsToday ?? 0}', ''),
-        KpiData('Check-ins Today', '${analytics?.checkinsToday ?? 0}', ''),
-        KpiData('Active Members', '${analytics?.activeMembers ?? activeMembersCount}', ''),
-      ];
+    KpiData('Total Clubs', '$totalClubs', '$activeClubs active'),
+    KpiData('Total Members', commas(totalMembers), ''),
+    KpiData("Today's Meetings", '${analytics?.meetingsToday ?? 0}', ''),
+    KpiData('Check-ins Today', '${analytics?.checkinsToday ?? 0}', ''),
+    KpiData(
+      'Active Members',
+      '${analytics?.activeMembers ?? activeMembersCount}',
+      '',
+    ),
+  ];
 
   // Attendance trend and "new clubs this month" need cross-club check-in
   // history the client doesn't have loaded, so those come from the
   // /admin/analytics endpoint rather than being derived client-side.
-  List<int> get attendanceVals => analytics?.attendanceValues ?? const [0, 0, 0, 0, 0, 0];
+  List<int> get attendanceVals =>
+      analytics?.attendanceValues ?? const [0, 0, 0, 0, 0, 0];
   List<String> get attendanceLabels =>
-      analytics?.attendanceLabels ?? const ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6'];
+      analytics?.attendanceLabels ??
+      const ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6'];
   int get newClubsThisMonth => analytics?.newClubsThisMonth ?? 0;
   int get avgAttendancePercent => analytics?.avgAttendancePercent ?? 0;
 

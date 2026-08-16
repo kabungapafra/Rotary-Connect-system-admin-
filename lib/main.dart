@@ -7,6 +7,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'screens/admin_login_screen.dart';
 import 'screens/analytics_view.dart';
 import 'screens/billing_view.dart';
+import 'screens/club_detail_view.dart';
 import 'screens/clubs_view.dart';
 import 'screens/dashboard_view.dart';
 import 'screens/health_view.dart';
@@ -103,13 +104,18 @@ class AdminShell extends StatelessWidget {
                       child: state.dataLoading && state.clubs.isEmpty
                           ? const Center(child: CircularProgressIndicator())
                           : state.dataError != null && state.clubs.isEmpty
-                              ? _LoadErrorView(message: state.dataError!)
-                              : Scrollbar(
-                                  child: SingleChildScrollView(
-                                    padding: const EdgeInsets.fromLTRB(32, 24, 32, 40),
-                                    child: _CurrentView(view: state.view),
-                                  ),
+                          ? _LoadErrorView(message: state.dataError!)
+                          : Scrollbar(
+                              child: SingleChildScrollView(
+                                padding: const EdgeInsets.fromLTRB(
+                                  32,
+                                  24,
+                                  32,
+                                  40,
                                 ),
+                                child: _CurrentView(view: state.view),
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -119,9 +125,11 @@ class AdminShell extends StatelessWidget {
           if (state.newClubOpen) const NewClubWizard(),
           if (state.paymentModalClubId != null) const RecordPaymentModal(),
           if (state.statsModalClubId != null) const StatsModal(),
-          if (state.presidentCredentials != null) const PresidentCredentialsModal(),
+          if (state.presidentCredentials != null)
+            const PresidentCredentialsModal(),
           if (state.addMemberModalClubId != null) const AddMemberModal(),
-          if (state.newMemberCredentials != null) const MemberCredentialsModal(),
+          if (state.newMemberCredentials != null)
+            const MemberCredentialsModal(),
           if (state.resetPasswordResult != null) const ResetPasswordModal(),
           if (state.confirmDeleteClubId != null) const DeleteClubModal(),
           if (state.confirmBulkSmsEnabled != null) const BulkSmsModal(),
@@ -148,12 +156,19 @@ class _LoadErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_outlined, size: 36, color: AdminColors.textMuted),
+            const Icon(
+              Icons.cloud_off_outlined,
+              size: 36,
+              color: AdminColors.textMuted,
+            ),
             const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13.5, color: AdminColors.overdueColor),
+              style: const TextStyle(
+                fontSize: 13.5,
+                color: AdminColors.overdueColor,
+              ),
             ),
             const SizedBox(height: 18),
             Row(
@@ -192,6 +207,8 @@ class _CurrentView extends StatelessWidget {
     switch (view) {
       case 'clubs':
         return const ClubsView();
+      case 'club':
+        return const ClubDetailView();
       case 'members':
         return const MembersView();
       case 'billing':

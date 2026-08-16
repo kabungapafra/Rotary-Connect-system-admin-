@@ -35,7 +35,9 @@ class Club {
   /// 'suspended'. Self-heals back to 'active' once a payment moves
   /// paymentStatus off 'overdue' — no separate unsuspend action needed.
   String get effectiveStatus =>
-      (status == 'suspended' || paymentStatus == 'overdue') ? 'suspended' : 'active';
+      (status == 'suspended' || paymentStatus == 'overdue')
+      ? 'suspended'
+      : 'active';
 
   Club({
     required this.id,
@@ -56,24 +58,22 @@ class Club {
   }) : smsTypes = smsTypes ?? {for (final k in smsTypeLabels.keys) k: true};
 
   factory Club.fromJson(Map<String, dynamic> json) => Club(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        district: json['district'] as String,
-        location: json['location'] as String,
-        members: json['members_count'] as int,
-        status: json['status'] as String,
-        clubType: json['club_type'] as String? ?? 'rotary',
-        feeAmount: json['fee_amount'] as int,
-        lastPaidDate: json['last_paid_date'] as String? ?? '—',
-        nextDueDate: json['next_due_date'] as String? ?? '—',
-        paymentStatus: json['payment_status'] as String,
-        joined: json['joined'] as String,
-        logo: json['logo'] as String?,
-        smsEnabled: json['sms_enabled'] as bool? ?? true,
-        smsTypes: {
-          for (final k in smsTypeLabels.keys) k: json[k] as bool? ?? true,
-        },
-      );
+    id: json['id'] as int,
+    name: json['name'] as String,
+    district: json['district'] as String,
+    location: json['location'] as String,
+    members: json['members_count'] as int,
+    status: json['status'] as String,
+    clubType: json['club_type'] as String? ?? 'rotary',
+    feeAmount: json['fee_amount'] as int,
+    lastPaidDate: json['last_paid_date'] as String? ?? '—',
+    nextDueDate: json['next_due_date'] as String? ?? '—',
+    paymentStatus: json['payment_status'] as String,
+    joined: json['joined'] as String,
+    logo: json['logo'] as String?,
+    smsEnabled: json['sms_enabled'] as bool? ?? true,
+    smsTypes: {for (final k in smsTypeLabels.keys) k: json[k] as bool? ?? true},
+  );
 }
 
 /// A member of a club, managed platform-wide by the system admin.
@@ -93,12 +93,12 @@ class Member {
   });
 
   factory Member.fromJson(Map<String, dynamic> json) => Member(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        phone: json['phone'] as String,
-        club: json['club'] as String,
-        status: json['status'] as String,
-      );
+    id: json['id'] as int,
+    name: json['name'] as String,
+    phone: json['phone'] as String,
+    club: json['club'] as String,
+    status: json['status'] as String,
+  );
 }
 
 /// Working copy of the "Onboard New Club" wizard fields.
@@ -126,7 +126,13 @@ class PresidentCredentials {
   final String phone;
   final String memberNumber;
   final String pin;
-  const PresidentCredentials(this.id, this.name, this.phone, this.memberNumber, this.pin);
+  const PresidentCredentials(
+    this.id,
+    this.name,
+    this.phone,
+    this.memberNumber,
+    this.pin,
+  );
 }
 
 /// Working copy of the "Add Member" modal fields.
@@ -186,10 +192,10 @@ class LegendItem {
   const LegendItem(this.name, this.count, this.colorKey);
 
   factory LegendItem.fromJson(Map<String, dynamic> json) => LegendItem(
-        json['name'] as String,
-        json['count'] as int,
-        json['color_key'] as String,
-      );
+    json['name'] as String,
+    json['count'] as int,
+    json['color_key'] as String,
+  );
 }
 
 /// Aggregate stats backing the Dashboard and Analytics views.
@@ -227,27 +233,27 @@ class AnalyticsData {
   });
 
   factory AnalyticsData.fromJson(Map<String, dynamic> json) => AnalyticsData(
-        totalClubs: json['total_clubs'] as int,
-        activeClubs: json['active_clubs'] as int,
-        totalMembers: json['total_members'] as int,
-        activeMembers: json['active_members'] as int,
-        newClubsThisMonth: json['new_clubs_this_month'] as int,
-        avgAttendancePercent: json['avg_attendance_percent'] as int,
-        meetingsToday: json['meetings_today'] as int? ?? 0,
-        checkinsToday: json['checkins_today'] as int? ?? 0,
-        mrrFormatted: json['mrr_formatted'] as String,
-        paymentLegend: (json['payment_legend'] as List)
-            .map((e) => LegendItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        attendanceLabels: (json['attendance_labels'] as List).cast<String>(),
-        attendanceValues: (json['attendance_values'] as List).cast<int>(),
-        clubAttendance: (json['club_attendance'] as List<dynamic>? ?? const [])
-            .map((e) => ClubAttendanceItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        engagement: json['engagement'] == null
-            ? const EngagementData()
-            : EngagementData.fromJson(json['engagement'] as Map<String, dynamic>),
-      );
+    totalClubs: json['total_clubs'] as int,
+    activeClubs: json['active_clubs'] as int,
+    totalMembers: json['total_members'] as int,
+    activeMembers: json['active_members'] as int,
+    newClubsThisMonth: json['new_clubs_this_month'] as int,
+    avgAttendancePercent: json['avg_attendance_percent'] as int,
+    meetingsToday: json['meetings_today'] as int? ?? 0,
+    checkinsToday: json['checkins_today'] as int? ?? 0,
+    mrrFormatted: json['mrr_formatted'] as String,
+    paymentLegend: (json['payment_legend'] as List)
+        .map((e) => LegendItem.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    attendanceLabels: (json['attendance_labels'] as List).cast<String>(),
+    attendanceValues: (json['attendance_values'] as List).cast<int>(),
+    clubAttendance: (json['club_attendance'] as List<dynamic>? ?? const [])
+        .map((e) => ClubAttendanceItem.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    engagement: json['engagement'] == null
+        ? const EngagementData()
+        : EngagementData.fromJson(json['engagement'] as Map<String, dynamic>),
+  );
 }
 
 class ClubAttendanceItem {
@@ -263,7 +269,8 @@ class ClubAttendanceItem {
     required this.memberCount,
   });
 
-  factory ClubAttendanceItem.fromJson(Map<String, dynamic> json) => ClubAttendanceItem(
+  factory ClubAttendanceItem.fromJson(Map<String, dynamic> json) =>
+      ClubAttendanceItem(
         clubName: json['club_name'] as String,
         attendancePercent: json['attendance_percent'] as int,
         meetingsHeld: json['meetings_held'] as int,
@@ -285,11 +292,11 @@ class EngagementData {
   });
 
   factory EngagementData.fromJson(Map<String, dynamic> json) => EngagementData(
-        checkins30d: json['checkins_30d'] as int? ?? 0,
-        guestVisits30d: json['guest_visits_30d'] as int? ?? 0,
-        apologies30d: json['apologies_30d'] as int? ?? 0,
-        galleryUploads30d: json['gallery_uploads_30d'] as int? ?? 0,
-      );
+    checkins30d: json['checkins_30d'] as int? ?? 0,
+    guestVisits30d: json['guest_visits_30d'] as int? ?? 0,
+    apologies30d: json['apologies_30d'] as int? ?? 0,
+    galleryUploads30d: json['gallery_uploads_30d'] as int? ?? 0,
+  );
 }
 
 /// One unhandled API exception — no third-party error tracker (Sentry,
@@ -313,13 +320,13 @@ class ErrorLogEntry {
   });
 
   factory ErrorLogEntry.fromJson(Map<String, dynamic> json) => ErrorLogEntry(
-        id: json['id'] as int,
-        method: json['method'] as String,
-        path: json['path'] as String,
-        exceptionType: json['exception_type'] as String,
-        message: json['message'] as String,
-        createdAt: DateTime.parse(json['created_at'] as String),
-      );
+    id: json['id'] as int,
+    method: json['method'] as String,
+    path: json['path'] as String,
+    exceptionType: json['exception_type'] as String,
+    message: json['message'] as String,
+    createdAt: DateTime.parse(json['created_at'] as String),
+  );
 }
 
 class MemberEventEntry {
@@ -341,7 +348,8 @@ class MemberEventEntry {
     required this.createdAt,
   });
 
-  factory MemberEventEntry.fromJson(Map<String, dynamic> json) => MemberEventEntry(
+  factory MemberEventEntry.fromJson(Map<String, dynamic> json) =>
+      MemberEventEntry(
         id: json['id'] as int,
         kind: json['kind'] as String,
         identifier: json['identifier'] as String,
@@ -369,7 +377,8 @@ class SlowRequestEntry {
     required this.createdAt,
   });
 
-  factory SlowRequestEntry.fromJson(Map<String, dynamic> json) => SlowRequestEntry(
+  factory SlowRequestEntry.fromJson(Map<String, dynamic> json) =>
+      SlowRequestEntry(
         id: json['id'] as int,
         method: json['method'] as String,
         path: json['path'] as String,
@@ -393,21 +402,25 @@ class MonitoringData {
   });
 
   factory MonitoringData.fromJson(Map<String, dynamic> json) => MonitoringData(
-        memberEvents: (json['member_events'] as List<dynamic>)
-            .map((e) => MemberEventEntry.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        slowRequests: (json['slow_requests'] as List<dynamic>)
-            .map((e) => SlowRequestEntry.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        eventsToday: json['events_today'] as int,
-        slowToday: json['slow_today'] as int,
-      );
+    memberEvents: (json['member_events'] as List<dynamic>)
+        .map((e) => MemberEventEntry.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    slowRequests: (json['slow_requests'] as List<dynamic>)
+        .map((e) => SlowRequestEntry.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    eventsToday: json['events_today'] as int,
+    slowToday: json['slow_today'] as int,
+  );
 }
 
 String initialsFor(String name) {
-  final stripped =
-      name.replaceFirst(RegExp(r'^Rotary Club (of )?', caseSensitive: false), '').trim();
-  final words = stripped.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+  final stripped = name
+      .replaceFirst(RegExp(r'^Rotary Club (of )?', caseSensitive: false), '')
+      .trim();
+  final words = stripped
+      .split(RegExp(r'\s+'))
+      .where((w) => w.isNotEmpty)
+      .toList();
   return words.take(2).map((w) => w[0]).join().toUpperCase();
 }
 
@@ -427,3 +440,19 @@ String commas(int n) {
 }
 
 String formatUgx(int amount) => 'UGX ${commas(amount)}';
+
+/// Byte count as a short human-readable size ("4.2 MB"). Uses 1024-based
+/// units, matching how object storage reports usage. Whole numbers below
+/// 10 keep one decimal so small libraries don't all collapse to "1 MB".
+String formatBytes(int bytes) {
+  if (bytes < 1024) return '$bytes B';
+  const units = ['KB', 'MB', 'GB', 'TB'];
+  double value = bytes / 1024;
+  int unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit++;
+  }
+  final digits = value < 10 ? 1 : 0;
+  return '${value.toStringAsFixed(digits)} ${units[unit]}';
+}
