@@ -85,6 +85,172 @@ class ClubUsage {
   );
 }
 
+class DuesMember {
+  final int memberId;
+  final String name;
+  final String role;
+  final bool paid;
+  const DuesMember({
+    required this.memberId,
+    required this.name,
+    required this.role,
+    required this.paid,
+  });
+
+  factory DuesMember.fromJson(Map<String, dynamic> j) => DuesMember(
+    memberId: j['member_id'] as int,
+    name: j['name'] as String,
+    role: j['role'] as String,
+    paid: j['paid'] as bool,
+  );
+}
+
+class ClubTransaction {
+  final int id;
+  final String kind; // income | expense
+  final String label;
+  final int amount;
+  final DateTime createdAt;
+  const ClubTransaction({
+    required this.id,
+    required this.kind,
+    required this.label,
+    required this.amount,
+    required this.createdAt,
+  });
+
+  factory ClubTransaction.fromJson(Map<String, dynamic> j) => ClubTransaction(
+    id: j['id'] as int,
+    kind: j['kind'] as String,
+    label: j['label'] as String,
+    amount: j['amount'] as int,
+    createdAt: DateTime.parse(j['created_at'] as String),
+  );
+}
+
+class ClubFinances {
+  final int duesAmount;
+  final String duesPeriod;
+  final String duesPeriodLabel;
+  final int duesCollected;
+  final int duesOutstanding;
+  final int totalIncome;
+  final int totalExpenses;
+  final int duesPaidCount;
+  final int duesUnpaidCount;
+  final List<DuesMember> dues;
+  final List<ClubTransaction> recentTransactions;
+
+  const ClubFinances({
+    required this.duesAmount,
+    required this.duesPeriod,
+    required this.duesPeriodLabel,
+    required this.duesCollected,
+    required this.duesOutstanding,
+    required this.totalIncome,
+    required this.totalExpenses,
+    required this.duesPaidCount,
+    required this.duesUnpaidCount,
+    required this.dues,
+    required this.recentTransactions,
+  });
+
+  factory ClubFinances.fromJson(Map<String, dynamic> j) {
+    final s = j['summary'] as Map<String, dynamic>;
+    return ClubFinances(
+      duesAmount: s['dues_amount'] as int,
+      duesPeriod: s['dues_period'] as String,
+      duesPeriodLabel: s['dues_period_label'] as String,
+      duesCollected: s['dues_collected'] as int,
+      duesOutstanding: s['dues_outstanding'] as int,
+      totalIncome: s['total_income'] as int,
+      totalExpenses: s['total_expenses'] as int,
+      duesPaidCount: j['dues_paid_count'] as int,
+      duesUnpaidCount: j['dues_unpaid_count'] as int,
+      dues: (j['dues'] as List)
+          .map((e) => DuesMember.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      recentTransactions: (j['recent_transactions'] as List)
+          .map((e) => ClubTransaction.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+class ClubEventOversight {
+  final int id;
+  final String name;
+  final String meta;
+  final String dow;
+  final DateTime? eventDate;
+  final int rsvpCount;
+  final bool isUpcoming;
+  final bool canCancel;
+
+  const ClubEventOversight({
+    required this.id,
+    required this.name,
+    required this.meta,
+    required this.dow,
+    required this.eventDate,
+    required this.rsvpCount,
+    required this.isUpcoming,
+    required this.canCancel,
+  });
+
+  factory ClubEventOversight.fromJson(Map<String, dynamic> j) =>
+      ClubEventOversight(
+        id: j['id'] as int,
+        name: j['name'] as String,
+        meta: j['meta'] as String,
+        dow: j['dow'] as String,
+        eventDate: j['event_date'] == null
+            ? null
+            : DateTime.parse(j['event_date'] as String),
+        rsvpCount: j['rsvp_count'] as int,
+        isUpcoming: j['is_upcoming'] as bool,
+        canCancel: j['can_cancel'] as bool,
+      );
+}
+
+class AuditEntry {
+  final int id;
+  final String actorEmail;
+  final String action;
+  final String subject;
+  final String detail;
+  final DateTime createdAt;
+
+  const AuditEntry({
+    required this.id,
+    required this.actorEmail,
+    required this.action,
+    required this.subject,
+    required this.detail,
+    required this.createdAt,
+  });
+
+  factory AuditEntry.fromJson(Map<String, dynamic> j) => AuditEntry(
+    id: j['id'] as int,
+    actorEmail: j['actor_email'] as String,
+    action: j['action'] as String,
+    subject: j['subject'] as String,
+    detail: j['detail'] as String,
+    createdAt: DateTime.parse(j['created_at'] as String),
+  );
+}
+
+class BroadcastResult {
+  final int recipients;
+  final int devices;
+  final bool delivered;
+  const BroadcastResult({
+    required this.recipients,
+    required this.devices,
+    required this.delivered,
+  });
+}
+
 /// One of a club's three key officers. Null on [ClubOverview] when nobody
 /// holds that post — a vacancy the screen shows rather than hides.
 class ClubOfficer {
@@ -331,6 +497,64 @@ class ApiClient {
           .map((e) => ErrorLogEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
+  }
+
+  Future<ClubFinances> fetchClubFinances(String token, int clubId) async {
+    final res = await _get('/admin/clubs/$clubId/finances', token: token);
+    return ClubFinances.fromJson(res);
+  }
+
+  Future<List<ClubEventOversight>> fetchClubEvents(
+    String token,
+    int clubId,
+  ) async {
+    final res = await _getList('/admin/clubs/$clubId/events', token: token);
+    return res
+        .map((e) => ClubEventOversight.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<AuditEntry>> fetchClubAudit(String token, int clubId) async {
+    final res = await _getList('/admin/clubs/$clubId/audit', token: token);
+    return res
+        .map((e) => AuditEntry.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<BroadcastResult> broadcastToClub(
+    String token,
+    int clubId, {
+    required String title,
+    required String body,
+    required String audience,
+  }) async {
+    final res = await _post('/admin/clubs/$clubId/broadcast', {
+      'title': title,
+      'body': body,
+      'audience': audience,
+    }, token: token);
+    return BroadcastResult(
+      recipients: res['recipients'] as int,
+      devices: res['devices'] as int,
+      delivered: res['delivered'] as bool,
+    );
+  }
+
+  Future<void> cancelClubEvent(String token, int clubId, int eventId) async {
+    final http.Response res;
+    try {
+      res = await http
+          .delete(
+            Uri.parse('$apiBaseUrl/admin/clubs/$clubId/events/$eventId'),
+            headers: {'Authorization': 'Bearer $token'},
+          )
+          .timeout(_requestTimeout);
+    } catch (_) {
+      throw ApiException('Could not reach the server. Check your connection.');
+    }
+    if (res.statusCode >= 400) {
+      throw ApiException(_errorDetail(res));
+    }
   }
 
   Future<List<Member>> fetchMembers(

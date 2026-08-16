@@ -182,6 +182,9 @@ class DashboardState extends ChangeNotifier {
     openClubId = null;
     clubOverview = null;
     clubOverviewError = null;
+    clubFinances = null;
+    clubEvents = [];
+    clubAudit = [];
   });
 
   void goDashboard() => _go('dashboard');
@@ -709,6 +712,12 @@ class DashboardState extends ChangeNotifier {
     return matches.isEmpty ? null : matches.first;
   }
 
+  // Each panel loads independently rather than through one fat response, so
+  // a slow or failing finance query can't blank the whole screen.
+  ClubFinances? clubFinances;
+  List<ClubEventOversight> clubEvents = [];
+  List<AuditEntry> clubAudit = [];
+
   Future<void> openClubScreen(int id) async {
     _update(() {
       openClubId = id;
@@ -716,8 +725,90 @@ class DashboardState extends ChangeNotifier {
       clubOverview = null;
       clubOverviewError = null;
       clubOverviewLoading = true;
+      clubFinances = null;
+      clubEvents = [];
+      clubAudit = [];
     });
     await _loadClubOverview(id);
+    unawaited(_loadClubPanels(id));
+  }
+
+  Future<void> _loadClubPanels(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    // Best-effort and independent: a panel that fails leaves its own section
+    // empty instead of taking the others down with it.
+    await Future.wait([
+      _api
+          .fetchClubFinances(token, id)
+          .then((f) {
+            if (openClubId == id) _update(() => clubFinances = f);
+          })
+          .catchError((_) {}),
+      _api
+          .fetchClubEvents(token, id)
+          .then((e) {
+            if (openClubId == id) _update(() => clubEvents = e);
+          })
+          .catchError((_) {}),
+      _api
+          .fetchClubAudit(token, id)
+          .then((a) {
+            if (openClubId == id) _update(() => clubAudit = a);
+          })
+          .catchError((_) {}),
+    ]);
+  }
+
+  Future<void> cancelClubEvent(int eventId) async {
+    final token = authToken;
+    final id = openClubId;
+    if (token == null || id == null) return;
+    try {
+      await _api.cancelClubEvent(token, id, eventId);
+      _toast('Event cancelled.');
+      await _loadClubPanels(id);
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  bool broadcastSending = false;
+
+  Future<void> sendClubBroadcast({
+    required String title,
+    required String body,
+    required String audience,
+  }) async {
+    final token = authToken;
+    final id = openClubId;
+    if (token == null || id == null) return;
+    _update(() => broadcastSending = true);
+    try {
+      final result = await _api.broadcastToClub(
+        token,
+        id,
+        title: title,
+        body: body,
+        audience: audience,
+      );
+      _update(() => broadcastSending = false);
+      // Report what actually happened: push is silently disabled without
+      // Firebase credentials, so "sent" would be a lie in that case.
+      if (result.devices == 0) {
+        _toast('Nobody to notify — no member of this club has the app.');
+      } else if (!result.delivered) {
+        _toast('Push is not configured, so nothing was sent.');
+      } else {
+        _toast(
+          'Sent to ${result.recipients} member(s) on ${result.devices} device(s).',
+        );
+      }
+      await _loadClubPanels(id);
+    } on ApiException catch (e) {
+      _update(() => broadcastSending = false);
+      _toast(e.message);
+    }
   }
 
   Future<void> _loadClubOverview(int id) async {

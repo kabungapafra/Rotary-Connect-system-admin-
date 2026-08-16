@@ -441,6 +441,28 @@ String commas(int n) {
 
 String formatUgx(int amount) => 'UGX ${commas(amount)}';
 
+const _monthAbbr = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
+/// "06 Sep 2026" — the same shape the backend already formats club dates
+/// into, so dates the dashboard formats itself don't read differently from
+/// the ones it is handed. Numeric D/M/Y is deliberately avoided: it reads
+/// as a different date to a US audience.
+String formatDate(DateTime d) =>
+    '${d.day.toString().padLeft(2, '0')} ${_monthAbbr[d.month - 1]} ${d.year}';
+
 /// Byte count as a short human-readable size ("4.2 MB"). Uses 1024-based
 /// units, matching how object storage reports usage. Whole numbers below
 /// 10 keep one decimal so small libraries don't all collapse to "1 MB".

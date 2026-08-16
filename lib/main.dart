@@ -82,8 +82,26 @@ class AdminApp extends StatelessWidget {
   }
 }
 
-class AdminShell extends StatelessWidget {
+class AdminShell extends StatefulWidget {
   const AdminShell({super.key});
+
+  @override
+  State<AdminShell> createState() => _AdminShellState();
+}
+
+class _AdminShellState extends State<AdminShell> {
+  // Shared by the Scrollbar and the ScrollView it decorates. Without an
+  // explicit controller the Scrollbar falls back to the PrimaryScrollController,
+  // which a SingleChildScrollView does not attach to on web/desktop — so the
+  // scrollbar had no ScrollPosition and threw as soon as a view grew tall
+  // enough to actually need one.
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +124,9 @@ class AdminShell extends StatelessWidget {
                           : state.dataError != null && state.clubs.isEmpty
                           ? _LoadErrorView(message: state.dataError!)
                           : Scrollbar(
+                              controller: _scrollController,
                               child: SingleChildScrollView(
+                                controller: _scrollController,
                                 padding: const EdgeInsets.fromLTRB(
                                   32,
                                   24,

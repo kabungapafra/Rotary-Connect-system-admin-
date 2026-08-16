@@ -58,6 +58,17 @@ class ClubDetailView extends StatelessWidget {
           const SizedBox(height: 18),
           _ActionsCard(club: club, state: state),
           const SizedBox(height: 18),
+          _FinancesCard(
+            finances: state.clubFinances,
+            accent: state.accentColor,
+          ),
+          const SizedBox(height: 18),
+          _EventsCard(events: state.clubEvents, state: state),
+          const SizedBox(height: 18),
+          _BroadcastCard(state: state),
+          const SizedBox(height: 18),
+          _AuditCard(entries: state.clubAudit),
+          const SizedBox(height: 18),
           _ErrorsCard(overview: overview),
         ],
       ],
@@ -687,6 +698,519 @@ class _ActionButton extends StatelessWidget {
     );
   }
 }
+
+/// Shared shell so every panel on this screen reads the same: a title, an
+/// optional right-hand note, and either content or a one-line empty state.
+class _Panel extends StatelessWidget {
+  final String title;
+  final String? note;
+  final Widget child;
+  const _Panel({required this.title, this.note, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Spacer(),
+              if (note != null)
+                Text(
+                  note!,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: AdminColors.textMuted,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _PanelEmpty extends StatelessWidget {
+  final String message;
+  const _PanelEmpty(this.message);
+
+  @override
+  Widget build(BuildContext context) => Text(
+    message,
+    style: const TextStyle(fontSize: 12.5, color: AdminColors.textMuted),
+  );
+}
+
+class _FinancesCard extends StatelessWidget {
+  final ClubFinances? finances;
+  final Color accent;
+  const _FinancesCard({required this.finances, required this.accent});
+
+  @override
+  Widget build(BuildContext context) {
+    final f = finances;
+    if (f == null) {
+      return const _Panel(
+        title: 'Dues & finances',
+        child: _PanelEmpty('Loading…'),
+      );
+    }
+    final unpaid = f.dues.where((d) => !d.paid).toList();
+    return _Panel(
+      title: 'Dues & finances',
+      note: '${f.duesPeriodLabel} · ${formatUgx(f.duesAmount)} per member',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              _MiniStat(
+                'Collected',
+                formatUgx(f.duesCollected),
+                AdminColors.paidColor,
+              ),
+              _MiniStat(
+                'Outstanding',
+                formatUgx(f.duesOutstanding),
+                f.duesOutstanding > 0
+                    ? AdminColors.overdueColor
+                    : AdminColors.textMuted,
+              ),
+              _MiniStat('Paid', '${f.duesPaidCount}', AdminColors.paidColor),
+              _MiniStat(
+                'Unpaid',
+                '${f.duesUnpaidCount}',
+                f.duesUnpaidCount > 0
+                    ? AdminColors.overdueColor
+                    : AdminColors.textMuted,
+              ),
+              _MiniStat('Income', formatUgx(f.totalIncome), accent),
+              _MiniStat('Expenses', formatUgx(f.totalExpenses), accent),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            unpaid.isEmpty
+                ? 'Everyone has paid for this period.'
+                : "Hasn't paid this period",
+            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+          ),
+          if (unpaid.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final d in unpaid)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AdminColors.pageBg,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(d.name, style: const TextStyle(fontSize: 12)),
+                  ),
+              ],
+            ),
+          ],
+          if (f.recentTransactions.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Text(
+              'Recent transactions',
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 6),
+            for (final t in f.recentTransactions)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 3),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        t.label,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12.5),
+                      ),
+                    ),
+                    Text(
+                      '${t.kind == 'expense' ? '−' : '+'}${formatUgx(t.amount)}',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: t.kind == 'expense'
+                            ? AdminColors.overdueColor
+                            : AdminColors.paidColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+          const SizedBox(height: 12),
+          const Text(
+            'Read-only: recording a payment stays with the club treasurer.',
+            style: TextStyle(fontSize: 11.5, color: AdminColors.textMuted),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  const _MiniStat(this.label, this.value, this.color);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+      decoration: BoxDecoration(
+        color: AdminColors.pageBg,
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: AdminColors.textMuted,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EventsCard extends StatelessWidget {
+  final List<ClubEventOversight> events;
+  final DashboardState state;
+  const _EventsCard({required this.events, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    if (events.isEmpty) {
+      return const _Panel(
+        title: 'Events',
+        child: _PanelEmpty('This club has no events.'),
+      );
+    }
+    final totalRsvps = events.fold<int>(0, (sum, e) => sum + e.rsvpCount);
+    return _Panel(
+      title: 'Events',
+      note: '$totalRsvps RSVP(s) across ${events.length} event(s)',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final e in events)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          e.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: e.isUpcoming ? null : AdminColors.textMuted,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          [
+                            e.eventDate == null
+                                ? 'Weekly · ${e.dow}'
+                                : formatDate(e.eventDate!),
+                            if (e.meta.isNotEmpty) e.meta,
+                            if (!e.isUpcoming) 'past',
+                          ].join(' · '),
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: AdminColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    '${e.rsvpCount} RSVP',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // A past one-off event is kept as a historical record, so
+                  // there is deliberately nothing to press.
+                  SizedBox(
+                    width: 76,
+                    child: e.canCancel
+                        ? TextButton(
+                            onPressed: () => state.cancelClubEvent(e.id),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AdminColors.overdueColor,
+                              padding: EdgeInsets.zero,
+                            ),
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BroadcastCard extends StatefulWidget {
+  final DashboardState state;
+  const _BroadcastCard({required this.state});
+
+  @override
+  State<_BroadcastCard> createState() => _BroadcastCardState();
+}
+
+class _BroadcastCardState extends State<_BroadcastCard> {
+  final _title = TextEditingController();
+  final _body = TextEditingController();
+  String _audience = 'all';
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _body.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    await widget.state.sendClubBroadcast(
+      title: _title.text,
+      body: _body.text,
+      audience: _audience,
+    );
+    if (mounted) {
+      _title.clear();
+      _body.clear();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sending = widget.state.broadcastSending;
+    return _Panel(
+      title: 'Send an announcement',
+      note: 'Push notification',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _BroadcastField(controller: _title, hint: 'Title'),
+          const SizedBox(height: 8),
+          _BroadcastField(controller: _body, hint: 'Message', maxLines: 3),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              SegmentedButton<String>(
+                showSelectedIcon: false,
+                style: ButtonStyle(
+                  textStyle: WidgetStateProperty.all(
+                    const TextStyle(fontSize: 12),
+                  ),
+                  visualDensity: VisualDensity.compact,
+                ),
+                segments: const [
+                  ButtonSegment(value: 'all', label: Text('Everyone')),
+                  ButtonSegment(value: 'board', label: Text('Board only')),
+                ],
+                selected: {_audience},
+                onSelectionChanged: (s) => setState(() => _audience = s.first),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: sending ? null : _send,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: widget.state.accentColor,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                ),
+                child: Text(sending ? 'Sending…' : 'Send'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BroadcastField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final int maxLines;
+  const _BroadcastField({
+    required this.controller,
+    required this.hint,
+    this.maxLines = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      style: const TextStyle(fontSize: 13),
+      decoration: InputDecoration(
+        isDense: true,
+        hintText: hint,
+        hintStyle: const TextStyle(
+          fontSize: 13,
+          color: AdminColors.placeholder,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 11,
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AdminColors.inputBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AdminColors.inputBorder),
+        ),
+      ),
+    );
+  }
+}
+
+class _AuditCard extends StatelessWidget {
+  final List<AuditEntry> entries;
+  const _AuditCard({required this.entries});
+
+  @override
+  Widget build(BuildContext context) {
+    if (entries.isEmpty) {
+      return const _Panel(
+        title: 'Recent admin activity',
+        child: _PanelEmpty('No administrative actions recorded for this club.'),
+      );
+    }
+    return _Panel(
+      title: 'Recent admin activity',
+      note: '${entries.length} most recent',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final e in entries)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _actionLabel(e.action),
+                          style: const TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          [
+                            e.actorEmail,
+                            if (e.subject.isNotEmpty) e.subject,
+                            if (e.detail.isNotEmpty) e.detail,
+                          ].join(' · '),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: AdminColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    relativeTime(e.createdAt),
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: AdminColors.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Turns a machine action key into something readable. Unknown keys fall
+/// through as-is rather than being hidden — a new action type should still
+/// show up in the trail before anyone remembers to add a label for it.
+String _actionLabel(String action) => switch (action) {
+  'club.suspended' => 'Club suspended',
+  'club.active' => 'Club reactivated',
+  'club.delete' => 'Club deleted',
+  'club.sms_on' => 'SMS enabled',
+  'club.sms_off' => 'SMS suspended',
+  'club.broadcast' => 'Announcement sent',
+  'event.cancel' => 'Event cancelled',
+  _ => action,
+};
 
 class _ErrorsCard extends StatelessWidget {
   final ClubOverview overview;

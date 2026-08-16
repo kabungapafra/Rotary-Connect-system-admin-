@@ -204,6 +204,123 @@ void main() {
     expect(find.text('Not assigned'), findsNWidgets(2));
   });
 
+  testWidgets('finances name who has not paid, not just a count', (
+    tester,
+  ) async {
+    await setDesktopSize(tester);
+    // A count alone is not actionable — the admin needs the names to chase.
+    final state = DashboardState()
+      ..openClubId = 7
+      ..clubs.add(_club())
+      ..clubOverview = _overview()
+      ..clubFinances = ClubFinances(
+        duesAmount: 10000,
+        duesPeriod: 'quarterly',
+        duesPeriodLabel: '2026-Q3',
+        duesCollected: 10000,
+        duesOutstanding: 20000,
+        totalIncome: 45000,
+        totalExpenses: 12000,
+        duesPaidCount: 1,
+        duesUnpaidCount: 2,
+        dues: const [
+          DuesMember(
+            memberId: 1,
+            name: 'Grace Nakato',
+            role: 'President',
+            paid: true,
+          ),
+          DuesMember(
+            memberId: 2,
+            name: 'Peter Okello',
+            role: 'Member',
+            paid: false,
+          ),
+          DuesMember(
+            memberId: 3,
+            name: 'Alice Auma',
+            role: 'Member',
+            paid: false,
+          ),
+        ],
+        recentTransactions: const [],
+      );
+
+    await tester.pumpWidget(_wrap(state));
+
+    expect(find.text("Hasn't paid this period"), findsOneWidget);
+    expect(find.text('Peter Okello'), findsOneWidget);
+    expect(find.text('Alice Auma'), findsOneWidget);
+    // Someone who has paid must not appear in the chase list.
+    expect(find.text('Grace Nakato'), findsNothing);
+  });
+
+  testWidgets('a past event offers no cancel button', (tester) async {
+    await setDesktopSize(tester);
+    // Past one-off events are kept as a historical record, so there must be
+    // nothing to press — the backend would reject it anyway.
+    final state = DashboardState()
+      ..openClubId = 7
+      ..clubs.add(_club())
+      ..clubOverview = _overview()
+      ..clubEvents = [
+        ClubEventOversight(
+          id: 1,
+          name: 'Charter night',
+          meta: '',
+          dow: 'FRI',
+          eventDate: DateTime(2026, 12, 1),
+          rsvpCount: 12,
+          isUpcoming: true,
+          canCancel: true,
+        ),
+        ClubEventOversight(
+          id: 2,
+          name: "Last month's gala",
+          meta: '',
+          dow: 'MON',
+          eventDate: DateTime(2026, 1, 1),
+          rsvpCount: 40,
+          isUpcoming: false,
+          canCancel: false,
+        ),
+      ];
+
+    await tester.pumpWidget(_wrap(state));
+
+    expect(find.text('Charter night'), findsOneWidget);
+    expect(find.text("Last month's gala"), findsOneWidget);
+    expect(find.text('12 RSVP'), findsOneWidget);
+    // One cancellable event -> exactly one Cancel button.
+    expect(find.text('Cancel'), findsOneWidget);
+  });
+
+  testWidgets('the audit trail names the actor, not just the action', (
+    tester,
+  ) async {
+    await setDesktopSize(tester);
+    final state = DashboardState()
+      ..openClubId = 7
+      ..clubs.add(_club())
+      ..clubOverview = _overview()
+      ..clubAudit = [
+        AuditEntry(
+          id: 1,
+          actorEmail: 'admin@rotary.org',
+          action: 'club.suspended',
+          subject: '',
+          detail: 'active -> suspended',
+          createdAt: DateTime.now().toUtc(),
+        ),
+      ];
+
+    await tester.pumpWidget(_wrap(state));
+
+    // The raw action key is translated, but the actor is the point.
+    expect(find.text('Club suspended'), findsOneWidget);
+    expect(find.textContaining('admin@rotary.org'), findsOneWidget);
+  });
+
   testWidgets('deleting the club from this screen falls back, not crashes', (
     tester,
   ) async {
