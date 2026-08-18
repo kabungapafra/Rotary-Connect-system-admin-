@@ -406,6 +406,22 @@ class DashboardState extends ChangeNotifier {
     }
   }
 
+  /// Set or replace a club's logo. A club onboarded without one previously
+  /// had no way to get one, so the dashboard could only show its initials.
+  Future<void> setClubLogo(int id, String? logoDataUrl) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      final updated = await _api.setClubLogo(token, id, logoDataUrl);
+      _update(() => _replaceClub(updated));
+      _toast(logoDataUrl == null
+          ? '${updated.name} logo removed'
+          : '${updated.name} logo updated');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
   // ── per-club, per-message-type SMS toggles ─────────────────────────────
   int? smsTypesModalClubId;
   Map<String, bool>? smsTypesDraft; // working copy while the modal is open

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../api_client.dart';
@@ -152,7 +153,7 @@ class _Header extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _Logo(logo: club.logo, name: club.name),
+              _Logo(logo: club.logo, name: club.name, state: state, clubId: club.id),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -214,10 +215,44 @@ class _Header extends StatelessWidget {
 class _Logo extends StatelessWidget {
   final String? logo;
   final String name;
-  const _Logo({required this.logo, required this.name});
+  final DashboardState state;
+  final int clubId;
+  const _Logo({
+    required this.logo,
+    required this.name,
+    required this.state,
+    required this.clubId,
+  });
+
+  /// Same picker contract as the onboarding wizard: resize on the way in and
+  /// hand the backend a data URL, which it stores on R2.
+  Future<void> _pick() async {
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+    );
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    final mime = file.mimeType ?? 'image/png';
+    await state.setClubLogo(clubId, 'data:$mime;base64,${base64Encode(bytes)}');
+  }
 
   @override
   Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: _pick,
+        child: Tooltip(
+          message: logo == null ? 'Add a logo' : 'Change logo',
+          child: _build(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _build(BuildContext context) {
     return Container(
       width: 58,
       height: 58,

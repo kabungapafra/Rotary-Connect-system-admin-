@@ -415,6 +415,15 @@ class ApiClient {
     return Club.fromJson(res);
   }
 
+  /// Set or replace a club's logo. Pass null to clear it and fall back to
+  /// the club's initials.
+  Future<Club> setClubLogo(String token, int clubId, String? logoDataUrl) async {
+    final res = await _patch('/admin/clubs/$clubId/logo', {
+      'logo': logoDataUrl,
+    }, token: token);
+    return Club.fromJson(res);
+  }
+
   Future<Club> setClubSmsEnabled(String token, int clubId, bool enabled) async {
     final res = await _patch('/admin/clubs/$clubId/sms', {
       'sms_enabled': enabled,
