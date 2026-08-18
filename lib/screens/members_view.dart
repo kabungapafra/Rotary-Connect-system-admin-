@@ -216,6 +216,8 @@ class _MemberRow extends StatelessWidget {
               children: [
                 MemberAvatar(memberInitialsFor(member.name)),
                 const SizedBox(width: 9),
+                OnlineDot(online: member.isOnline),
+                const SizedBox(width: 7),
                 Expanded(
                   child: Text(
                     member.name,

@@ -156,3 +156,35 @@ class StatCard extends StatelessWidget {
     );
   }
 }
+
+/// A small green dot marking a member or club as currently online, with a
+/// hollow grey ring when offline so the column keeps its alignment either
+/// way rather than the row shifting as people come and go.
+class OnlineDot extends StatelessWidget {
+  final bool online;
+  final String? tooltip;
+  const OnlineDot({super.key, required this.online, this.tooltip});
+
+  static const _online = Color(0xFF1D9A4F);
+  static const _offline = Color(0xFFC9CFD8);
+
+  @override
+  Widget build(BuildContext context) {
+    final dot = Container(
+      width: 9,
+      height: 9,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: online ? _online : Colors.transparent,
+        border: online ? null : Border.all(color: _offline, width: 1.4),
+        boxShadow: online
+            ? [BoxShadow(color: _online.withValues(alpha: .45), blurRadius: 5, spreadRadius: 1)]
+            : null,
+      ),
+    );
+    return Tooltip(
+      message: tooltip ?? (online ? 'Online' : 'Offline'),
+      child: dot,
+    );
+  }
+}

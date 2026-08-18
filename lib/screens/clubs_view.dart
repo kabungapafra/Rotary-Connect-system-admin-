@@ -142,6 +142,13 @@ class _ClubRow extends StatelessWidget {
                 children: [
                   ClubAvatar(initialsFor(club.name), logo: club.logo),
                   const SizedBox(width: 9),
+                  OnlineDot(
+                    online: club.isOnline,
+                    tooltip: club.isOnline
+                        ? '${club.onlineMemberCount} member(s) online'
+                        : 'No members online',
+                  ),
+                  const SizedBox(width: 7),
                   Expanded(
                     child: Text(
                       club.name,

@@ -30,6 +30,10 @@ class Club {
   bool smsEnabled;
   Map<String, bool> smsTypes;
 
+  /// At least one member of this club is currently online.
+  bool isOnline;
+  int onlineMemberCount;
+
   /// Mirrors the backend's is_club_access_blocked(): the app also suspends
   /// access when dues are overdue, not just when status is manually set to
   /// 'suspended'. Self-heals back to 'active' once a payment moves
@@ -54,6 +58,8 @@ class Club {
     required this.joined,
     this.logo,
     this.smsEnabled = true,
+    this.isOnline = false,
+    this.onlineMemberCount = 0,
     Map<String, bool>? smsTypes,
   }) : smsTypes = smsTypes ?? {for (final k in smsTypeLabels.keys) k: true};
 
@@ -65,6 +71,8 @@ class Club {
     members: json['members_count'] as int,
     status: json['status'] as String,
     clubType: json['club_type'] as String? ?? 'rotary',
+    isOnline: json['is_online'] as bool? ?? false,
+    onlineMemberCount: json['online_member_count'] as int? ?? 0,
     feeAmount: json['fee_amount'] as int,
     lastPaidDate: json['last_paid_date'] as String? ?? '—',
     nextDueDate: json['next_due_date'] as String? ?? '—',
@@ -84,12 +92,18 @@ class Member {
   String club;
   String status; // active | suspended
 
+  /// Seen by the API within its online window — drives the green dot.
+  /// Defaults false so an older API response simply reads as offline
+  /// rather than failing to parse.
+  bool isOnline;
+
   Member({
     required this.id,
     required this.name,
     required this.phone,
     required this.club,
     required this.status,
+    this.isOnline = false,
   });
 
   factory Member.fromJson(Map<String, dynamic> json) => Member(
@@ -98,6 +112,7 @@ class Member {
     phone: json['phone'] as String,
     club: json['club'] as String,
     status: json['status'] as String,
+    isOnline: json['is_online'] as bool? ?? false,
   );
 }
 
