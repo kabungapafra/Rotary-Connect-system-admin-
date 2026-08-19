@@ -12,6 +12,8 @@ import 'screens/clubs_view.dart';
 import 'screens/dashboard_view.dart';
 import 'screens/health_view.dart';
 import 'screens/members_view.dart';
+import 'screens/site_content_view.dart';
+import 'screens/site_requests_view.dart';
 import 'screens/sms_view.dart';
 import 'state/dashboard_state.dart';
 import 'theme.dart';
@@ -239,6 +241,14 @@ class _CurrentView extends StatelessWidget {
         return const SmsView();
       case 'health':
         return const HealthView();
+      case 'site_requests':
+        return const SiteRequestsView();
+      case 'site_events':
+        return const SiteEventsView();
+      case 'site_news':
+        return const SiteNewsView();
+      case 'site_projects':
+        return const SiteProjectsView();
       default:
         return const DashboardView();
     }

@@ -83,6 +83,31 @@ class AdminSidebar extends StatelessWidget {
             active: state.view == 'sms',
             onTap: state.goSms,
           ),
+          const _SectionLabel('Website', topPad: 16),
+          _NavItem(
+            icon: NavIconShape.requests,
+            label: 'Join Requests',
+            active: state.view == 'site_requests',
+            onTap: state.goJoinRequests,
+          ),
+          _NavItem(
+            icon: NavIconShape.events,
+            label: 'Events',
+            active: state.view == 'site_events',
+            onTap: state.goSiteEvents,
+          ),
+          _NavItem(
+            icon: NavIconShape.news,
+            label: 'News',
+            active: state.view == 'site_news',
+            onTap: state.goSiteNews,
+          ),
+          _NavItem(
+            icon: NavIconShape.projects,
+            label: 'Projects',
+            active: state.view == 'site_projects',
+            onTap: state.goSiteProjects,
+          ),
           const _SectionLabel('Monitor', topPad: 16),
           _NavItem(
             icon: NavIconShape.health,

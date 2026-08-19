@@ -30,7 +30,19 @@ class NavIcon extends StatelessWidget {
   }
 }
 
-enum NavIconShape { dashboard, analytics, clubs, members, billing, sms, health }
+enum NavIconShape {
+  dashboard,
+  analytics,
+  clubs,
+  members,
+  billing,
+  sms,
+  health,
+  requests,
+  events,
+  news,
+  projects,
+}
 
 class _NavIconPainter extends CustomPainter {
   final NavIconShape shape;
@@ -111,6 +123,32 @@ class _NavIconPainter extends CustomPainter {
           ..close();
         paint.color = color.withValues(alpha: 0.5);
         canvas.drawPath(path, paint);
+        break;
+      case NavIconShape.requests:
+        // Inbox tray: the join-request queue.
+        rrect(1, 3, 16, 12, 2, 0.5);
+        rrect(4.5, 9.5, 9, 2, 1, 1);
+        break;
+      case NavIconShape.events:
+        // Calendar with a bound top edge.
+        rrect(1, 3, 16, 13, 2, 0.5);
+        rrect(1, 3, 16, 3.5, 0, 1);
+        rrect(4.5, 1, 2, 4, 1, 1);
+        rrect(11.5, 1, 2, 4, 1, 1);
+        break;
+      case NavIconShape.news:
+        // Stacked article lines.
+        rrect(1.5, 2.5, 15, 13, 2, 0.5);
+        rrect(4, 5.5, 10, 2, 1, 1);
+        rrect(4, 9, 10, 1.6, 0.8, 1);
+        rrect(4, 12, 6.5, 1.6, 0.8, 1);
+        break;
+      case NavIconShape.projects:
+        // Progress bar over a base plate.
+        rrect(1, 4, 16, 4, 2, 0.5);
+        rrect(1, 4, 10, 4, 2, 1);
+        rrect(1, 11, 16, 4, 2, 0.5);
+        rrect(1, 11, 6, 4, 2, 1);
         break;
       case NavIconShape.health:
         // Heartbeat pulse line, stroked to match the other icons' weight.

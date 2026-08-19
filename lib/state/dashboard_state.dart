@@ -203,6 +203,231 @@ class DashboardState extends ChangeNotifier {
     unawaited(loadMonitoring());
   }
 
+  // ── website (marketing site) ─────────────────────────────────────────
+  // Four separate lists rather than one blob: each has its own endpoint
+  // and the admin only ever looks at one at a time, so loading them
+  // together would fetch three lists nobody asked for.
+
+  final List<JoinRequest> joinRequests = [];
+  bool joinRequestsLoading = false;
+  String joinRequestFilter = 'all';
+
+  final List<SiteEvent> siteEvents = [];
+  bool siteEventsLoading = false;
+
+  final List<SiteNews> siteNews = [];
+  bool siteNewsLoading = false;
+
+  final List<SiteProject> siteProjects = [];
+  bool siteProjectsLoading = false;
+
+  void goJoinRequests() {
+    _go('site_requests');
+    unawaited(loadJoinRequests());
+  }
+
+  void goSiteEvents() {
+    _go('site_events');
+    unawaited(loadSiteEvents());
+  }
+
+  void goSiteNews() {
+    _go('site_news');
+    unawaited(loadSiteNews());
+  }
+
+  void goSiteProjects() {
+    _go('site_projects');
+    unawaited(loadSiteProjects());
+  }
+
+  void setJoinRequestFilter(String value) {
+    _update(() => joinRequestFilter = value);
+    unawaited(loadJoinRequests());
+  }
+
+  Future<void> loadJoinRequests() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() => joinRequestsLoading = true);
+    try {
+      final rows = await _api.fetchJoinRequests(token, status: joinRequestFilter);
+      _update(() {
+        joinRequests
+          ..clear()
+          ..addAll(rows);
+        joinRequestsLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() => joinRequestsLoading = false);
+      _toast(e.message);
+    }
+  }
+
+  Future<void> setJoinRequestStatus(int requestId, String status) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      await _api.setJoinRequestStatus(token, requestId, status);
+      // Refetch rather than patch in place: the list is filtered by status
+      // server-side, so a row may no longer belong in the current view.
+      await loadJoinRequests();
+      _toast('Request marked $status');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> deleteJoinRequest(int requestId) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      await _api.deleteJoinRequest(token, requestId);
+      await loadJoinRequests();
+      _toast('Request deleted');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> loadSiteEvents() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() => siteEventsLoading = true);
+    try {
+      final rows = await _api.fetchSiteEvents(token);
+      _update(() {
+        siteEvents
+          ..clear()
+          ..addAll(rows);
+        siteEventsLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() => siteEventsLoading = false);
+      _toast(e.message);
+    }
+  }
+
+  Future<void> saveSiteEvent(SiteEvent event, {required bool isNew}) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      if (isNew) {
+        await _api.createSiteEvent(token, event);
+      } else {
+        await _api.updateSiteEvent(token, event);
+      }
+      await loadSiteEvents();
+      _toast(isNew ? 'Event added to the website' : 'Event updated');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> deleteSiteEvent(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      await _api.deleteSiteEvent(token, id);
+      await loadSiteEvents();
+      _toast('Event removed from the website');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> loadSiteNews() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() => siteNewsLoading = true);
+    try {
+      final rows = await _api.fetchSiteNews(token);
+      _update(() {
+        siteNews
+          ..clear()
+          ..addAll(rows);
+        siteNewsLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() => siteNewsLoading = false);
+      _toast(e.message);
+    }
+  }
+
+  Future<void> saveSiteNews(SiteNews item, {required bool isNew}) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      if (isNew) {
+        await _api.createSiteNews(token, item);
+      } else {
+        await _api.updateSiteNews(token, item);
+      }
+      await loadSiteNews();
+      _toast(isNew ? 'News item published' : 'News item updated');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> deleteSiteNews(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      await _api.deleteSiteNews(token, id);
+      await loadSiteNews();
+      _toast('News item removed');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> loadSiteProjects() async {
+    final token = authToken;
+    if (token == null) return;
+    _update(() => siteProjectsLoading = true);
+    try {
+      final rows = await _api.fetchSiteProjects(token);
+      _update(() {
+        siteProjects
+          ..clear()
+          ..addAll(rows);
+        siteProjectsLoading = false;
+      });
+    } on ApiException catch (e) {
+      _update(() => siteProjectsLoading = false);
+      _toast(e.message);
+    }
+  }
+
+  Future<void> saveSiteProject(SiteProject project, {required bool isNew}) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      if (isNew) {
+        await _api.createSiteProject(token, project);
+      } else {
+        await _api.updateSiteProject(token, project);
+      }
+      await loadSiteProjects();
+      _toast(isNew ? 'Project added to the website' : 'Project updated');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
+  Future<void> deleteSiteProject(int id) async {
+    final token = authToken;
+    if (token == null) return;
+    try {
+      await _api.deleteSiteProject(token, id);
+      await loadSiteProjects();
+      _toast('Project removed from the website');
+    } on ApiException catch (e) {
+      _toast(e.message);
+    }
+  }
+
   // ── system health ───────────────────────────────────────────────────
   MonitoringData? monitoring;
   bool monitoringLoading = false;

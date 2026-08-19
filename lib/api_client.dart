@@ -707,6 +707,102 @@ class ApiClient {
         .toList();
   }
 
+
+  // ── website (marketing site) ─────────────────────────────────────────
+  // The public site reads /site/* anonymously; everything here is the
+  // admin-side counterpart that decides what it gets to read.
+
+  Future<List<JoinRequest>> fetchJoinRequests(
+    String token, {
+    String status = 'all',
+  }) async {
+    final uri = Uri.parse(
+      '$apiBaseUrl/admin/join-requests',
+    ).replace(queryParameters: {'status_filter': status});
+    final res = await _getListUri(uri, token: token);
+    return res
+        .map((e) => JoinRequest.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<JoinRequest> setJoinRequestStatus(
+    String token,
+    int requestId,
+    String status,
+  ) async {
+    final res = await _patch('/admin/join-requests/$requestId/status', {
+      'status': status,
+    }, token: token);
+    return JoinRequest.fromJson(res);
+  }
+
+  Future<void> deleteJoinRequest(String token, int requestId) =>
+      _delete('/admin/join-requests/$requestId', token: token);
+
+  Future<List<SiteEvent>> fetchSiteEvents(String token) async {
+    final res = await _getList('/admin/site/events', token: token);
+    return res
+        .map((e) => SiteEvent.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<SiteEvent> createSiteEvent(String token, SiteEvent event) async =>
+      SiteEvent.fromJson(
+        await _post('/admin/site/events', event.toJson(), token: token),
+      );
+
+  Future<SiteEvent> updateSiteEvent(String token, SiteEvent event) async =>
+      SiteEvent.fromJson(
+        await _put('/admin/site/events/${event.id}', event.toJson(),
+            token: token),
+      );
+
+  Future<void> deleteSiteEvent(String token, int id) =>
+      _delete('/admin/site/events/$id', token: token);
+
+  Future<List<SiteNews>> fetchSiteNews(String token) async {
+    final res = await _getList('/admin/site/news', token: token);
+    return res.map((e) => SiteNews.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<SiteNews> createSiteNews(String token, SiteNews item) async =>
+      SiteNews.fromJson(
+        await _post('/admin/site/news', item.toJson(), token: token),
+      );
+
+  Future<SiteNews> updateSiteNews(String token, SiteNews item) async =>
+      SiteNews.fromJson(
+        await _put('/admin/site/news/${item.id}', item.toJson(), token: token),
+      );
+
+  Future<void> deleteSiteNews(String token, int id) =>
+      _delete('/admin/site/news/$id', token: token);
+
+  Future<List<SiteProject>> fetchSiteProjects(String token) async {
+    final res = await _getList('/admin/site/projects', token: token);
+    return res
+        .map((e) => SiteProject.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<SiteProject> createSiteProject(
+    String token,
+    SiteProject project,
+  ) async => SiteProject.fromJson(
+    await _post('/admin/site/projects', project.toJson(), token: token),
+  );
+
+  Future<SiteProject> updateSiteProject(
+    String token,
+    SiteProject project,
+  ) async => SiteProject.fromJson(
+    await _put('/admin/site/projects/${project.id}', project.toJson(),
+        token: token),
+  );
+
+  Future<void> deleteSiteProject(String token, int id) =>
+      _delete('/admin/site/projects/$id', token: token);
+
   // ── http plumbing ────────────────────────────────────────────────────
   Future<Map<String, dynamic>> _post(
     String path,
@@ -775,6 +871,45 @@ class ApiClient {
       throw ApiException(_errorDetail(res));
     }
     return jsonDecode(res.body) as List<dynamic>;
+  }
+
+
+  Future<Map<String, dynamic>> _put(
+    String path,
+    Map<String, dynamic> body, {
+    String? token,
+  }) async {
+    final headers = {'Content-Type': 'application/json'};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+    final http.Response res;
+    try {
+      res = await http
+          .put(
+            Uri.parse('$apiBaseUrl$path'),
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(_requestTimeout);
+    } catch (_) {
+      throw ApiException('Could not reach the server. Check your connection.');
+    }
+    return _decode(res);
+  }
+
+  Future<void> _delete(String path, {String? token}) async {
+    final headers = <String, String>{};
+    if (token != null) headers['Authorization'] = 'Bearer $token';
+    final http.Response res;
+    try {
+      res = await http
+          .delete(Uri.parse('$apiBaseUrl$path'), headers: headers)
+          .timeout(_requestTimeout);
+    } catch (_) {
+      throw ApiException('Could not reach the server. Check your connection.');
+    }
+    if (res.statusCode >= 400) {
+      throw ApiException(_errorDetail(res));
+    }
   }
 
   Future<Map<String, dynamic>> _get(String path, {String? token}) =>

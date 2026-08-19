@@ -23,6 +23,16 @@ const Map<String, List<String>> _pageMeta = {
     'System Health',
     'Member sign-in problems, API speed, and backend errors',
   ],
+  'site_requests': [
+    'Join Requests',
+    'Clubs that applied through the public website',
+  ],
+  'site_events': ['Website Events', 'Events shown on the public website'],
+  'site_news': ['Website News', 'News items shown on the public website'],
+  'site_projects': [
+    'Website Projects',
+    'Showcase projects shown on the public website',
+  ],
 };
 
 class AdminTopbar extends StatelessWidget {

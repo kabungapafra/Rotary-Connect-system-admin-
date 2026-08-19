@@ -493,3 +493,188 @@ String formatBytes(int bytes) {
   final digits = value < 10 ? 1 : 0;
   return '${value.toStringAsFixed(digits)} ${units[unit]}';
 }
+
+/// A club's "request to join" submitted from the public marketing site.
+///
+/// Not a [Club]: the backend keeps these in their own triage table because
+/// anyone on the internet can submit one. The admin reads it here, then
+/// onboards the club through the normal new-club wizard.
+class JoinRequest {
+  final int id;
+  final String clubName;
+  final String clubType; // rotary | rotaract
+  final String district;
+  final String location;
+  final String? charterDate;
+  final int membersCount;
+  final String? logo;
+  final String contactName;
+  final String contactRole;
+  final String phone;
+  final String email;
+  final String dob;
+  final String heardAbout;
+  final String problems;
+  final String notes;
+  String status; // new | contacted | approved | declined
+  final String createdAt;
+
+  JoinRequest({
+    required this.id,
+    required this.clubName,
+    required this.clubType,
+    required this.district,
+    required this.location,
+    required this.charterDate,
+    required this.membersCount,
+    required this.logo,
+    required this.contactName,
+    required this.contactRole,
+    required this.phone,
+    required this.email,
+    required this.dob,
+    required this.heardAbout,
+    required this.problems,
+    required this.notes,
+    required this.status,
+    required this.createdAt,
+  });
+
+  factory JoinRequest.fromJson(Map<String, dynamic> json) => JoinRequest(
+    id: json['id'] as int,
+    clubName: json['club_name'] as String,
+    clubType: json['club_type'] as String? ?? 'rotary',
+    district: json['district'] as String? ?? '',
+    location: json['location'] as String? ?? '',
+    charterDate: json['charter_date'] as String?,
+    membersCount: json['members_count'] as int? ?? 0,
+    logo: json['logo'] as String?,
+    contactName: json['contact_name'] as String? ?? '',
+    contactRole: json['contact_role'] as String? ?? '',
+    phone: json['phone'] as String? ?? '',
+    email: json['email'] as String? ?? '',
+    dob: json['dob'] as String? ?? '',
+    heardAbout: json['heard_about'] as String? ?? '',
+    problems: json['problems'] as String? ?? '',
+    notes: json['notes'] as String? ?? '',
+    status: json['status'] as String? ?? 'new',
+    createdAt: json['created_at'] as String? ?? '',
+  );
+}
+
+/// An event shown on the public marketing site. Unrelated to a club's own
+/// events — this is website copy, and publishing it notifies nobody.
+class SiteEvent {
+  final int id;
+  String eventDate; // ISO yyyy-MM-dd
+  String title;
+  String meta;
+  String kind;
+  bool published;
+
+  SiteEvent({
+    required this.id,
+    required this.eventDate,
+    required this.title,
+    required this.meta,
+    required this.kind,
+    required this.published,
+  });
+
+  factory SiteEvent.fromJson(Map<String, dynamic> json) => SiteEvent(
+    id: json['id'] as int,
+    eventDate: json['event_date'] as String,
+    title: json['title'] as String,
+    meta: json['meta'] as String? ?? '',
+    kind: json['kind'] as String? ?? '',
+    published: json['published'] as bool? ?? true,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'event_date': eventDate,
+    'title': title,
+    'meta': meta,
+    'kind': kind,
+    'published': published,
+  };
+}
+
+/// A news item on the public marketing site.
+class SiteNews {
+  final int id;
+  String publishedOn; // ISO yyyy-MM-dd
+  String title;
+  String body;
+  bool published;
+
+  SiteNews({
+    required this.id,
+    required this.publishedOn,
+    required this.title,
+    required this.body,
+    required this.published,
+  });
+
+  factory SiteNews.fromJson(Map<String, dynamic> json) => SiteNews(
+    id: json['id'] as int,
+    publishedOn: json['published_on'] as String,
+    title: json['title'] as String,
+    body: json['body'] as String? ?? '',
+    published: json['published'] as bool? ?? true,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'published_on': publishedOn,
+    'title': title,
+    'body': body,
+    'published': published,
+  };
+}
+
+/// A showcase project on the public marketing site.
+class SiteProject {
+  final int id;
+  String tag;
+  String area;
+  String title;
+  String body;
+  int progressPercent;
+  String? deadline; // ISO yyyy-MM-dd
+  String photoCaption;
+  bool published;
+
+  SiteProject({
+    required this.id,
+    required this.tag,
+    required this.area,
+    required this.title,
+    required this.body,
+    required this.progressPercent,
+    required this.deadline,
+    required this.photoCaption,
+    required this.published,
+  });
+
+  factory SiteProject.fromJson(Map<String, dynamic> json) => SiteProject(
+    id: json['id'] as int,
+    tag: json['tag'] as String? ?? '',
+    area: json['area'] as String? ?? '',
+    title: json['title'] as String,
+    body: json['body'] as String? ?? '',
+    progressPercent: json['progress_percent'] as int? ?? 0,
+    deadline: json['deadline'] as String?,
+    photoCaption: json['photo_caption'] as String? ?? '',
+    published: json['published'] as bool? ?? true,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'tag': tag,
+    'area': area,
+    'title': title,
+    'body': body,
+    'progress_percent': progressPercent,
+    'deadline': deadline,
+    'photo_caption': photoCaption,
+    'published': published,
+  };
+}
