@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../models.dart';
@@ -199,7 +202,9 @@ class SiteProjectsView extends StatelessWidget {
       children: [
         for (final p in state.siteProjects)
           _Row(
-            leading: _TagChip(tag: p.tag),
+            leading: p.photo == null
+                ? _TagChip(tag: p.tag)
+                : _Thumb(url: p.photo!),
             title: p.title,
             subtitle: [
               if (p.area.isNotEmpty) p.area,
@@ -231,6 +236,8 @@ void _openProjectEditor(
   final deadline = TextEditingController(text: existing?.deadline ?? '');
   final photo = TextEditingController(text: existing?.photoCaption ?? '');
   var published = existing?.published ?? true;
+  var photoUrl = existing?.photo;
+  var photoChanged = false;
 
   _showEditor(
     context: context,
@@ -248,6 +255,13 @@ void _openProjectEditor(
       _Field(
         label: 'Deadline (YYYY-MM-DD, optional)',
         controller: deadline,
+      ),
+      _PhotoPicker(
+        value: photoUrl,
+        onPicked: (v) => setLocal(() {
+          photoUrl = v;
+          photoChanged = true;
+        }),
       ),
       _Field(label: 'Photo caption', controller: photo),
       _PublishedToggle(
@@ -272,6 +286,8 @@ void _openProjectEditor(
           deadline: deadlineText.isEmpty ? null : deadlineText,
           photoCaption: photo.text.trim(),
           published: published,
+          photo: photoUrl,
+          photoChanged: photoChanged,
         ),
         isNew: isNew,
       );
@@ -553,6 +569,32 @@ class _TagChip extends StatelessWidget {
   }
 }
 
+/// Project rows show the card photo where other lists show a chip, so the
+/// admin can tell at a glance which projects still need one.
+class _Thumb extends StatelessWidget {
+  final String url;
+  const _Thumb({required this.url});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Image.memory(
+        base64Decode(url.split(',').last),
+        width: 46,
+        height: 46,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => Container(
+          width: 46,
+          height: 46,
+          color: AdminColors.statsPlaceholderBg,
+        ),
+      ),
+    );
+  }
+}
+
 class _TextButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -769,6 +811,125 @@ void _showEditor({
       );
     },
   );
+}
+
+
+/// Card photo for a showcase project.
+///
+/// Shrinks to 1200px on the way in — the card renders at ~400px wide, and
+/// a phone-camera original would otherwise be uploaded at full size and
+/// then shrunk again server-side for nothing.
+class _PhotoPicker extends StatelessWidget {
+  final String? value;
+  final ValueChanged<String?> onPicked;
+  const _PhotoPicker({required this.value, required this.onPicked});
+
+  Future<void> _pick() async {
+    final file = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1200,
+      maxHeight: 1200,
+    );
+    if (file == null) return;
+    final bytes = await file.readAsBytes();
+    final mime = file.mimeType ?? 'image/png';
+    onPicked('data:$mime;base64,${base64Encode(bytes)}');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = value != null && value!.isNotEmpty;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Card photo',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AdminColors.textBase,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              InkWell(
+                onTap: _pick,
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  width: 108,
+                  height: 72,
+                  clipBehavior: Clip.antiAlias,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AdminColors.statsPlaceholderBg,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AdminColors.inputBorder),
+                  ),
+                  child: hasPhoto
+                      ? _Preview(source: value!)
+                      : const Text(
+                          'Choose…',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AdminColors.textMuted,
+                          ),
+                        ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      hasPhoto
+                          ? 'Click the image to replace it.'
+                          : 'Optional — without one the site shows its '
+                                'placeholder pattern.',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AdminColors.textMuted,
+                      ),
+                    ),
+                    if (hasPhoto) ...[
+                      const SizedBox(height: 6),
+                      _TextButton(
+                        label: 'Remove photo',
+                        danger: true,
+                        onTap: () => onPicked(null),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Photos are data URLs whether freshly picked or loaded from the API, so
+/// this always decodes rather than fetching.
+class _Preview extends StatelessWidget {
+  final String source;
+  const _Preview({required this.source});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.memory(
+      base64Decode(source.split(',').last),
+      width: 108,
+      height: 72,
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => const Icon(Icons.broken_image_outlined),
+    );
+  }
 }
 
 String _todayIso() => DateTime.now().toIso8601String().substring(0, 10);

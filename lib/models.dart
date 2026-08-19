@@ -643,6 +643,17 @@ class SiteProject {
   String photoCaption;
   bool published;
 
+  /// The card image as a "data:image/..." URL — held in the database
+  /// rather than R2, so replacing it is what deletes the old one.
+  String? photo;
+
+  /// Whether the admin actually picked or removed an image in this edit.
+  /// The stored photo is itself a data URL, so the API cannot tell an
+  /// unchanged photo echoed back from a new upload; [toJson] therefore
+  /// omits the field entirely unless this is set, and the API leaves the
+  /// existing image alone when it is absent.
+  bool photoChanged;
+
   SiteProject({
     required this.id,
     required this.tag,
@@ -653,6 +664,8 @@ class SiteProject {
     required this.deadline,
     required this.photoCaption,
     required this.published,
+    required this.photo,
+    this.photoChanged = false,
   });
 
   factory SiteProject.fromJson(Map<String, dynamic> json) => SiteProject(
@@ -665,6 +678,7 @@ class SiteProject {
     deadline: json['deadline'] as String?,
     photoCaption: json['photo_caption'] as String? ?? '',
     published: json['published'] as bool? ?? true,
+    photo: json['photo'] as String?,
   );
 
   Map<String, dynamic> toJson() => {
@@ -676,5 +690,6 @@ class SiteProject {
     'deadline': deadline,
     'photo_caption': photoCaption,
     'published': published,
+    if (photoChanged) 'photo': photo,
   };
 }
