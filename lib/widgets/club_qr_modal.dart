@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../api_client.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
 import 'modal_scrim.dart';
@@ -13,7 +12,11 @@ import 'modal_scrim.dart';
 /// recognises the same link — see RotaryConnect's scan_screen.dart
 /// `decodeClubQr`, which also still accepts the older
 /// {"t":"rc_club","id":N} codes already printed.
-String clubQrPayload(int clubId) => '$apiBaseUrl/visit/$clubId';
+///
+/// It points at the public check-in domain rather than the API host: that
+/// domain serves only the /visit/ form, so it is a clean address to print.
+const String guestCheckinBaseUrl = 'https://checkin.digiflecttech.dev';
+String clubQrPayload(int clubId) => '$guestCheckinBaseUrl/visit/$clubId';
 
 class ClubQrModal extends StatelessWidget {
   const ClubQrModal({super.key});
