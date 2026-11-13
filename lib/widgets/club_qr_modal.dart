@@ -1,20 +1,19 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../api_client.dart';
 import '../state/dashboard_state.dart';
 import '../theme.dart';
 import 'modal_scrim.dart';
 
-/// The QR code a club prints and displays at their venue. The mobile app's
-/// scanner decodes exactly this payload — see RotaryConnect's
-/// scan_screen.dart `_decodeClubId` for the matching format. Anyone with
-/// the app can scan it to check in as a visitor with no account and no
-/// login; a returning visitor (or a member checking into a club that
-/// isn't their own) skips straight through without re-entering details.
-String clubQrPayload(int clubId) => jsonEncode({'t': 'rc_club', 'id': clubId});
+/// The QR code a club prints and displays at their venue: a link to the
+/// backend's guest check-in web form, so a guest scanning it with their
+/// phone's own camera (no app) lands on a form. The mobile app's scanner
+/// recognises the same link — see RotaryConnect's scan_screen.dart
+/// `decodeClubQr`, which also still accepts the older
+/// {"t":"rc_club","id":N} codes already printed.
+String clubQrPayload(int clubId) => '$apiBaseUrl/visit/$clubId';
 
 class ClubQrModal extends StatelessWidget {
   const ClubQrModal({super.key});
