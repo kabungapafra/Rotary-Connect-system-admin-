@@ -42,11 +42,11 @@ class PresidentCredentialsModal extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               color: AdminColors.paidTint,
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CLUB PRESIDENT ACCOUNT CREATED',
+                    '${creds.isClubAdmin ? 'CLUB ADMIN' : 'CLUB PRESIDENT'} ACCOUNT CREATED',
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700,
@@ -54,9 +54,9 @@ class PresidentCredentialsModal extends StatelessWidget {
                       letterSpacing: 0.4,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    'Share these credentials with the president',
+                    'Share these credentials with the ${creds.isClubAdmin ? 'club admin' : 'president'}',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
                   ),
                 ],
@@ -73,9 +73,10 @@ class PresidentCredentialsModal extends StatelessWidget {
                   const SizedBox(height: 10),
                   _CredRow(label: 'PIN', value: creds.pin),
                   const SizedBox(height: 14),
-                  const Text(
+                  Text(
                     'The PIN is shown only once and cannot be recovered — only reset. '
-                    'The president signs in to the club app with the member number (or phone) and this PIN.',
+                    'The ${creds.isClubAdmin ? 'club admin' : 'president'} signs in with the member number (or phone) and this PIN'
+                    '${creds.isClubAdmin ? ', then adds the club President and members.' : '.'}',
                     style: TextStyle(
                       fontSize: 12,
                       color: AdminColors.textMuted,

@@ -377,6 +377,7 @@ class ApiClient {
     String presidentEmail = '',
     String presidentPhone = '',
     String presidentDob = '',
+    String firstAdminRole = 'president',
   }) async {
     final res = await _post('/admin/clubs', {
       'name': name,
@@ -392,6 +393,7 @@ class ApiClient {
       'president_email': presidentEmail,
       'president_phone': presidentPhone,
       'president_dob': presidentDob,
+      'first_admin_role': firstAdminRole,
     }, token: token);
     final president = res['president'] as Map<String, dynamic>?;
     return CreateClubResult(
@@ -404,6 +406,7 @@ class ApiClient {
               president['phone'] as String,
               president['member_number'] as String,
               president['pin'] as String,
+              president['role'] as String? ?? 'Club President',
             ),
     );
   }

@@ -122,6 +122,8 @@ class ClubDraft {
   String district = '';
   String location = '';
   String clubType = 'rotary';
+  /// 'president' or 'club_admin' — who the club's first administrator is.
+  String firstAdminRole = 'president';
   String presidentName = '';
   String email = '';
   String phone = '';
@@ -141,13 +143,17 @@ class PresidentCredentials {
   final String phone;
   final String memberNumber;
   final String pin;
+  final String role;
   const PresidentCredentials(
     this.id,
     this.name,
     this.phone,
     this.memberNumber,
-    this.pin,
-  );
+    this.pin, [
+    this.role = 'Club President',
+  ]);
+
+  bool get isClubAdmin => role == 'Club Admin';
 }
 
 /// Working copy of the "Add Member" modal fields.

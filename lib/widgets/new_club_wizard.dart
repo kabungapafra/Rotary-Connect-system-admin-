@@ -490,12 +490,64 @@ class _StepContent extends StatelessWidget {
           ],
         );
       case 1:
+        final who = state.draft.firstAdminRole == 'club_admin'
+            ? 'Club Admin'
+            : 'Club President';
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Who are you adding?',
+                  style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 6),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: AdminColors.inputBorder),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      key: const ValueKey('draft-firstAdminRole'),
+                      value: state.draft.firstAdminRole,
+                      isExpanded: true,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'president',
+                          child: Text(
+                            'Club President',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'club_admin',
+                          child: Text(
+                            'Club Admin (will add the President)',
+                            style: TextStyle(fontSize: 13),
+                          ),
+                        ),
+                      ],
+                      onChanged: (v) =>
+                          state.setDraftFirstAdminRole(v ?? 'president'),
+                      icon: const Icon(
+                        Icons.keyboard_arrow_down,
+                        size: 18,
+                        color: AdminColors.textMuted,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 13),
             LabeledField(
               key: const ValueKey('draft-presidentName'),
-              label: 'Club President Name',
+              label: '$who Name',
               value: state.draft.presidentName,
               placeholder: 'e.g. Jane Doe',
               accentColor: state.accentColor,
@@ -504,7 +556,7 @@ class _StepContent extends StatelessWidget {
             const SizedBox(height: 13),
             LabeledField(
               key: const ValueKey('draft-email'),
-              label: 'Club President Email',
+              label: '$who Email',
               value: state.draft.email,
               placeholder: 'president@club.org',
               accentColor: state.accentColor,
@@ -522,7 +574,7 @@ class _StepContent extends StatelessWidget {
             const SizedBox(height: 13),
             LabeledDateField(
               key: const ValueKey('draft-dob'),
-              label: 'Club President Date of Birth (optional)',
+              label: '$who Date of Birth (optional)',
               value: state.draft.dob,
               placeholder: 'Pick a date',
               accentColor: state.accentColor,
